@@ -90,9 +90,16 @@ export class LoansComponent implements OnInit {
         formattedDate = date.toISOString().slice(0, 10);
       }
 
+      // Workaround: Se não temos client_id, encontrar pelo client_name
+      let clientId = loan.client_id;
+      if (!clientId && loan.client_name) {
+        const foundClient = this.clients().find(c => c.name === loan.client_name);
+        clientId = foundClient?.id || '';
+      }
+
       // Para edição, preencher o formulário
       this.form.patchValue({
-        client_id: loan.client_id,
+        client_id: clientId,
         principal: loan.principal,
         interest_rate: loan.interest_rate,
         installments_count: loan.installments_count,

@@ -10,6 +10,7 @@ import {
   faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-home',
@@ -27,14 +28,22 @@ import { DataService } from '../../core/data.service';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Total Clientes</p>
-              <p class="text-3xl font-bold text-foreground">{{ metrics().total_clients }}</p>
+              @if (loading()) {
+                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
+              } @else {
+                <p class="text-3xl font-bold text-foreground">{{ metrics().total_clients }}</p>
+              }
             </div>
             <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faUsers" class="text-muted-foreground text-xl"></fa-icon>
             </div>
           </div>
           <div class="mt-4">
-            <span class="text-sm text-emerald-600 font-medium">+0 este mês</span>
+            @if (loading()) {
+              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
+            } @else {
+              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_clients > 0 ? 'Ativos' : 'Nenhum cliente' }}</span>
+            }
           </div>
         </div>
 
@@ -42,14 +51,22 @@ import { DataService } from '../../core/data.service';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Empréstimos Ativos</p>
-              <p class="text-3xl font-bold text-foreground">{{ metrics().total_loans }}</p>
+              @if (loading()) {
+                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
+              } @else {
+                <p class="text-3xl font-bold text-foreground">{{ metrics().total_loans }}</p>
+              }
             </div>
             <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faMoneyBillWave" class="text-emerald-600 text-xl"></fa-icon>
             </div>
           </div>
           <div class="mt-4">
-            <span class="text-sm text-emerald-600 font-medium">+0 este mês</span>
+            @if (loading()) {
+              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
+            } @else {
+              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_loans > 0 ? 'Em andamento' : 'Nenhum ativo' }}</span>
+            }
           </div>
         </div>
 
@@ -57,14 +74,22 @@ import { DataService } from '../../core/data.service';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Pagamentos Pendentes</p>
-              <p class="text-3xl font-bold text-foreground">{{ metrics().total_payments_pending }}</p>
+              @if (loading()) {
+                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
+              } @else {
+                <p class="text-3xl font-bold text-foreground">{{ metrics().total_payments_pending }}</p>
+              }
             </div>
             <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faCreditCard" class="text-amber-600 text-xl"></fa-icon>
             </div>
           </div>
           <div class="mt-4">
-            <span class="text-sm text-amber-600 font-medium">Aguardando</span>
+            @if (loading()) {
+              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
+            } @else {
+              <span class="text-sm text-amber-600 font-medium">{{ metrics().total_payments_pending > 0 ? 'Aguardando' : 'Nenhum pendente' }}</span>
+            }
           </div>
         </div>
 
@@ -72,14 +97,22 @@ import { DataService } from '../../core/data.service';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Valor Total</p>
-              <p class="text-3xl font-bold text-foreground">{{ (metrics().total_principal || 0) | currency:'BRL':'symbol':'1.2-2' }}</p>
+              @if (loading()) {
+                <div class="h-8 w-24 bg-muted rounded animate-pulse"></div>
+              } @else {
+                <p class="text-3xl font-bold text-foreground">{{ (metrics().total_principal || 0) | currency:'BRL':'symbol':'1.2-2' }}</p>
+              }
             </div>
             <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faGem" class="text-indigo-600 text-xl"></fa-icon>
             </div>
           </div>
           <div class="mt-4">
-            <span class="text-sm text-indigo-600 font-medium">Em circulação</span>
+            @if (loading()) {
+              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
+            } @else {
+              <span class="text-sm text-indigo-600 font-medium">{{ metrics().total_principal > 0 ? 'Em circulação' : 'Nenhum valor' }}</span>
+            }
           </div>
         </div>
       </div>
@@ -129,7 +162,12 @@ export class HomeComponent implements OnInit {
     total_em_aberto: 0
   });
 
-  constructor(private dataService: DataService) {}
+  loading = signal(true);
+
+  constructor(
+    private dataService: DataService,
+    private toastService: ToastService
+  ) {}
 
   async ngOnInit() {
     await this.loadMetrics();
@@ -137,21 +175,15 @@ export class HomeComponent implements OnInit {
 
   private async loadMetrics() {
     try {
-      console.log('🔍 Carregando métricas do dashboard...');
+      this.loading.set(true);
       
       // Carregar métricas do dashboard
       const dashboardData = await this.dataService.getDashboardMetrics();
-      console.log('📊 Dashboard data:', dashboardData);
       
       // Carregar contadores adicionais
       const clients = await this.dataService.listClients();
-      console.log('👥 Clientes:', clients);
-      
       const loans = await this.dataService.listLoans();
-      console.log('💰 Empréstimos:', loans);
-      
       const payments = await this.dataService.listPayments();
-      console.log('💳 Pagamentos:', payments);
       
       const metrics = {
         total_clients: clients.length,
@@ -162,11 +194,12 @@ export class HomeComponent implements OnInit {
         total_em_aberto: dashboardData.total_em_aberto || 0
       };
       
-      console.log('📈 Métricas calculadas:', metrics);
       this.metrics.set(metrics);
       
-    } catch (error) {
-      console.error('❌ Erro ao carregar métricas:', error);
+    } catch (error: any) {
+      this.toastService.error('Erro ao carregar dados do dashboard');
+    } finally {
+      this.loading.set(false);
     }
   }
 }
