@@ -2,6 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
+import { VersionService } from '../../core/version.service';
 
 @Component({
   selector: 'app-login',
@@ -40,6 +41,11 @@ import { AuthService } from '../../core/auth.service';
             Entrar
           }
         </button>
+        
+        <!-- Versão do Sistema -->
+        <div class="text-center mt-6 pt-4 border-t border-slate-200">
+          <p class="text-xs text-slate-500">{{ versionService.getVersionFormatted() }}</p>
+        </div>
       </form>
     </div>
   `
@@ -48,6 +54,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  protected versionService = inject(VersionService);
 
   loading = signal(false);
   

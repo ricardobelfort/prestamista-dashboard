@@ -2,6 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { SidebarService } from '../../core/sidebar.service';
+import { VersionService } from '../../core/version.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { 
   faHome, 
@@ -62,6 +63,13 @@ import {
             <span class="ml-3 text-sm font-medium">Sair</span>
           }
         </button>
+        
+        <!-- Versão do Sistema -->
+        @if (sidebarService.expanded()) {
+          <div class="mt-3 px-3 py-2 text-center">
+            <p class="text-xs text-slate-500">{{ versionService.getVersionFormatted() }}</p>
+          </div>
+        }
       </div>
     </aside>
   `
@@ -70,6 +78,7 @@ export class SidebarComponent {
   private router = inject(Router);
   private auth = inject(AuthService);
   sidebarService = inject(SidebarService);
+  protected versionService = inject(VersionService);
 
   // FontAwesome icons
   faHome = faHome;
