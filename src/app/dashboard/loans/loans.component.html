@@ -110,12 +110,16 @@
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-foreground mb-1">Cliente *</label>
-          <input 
+          <select 
             formControlName="client_id" 
-            placeholder="ID do cliente" 
             class="input"
             [class.input-readonly]="editing()"
-            [readonly]="editing()" />
+            [disabled]="editing()">
+            <option value="">Selecione um cliente</option>
+            <option *ngFor="let client of clients(); trackBy: trackByClientId" [value]="client.id">
+              {{ client.name }}
+            </option>
+          </select>
         </div>
         
         <div>

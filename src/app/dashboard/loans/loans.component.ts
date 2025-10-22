@@ -17,6 +17,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 export class LoansComponent implements OnInit {
   // Signals for state management
   loans = signal<any[]>([]);
+  clients = signal<any[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   
@@ -58,8 +59,15 @@ export class LoansComponent implements OnInit {
     try {
       this.loading.set(true);
       this.error.set(null);
-      const data = await this.dataService.listLoans();
-      this.loans.set(data || []);
+      
+      // Carregar empréstimos e clientes em paralelo
+      const [loansData, clientsData] = await Promise.all([
+        this.dataService.listLoans(),
+        this.dataService.listClients()
+      ]);
+      
+      this.loans.set(loansData || []);
+      this.clients.set(clientsData || []);
     } catch (err: any) {
       this.error.set(err.message || 'Erro ao carregar empréstimos');
       console.error('Error loading loans:', err);
@@ -167,6 +175,10 @@ export class LoansComponent implements OnInit {
   }
 
   trackByLoanId(index: number, loan: any): any {
-    return loan.id || index;
+    return loan?.id;
+  }
+
+  trackByClientId(index: number, client: any): any {
+    return client?.id;
   }
 }
