@@ -1,0 +1,104 @@
+<div class="space-y-8 mt-6">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-4xl font-bold text-slate-900">Empréstimos</h1>
+      <p class="text-slate-600 mt-2 text-lg">Gerencie seus empréstimos e financiamentos</p>
+    </div>
+    <button class="bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2 ring-1 ring-slate-200">
+      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+      <span>Novo Empréstimo</span>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+        <h3 class="text-xl font-bold text-slate-900">Lista de Empréstimos</h3>
+      </div>
+      <div class="p-6">
+        <div class="flex flex-col items-center py-16">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+          <p class="text-slate-600 mt-4">Carregando empréstimos...</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (error() && !loading()) {
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
+      <div class="flex items-center">
+        <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-xl mr-3"></fa-icon>
+        <div>
+          <h3 class="text-red-800 font-semibold">Erro ao carregar empréstimos</h3>
+          <p class="text-red-600 text-sm mt-1">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!loading() && !error() && loans().length > 0) {
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+        <h3 class="text-xl font-bold text-slate-900">Lista de Empréstimos</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Cliente</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Valor</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Taxa (%)</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Parcelas</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Data</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            @for (loan of loans(); track loan.id) {
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-slate-900">Cliente #{{ loan.client_id }}</td>
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-emerald-600">
+                    {{ loan.principal | currency:'BRL':'symbol':'1.2-2' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-slate-600">{{ loan.interest_rate }}%</td>
+                <td class="px-6 py-4 text-slate-600">{{ loan.installments_count }}x</td>
+                <td class="px-6 py-4 text-slate-600">{{ loan.start_date | date:'shortDate' }}</td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center space-x-2">
+                    <button class="text-slate-600 hover:text-slate-800 transition-colors">
+                      <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                    </button>
+                    <button class="text-red-600 hover:text-red-800 transition-colors">
+                      <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  @if (!loading() && !error() && loans().length === 0) {
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+        <h3 class="text-xl font-bold text-slate-900">Lista de Empréstimos</h3>
+      </div>
+      <div class="p-6">
+        <div class="flex flex-col items-center py-16">
+          <fa-icon [icon]="faDollarSign" class="text-5xl mb-4 text-slate-400"></fa-icon>
+          <p class="text-xl font-semibold text-slate-900">Nenhum empréstimo registrado</p>
+          <p class="text-sm text-slate-400 mt-2">Comece criando seu primeiro empréstimo</p>
+          <button class="mt-6 bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2">
+            <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+            <span>Criar Empréstimo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
