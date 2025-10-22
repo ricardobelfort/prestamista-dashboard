@@ -1,22 +1,23 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { SidebarComponent } from '../shared/sidebar/sidebar.component';
+import { SidebarService } from '../core/sidebar.service';
 
 @Component({
   selector: 'app-dashboard-layout',
   imports: [RouterOutlet, NavbarComponent, SidebarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-slate-50">
+      <app-sidebar></app-sidebar>
       <app-navbar></app-navbar>
-      <div class="flex">
-        <app-sidebar></app-sidebar>
-        <main class="flex-1">
-          <router-outlet></router-outlet>
-        </main>
-      </div>
+      <main class="pt-16 p-6 transition-all duration-300" [class.ml-64]="sidebarService.expanded()" [class.ml-20]="!sidebarService.expanded()">
+        <router-outlet></router-outlet>
+      </main>
     </div>
   `
 })
-export class DashboardLayoutComponent { }
+export class DashboardLayoutComponent {
+  sidebarService = inject(SidebarService);
+}

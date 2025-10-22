@@ -1,55 +1,119 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../core/auth.service';
+import { SidebarService } from '../../core/sidebar.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { 
+  faHome, 
+  faUsers, 
+  faMoneyBillWave, 
+  faCreditCard, 
+  faRoute, 
+  faSignOutAlt,
+  faChevronLeft,
+  faChevronRight
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule],
+  imports: [RouterModule, FontAwesomeModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <aside class="w-64 bg-gray-800 min-h-screen">
-      <nav class="mt-8">
-        <div class="px-4">
-          <ul class="space-y-2">
-            <li>
-              <a routerLink="/dashboard" 
-                 routerLinkActive="bg-gray-700 text-white" 
-                 [routerLinkActiveOptions]="{exact: true}"
-                 class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a routerLink="/dashboard/clients" 
-                 routerLinkActive="bg-gray-700 text-white"
-                 class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                <span>Clientes</span>
-              </a>
-            </li>
-            <li>
-              <a routerLink="/dashboard/loans" 
-                 routerLinkActive="bg-gray-700 text-white"
-                 class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                <span>Empréstimos</span>
-              </a>
-            </li>
-            <li>
-              <a routerLink="/dashboard/payments" 
-                 routerLinkActive="bg-gray-700 text-white"
-                 class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                <span>Pagamentos</span>
-              </a>
-            </li>
-            <li>
-              <a routerLink="/dashboard/routes" 
-                 routerLinkActive="bg-gray-700 text-white"
-                 class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                <span>Rotas</span>
-              </a>
-            </li>
-          </ul>
+    <aside [class]="'fixed top-0 left-0 transition-all duration-300 bg-slate-900 h-screen shadow-xl flex flex-col z-30 ' + (sidebarService.expanded() ? 'w-64' : 'w-20')">
+      <div class="flex items-center justify-between px-4 py-4 border-b border-slate-700">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 bg-linear-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-base">P</span>
+          </div>
+          @if (sidebarService.expanded()) {
+            <span class="text-xl font-bold text-slate-100">Prestamista</span>
+          }
         </div>
+        <button (click)="toggleSidebar()" class="text-slate-400 hover:text-slate-200 transition-colors p-2 rounded-lg hover:bg-slate-800">
+          @if (sidebarService.expanded()) {
+            <fa-icon [icon]="faChevronLeft" class="w-4 h-4"></fa-icon>
+          } @else {
+            <fa-icon [icon]="faChevronRight" class="w-4 h-4"></fa-icon>
+          }
+        </button>
+      </div>
+
+      <nav class="flex-1 px-3 py-6">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" 
+             routerLinkActive="bg-slate-700 text-slate-100 shadow-lg" 
+             [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
+             class="flex items-center p-3 mb-2 cursor-pointer rounded-xl hover:bg-slate-800 transition-all duration-200 group"
+             [title]="!sidebarService.expanded() ? item.label : ''">
+            <fa-icon [icon]="item.icon" class="w-5 h-5 text-slate-400 group-hover:text-slate-200 transition-colors"></fa-icon>
+            @if (sidebarService.expanded()) {
+              <span class="ml-3 text-slate-300 text-sm font-medium group-hover:text-slate-100 transition-colors">{{ item.label }}</span>
+            }
+          </a>
+        }
       </nav>
+
+      <div class="p-3 border-t border-slate-700">
+        <button (click)="logout()" 
+                class="flex items-center w-full p-3 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-xl transition-all duration-200"
+                [title]="!sidebarService.expanded() ? 'Sair' : ''">
+          <fa-icon [icon]="faSignOutAlt" class="w-5 h-5"></fa-icon>
+          @if (sidebarService.expanded()) {
+            <span class="ml-3 text-sm font-medium">Sair</span>
+          }
+        </button>
+      </div>
     </aside>
   `
 })
-export class SidebarComponent { }
+export class SidebarComponent {
+  private router = inject(Router);
+  private auth = inject(AuthService);
+  sidebarService = inject(SidebarService);
+
+  // FontAwesome icons
+  faHome = faHome;
+  faUsers = faUsers;
+  faMoneyBillWave = faMoneyBillWave;
+  faCreditCard = faCreditCard;
+  faRoute = faRoute;
+  faSignOutAlt = faSignOutAlt;
+  faChevronLeft = faChevronLeft;
+  faChevronRight = faChevronRight;
+
+  navItems = [
+    { 
+      icon: this.faHome, 
+      label: 'Início', 
+      route: '/dashboard' 
+    },
+    { 
+      icon: this.faUsers, 
+      label: 'Clientes', 
+      route: '/dashboard/clients' 
+    },
+    { 
+      icon: this.faMoneyBillWave, 
+      label: 'Empréstimos', 
+      route: '/dashboard/loans' 
+    },
+    { 
+      icon: this.faCreditCard, 
+      label: 'Pagamentos', 
+      route: '/dashboard/payments' 
+    },
+    { 
+      icon: this.faRoute, 
+      label: 'Rotas', 
+      route: '/dashboard/routes' 
+    }
+  ];
+
+  toggleSidebar() {
+    this.sidebarService.toggle();
+  }
+
+  async logout() {
+    await this.auth.signOut();
+  }
+}
