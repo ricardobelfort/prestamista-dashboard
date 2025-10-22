@@ -12,26 +12,21 @@ export class DataService {
     if (!user) {
       // Para desenvolvimento, fazer login automático com usuário admin existente
       // IMPORTANTE: Remover isso em produção e implementar login real
-      const passwords = ['admin123', 'password', '123456', 'admin123456', 'demo123'];
-      let authenticated = false;
+      console.log('🔐 Tentando autenticação automática...');
       
-      for (const password of passwords) {
-        const { error } = await this.supabase.client.auth.signInWithPassword({
-          email: 'admin@demo.com',
-          password: password
-        });
-        
-        if (!error) {
-          console.log(`Auto-authenticated as admin@demo.com with password: ${password}`);
-          authenticated = true;
-          break;
-        }
-      }
+      const { data, error } = await this.supabase.client.auth.signInWithPassword({
+        email: 'admin@demo.com',
+        password: '123456'
+      });
       
-      if (!authenticated) {
-        console.error('Could not authenticate with any common password');
+      if (error) {
+        console.error('❌ Auto-login failed:', error.message);
         throw new Error('Authentication failed - unable to login with development credentials');
+      } else {
+        console.log('✅ Auto-authenticated as admin@demo.com');
       }
+    } else {
+      console.log('✅ User already authenticated:', user.email);
     }
   }
 
@@ -109,6 +104,8 @@ export class DataService {
 
   async listPayments() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('payments')
         .select(`
@@ -149,54 +146,54 @@ export class DataService {
 
   async listRoutes() {
     try {
+      await this.ensureAuthenticated();
+      
       console.log('🔍 DataService: Iniciando listRoutes()');
       
-      // Versão simplificada apenas para debugging
+      // Buscar rotas com perfis dos usuários atribuídos
       const { data, error } = await this.supabase.client
         .from('routes')
-        .select('id, name, assigned_to, created_at')
+        .select(`
+          id,
+          name,
+          assigned_to,
+          created_at,
+          profiles!routes_assigned_to_profiles_fkey(
+            full_name
+          )
+        `)
         .order('name', { ascending: true });
       
       console.log('📊 Supabase response:', { data, error });
       
       if (error) {
         console.error('❌ Supabase error:', error);
-        console.log('🔄 Usando dados mock como fallback');
-        return [
-          {
-            id: '1',
-            name: 'Rota Centro (Mock)',
-            assigned_to: null,
-            created_at: new Date().toISOString(),
-            profiles: { full_name: 'Cobrador Demo' }
-          }
-        ];
+        // Fallback sem join se houver erro
+        const { data: simpleData } = await this.supabase.client
+          .from('routes')
+          .select('id, name, assigned_to, created_at')
+          .order('name', { ascending: true });
+          
+        return (simpleData || []).map(route => ({
+          ...route,
+          profiles: route.assigned_to ? { full_name: 'Usuário' } : null
+        }));
       }
 
       console.log('✅ Dados reais recebidos:', data?.length || 0, 'rotas');
       
-      // Retornar dados simples primeiro, sem buscar perfis
-      return (data || []).map(route => ({
-        ...route,
-        profiles: { full_name: 'Carregando...' }
-      }));
+      return data || [];
       
     } catch (err: any) {
       console.error('💥 Erro geral em listRoutes:', err);
-      return [
-        {
-          id: '1',
-          name: 'Rota Erro (Mock)',
-          assigned_to: null,
-          created_at: new Date().toISOString(),
-          profiles: { full_name: 'Erro de conexão' }
-        }
-      ];
+      return [];
     }
   }
 
   async getProfile() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('profiles')
         .select('full_name, default_org')
@@ -217,6 +214,8 @@ export class DataService {
 
   async getDashboardMetrics() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('v_dashboard')
         .select('*')
@@ -245,6 +244,8 @@ export class DataService {
 
   async getInstallmentsDue() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('installments')
         .select(`
@@ -284,6 +285,19 @@ export class DataService {
   // CRUD Operations
   async createClient(client: any) {
     try {
+      await this.ensureAuthenticated();
+      
+      // Obter organização do usuário atual se não fornecida
+      if (!client.org_id) {
+        const { data: profile } = await this.supabase.client
+          .from('profiles')
+          .select('default_org')
+          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
+          .single();
+        
+        client.org_id = profile?.default_org;
+      }
+      
       const { data, error } = await this.supabase.client
         .from('clients')
         .insert([{
@@ -307,6 +321,19 @@ export class DataService {
 
   async createLoan(loan: any) {
     try {
+      await this.ensureAuthenticated();
+      
+      // Obter organização do usuário atual se não fornecida
+      if (!loan.org_id) {
+        const { data: profile } = await this.supabase.client
+          .from('profiles')
+          .select('default_org')
+          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
+          .single();
+        
+        loan.org_id = profile?.default_org;
+      }
+      
       const { data, error } = await this.supabase.client
         .from('loans')
         .insert([{
@@ -332,6 +359,19 @@ export class DataService {
 
   async createPayment(payment: any) {
     try {
+      await this.ensureAuthenticated();
+      
+      // Obter organização do usuário atual se não fornecida
+      if (!payment.org_id) {
+        const { data: profile } = await this.supabase.client
+          .from('profiles')
+          .select('default_org')
+          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
+          .single();
+        
+        payment.org_id = profile?.default_org;
+      }
+      
       // Preparar dados para inserção, removendo installment_id se estiver vazio
       const insertData: any = {
         value: payment.value,
@@ -362,6 +402,19 @@ export class DataService {
 
   async createRoute(route: any) {
     try {
+      await this.ensureAuthenticated();
+      
+      // Obter organização do usuário atual se não fornecida
+      if (!route.org_id) {
+        const { data: profile } = await this.supabase.client
+          .from('profiles')
+          .select('default_org')
+          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
+          .single();
+        
+        route.org_id = profile?.default_org;
+      }
+      
       const { data, error } = await this.supabase.client
         .from('routes')
         .insert([{
@@ -383,6 +436,8 @@ export class DataService {
   // Route CRUD methods
   async updateRoute(id: string, updates: any) {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('routes')
         .update(updates)
@@ -400,6 +455,8 @@ export class DataService {
 
   async deleteRoute(id: string) {
     try {
+      await this.ensureAuthenticated();
+      
       const { error } = await this.supabase.client
         .from('routes')
         .delete()
@@ -416,6 +473,8 @@ export class DataService {
   // Client CRUD methods
   async updateClient(id: string, updates: any) {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('clients')
         .update(updates)
@@ -433,6 +492,8 @@ export class DataService {
 
   async deleteClient(id: string) {
     try {
+      await this.ensureAuthenticated();
+      
       const { error } = await this.supabase.client
         .from('clients')
         .delete()
@@ -449,6 +510,8 @@ export class DataService {
   // Loan CRUD methods
   async updateLoan(id: string, updates: any) {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('loans')
         .update(updates)
@@ -466,6 +529,8 @@ export class DataService {
 
   async deleteLoan(id: string) {
     try {
+      await this.ensureAuthenticated();
+      
       const { error } = await this.supabase.client
         .from('loans')
         .delete()
@@ -482,6 +547,8 @@ export class DataService {
   // Payment CRUD methods
   async updatePayment(id: string, updates: any) {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('payments')
         .update(updates)
@@ -499,6 +566,8 @@ export class DataService {
 
   async deletePayment(id: string) {
     try {
+      await this.ensureAuthenticated();
+      
       const { error } = await this.supabase.client
         .from('payments')
         .delete()

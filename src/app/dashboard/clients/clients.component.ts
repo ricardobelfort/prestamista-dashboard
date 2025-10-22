@@ -16,6 +16,7 @@ import { ConfirmationModalComponent } from '../../shared/confirmation-modal/conf
 export class ClientsComponent implements OnInit {
   // Signals for state management
   clients = signal<any[]>([]);
+  routes = signal<any[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
 
@@ -41,7 +42,9 @@ export class ClientsComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       phone: [''],
-      address: ['']
+      address: [''],
+      doc_id: [''],
+      route_id: ['']
     });
   }
 
@@ -49,11 +52,18 @@ export class ClientsComponent implements OnInit {
     try {
       this.loading.set(true);
       this.error.set(null);
-      const data = await this.dataService.listClients();
-      this.clients.set(data || []);
+      
+      // Carregar clientes e rotas em paralelo
+      const [clientsData, routesData] = await Promise.all([
+        this.dataService.listClients(),
+        this.dataService.listRoutes()
+      ]);
+      
+      this.clients.set(clientsData || []);
+      this.routes.set(routesData || []);
     } catch (err: any) {
-      this.error.set(err.message || 'Erro ao carregar clientes');
-      console.error('Error loading clients:', err);
+      this.error.set(err.message || 'Erro ao carregar dados');
+      console.error('Error loading data:', err);
     } finally {
       this.loading.set(false);
     }

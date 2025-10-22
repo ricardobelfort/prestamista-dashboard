@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste RLS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Teste de RLS e Autenticação</h1>
+    <div id="status"></div>
+    <button onclick="testAuth()">Testar Autenticação</button>
+    <button onclick="testCreateClient()">Testar Criar Cliente</button>
+    <div id="results"></div>
+
+    <script>
+        const supabaseUrl = 'https://frwawmcvrpdhsuljrvlw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd2F3bWN2cnBkaHN1bGpydmx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk1NTI3NDMsImV4cCI6MjA0NTEyODc0M30.KNiOcPwWEHPdP7WfbTH8vQYkqnDgdmRx4Fxgj1vhtno';
+        
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function testAuth() {
+            const statusDiv = document.getElementById('status');
+            try {
+                // Tentar diferentes senhas
+                const passwords = ['admin123', 'password', '123456', 'admin123456', 'demo123'];
+                let authenticated = false;
+                
+                for (const password of passwords) {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: 'admin@demo.com',
+                        password: password
+                    });
+                    
+                    if (!error) {
+                        statusDiv.innerHTML = `✅ Autenticado com sucesso usando senha: ${password}<br>User ID: ${data.user.id}`;
+                        authenticated = true;
+                        break;
+                    }
+                }
+                
+                if (!authenticated) {
+                    statusDiv.innerHTML = '❌ Falha na autenticação com todas as senhas testadas';
+                }
+            } catch (err) {
+                statusDiv.innerHTML = `❌ Erro: ${err.message}`;
+            }
+        }
+
+        async function testCreateClient() {
+            const resultsDiv = document.getElementById('results');
+            try {
+                // Verificar se está autenticado
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    resultsDiv.innerHTML = '❌ Usuário não autenticado. Execute "Testar Autenticação" primeiro.';
+                    return;
+                }
+
+                // Obter organização do usuário
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('default_org')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (!profile?.default_org) {
+                    resultsDiv.innerHTML = '❌ Usuário não tem organização padrão';
+                    return;
+                }
+
+                // Tentar criar cliente
+                const { data, error } = await supabase
+                    .from('clients')
+                    .insert([{
+                        name: 'Cliente Teste RLS',
+                        phone: '(11) 98765-4321',
+                        address: 'Endereço Teste, 123',
+                        doc_id: '111.222.333-44',
+                        org_id: profile.default_org
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    resultsDiv.innerHTML = `❌ Erro ao criar cliente: ${error.message}`;
+                } else {
+                    resultsDiv.innerHTML = `✅ Cliente criado com sucesso!<br>ID: ${data.id}<br>Nome: ${data.name}`;
+                }
+            } catch (err) {
+                resultsDiv.innerHTML = `❌ Erro: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -44,6 +44,7 @@
           <tr class="table-row">
             <th class="table-head">Nome</th>
             <th class="table-head">Telefone</th>
+            <th class="table-head">Documento</th>
             <th class="table-head">Endereço</th>
             <th class="table-head">Rota</th>
             <th class="table-head">Ações</th>
@@ -53,6 +54,7 @@
           <tr *ngFor="let client of clients(); trackBy: trackByClientId" class="table-row">
             <td class="table-cell font-medium">{{ client.name }}</td>
             <td class="table-cell text-muted-foreground">{{ client.phone || '-' }}</td>
+            <td class="table-cell text-muted-foreground">{{ client.doc_id || '-' }}</td>
             <td class="table-cell text-muted-foreground">{{ client.address || '-' }}</td>
             <td class="table-cell">
               <span *ngIf="client.routes?.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
@@ -115,8 +117,23 @@
         </div>
         
         <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Documento (CPF/CNPJ)</label>
+          <input formControlName="doc_id" placeholder="000.000.000-00" class="input" />
+        </div>
+        
+        <div>
           <label class="block text-sm font-medium text-foreground mb-1">Endereço</label>
           <input formControlName="address" placeholder="Endereço completo" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Rota</label>
+          <select formControlName="route_id" class="input">
+            <option value="">Selecione uma rota</option>
+            <option *ngFor="let route of routes()" [value]="route.id">
+              {{ route.name }}
+            </option>
+          </select>
         </div>
       </div>
 
