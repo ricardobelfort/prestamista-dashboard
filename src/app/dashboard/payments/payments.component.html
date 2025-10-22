@@ -1,85 +1,87 @@
 <div class="space-y-8 mt-6">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-4xl font-bold text-slate-900">Pagamentos</h1>
-      <p class="text-slate-600 mt-2 text-lg">Controle todos os pagamentos recebidos</p>
+      <h1 class="text-3xl font-bold text-foreground">Pagamentos</h1>
+      <p class="text-muted-foreground mt-2 text-lg">Controle todos os pagamentos recebidos</p>
     </div>
-    <button class="bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2 ring-1 ring-slate-200">
+    <button class="btn btn-primary">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
       <span>Registrar Pagamento</span>
     </button>
   </div>
 
   @if (loading()) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Histórico de Pagamentos</h3>
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold text-foreground">Histórico de Pagamentos</h3>
       </div>
       <div class="p-6">
         <div class="flex flex-col items-center py-16">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-          <p class="text-slate-600 mt-4">Carregando pagamentos...</p>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p class="text-muted-foreground mt-4">Carregando pagamentos...</p>
         </div>
       </div>
     </div>
   }
 
   @if (error() && !loading()) {
-    <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
-      <div class="flex items-center">
-        <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-xl mr-3"></fa-icon>
-        <div>
-          <h3 class="text-red-800 font-semibold">Erro ao carregar pagamentos</h3>
-          <p class="text-red-600 text-sm mt-1">{{ error() }}</p>
+    <div class="card border-destructive bg-destructive/5">
+      <div class="p-6">
+        <div class="flex items-center">
+          <fa-icon [icon]="faExclamationTriangle" class="text-destructive text-xl mr-3"></fa-icon>
+          <div>
+            <h3 class="text-destructive font-semibold">Erro ao carregar pagamentos</h3>
+            <p class="text-destructive/80 text-sm mt-1">{{ error() }}</p>
+          </div>
         </div>
       </div>
     </div>
   }
 
   @if (!loading() && !error() && payments().length > 0) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Histórico de Pagamentos</h3>
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold text-foreground">Histórico de Pagamentos</h3>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-slate-50">
-            <tr>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Cliente</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Valor</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Método</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Data</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Parcela</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ações</th>
+      <div class="table-container">
+        <table class="table">
+          <thead class="table-header">
+            <tr class="table-row">
+              <th class="table-head">Cliente</th>
+              <th class="table-head">Valor</th>
+              <th class="table-head">Método</th>
+              <th class="table-head">Data</th>
+              <th class="table-head">Parcela</th>
+              <th class="table-head">Ações</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-200">
-          <tr *ngFor="let payment of payments(); trackBy: trackByPaymentId" class="hover:bg-slate-50 transition-colors">
-            <td class="px-6 py-4 text-slate-900">
+          <tbody class="table-body">
+          <tr *ngFor="let payment of payments(); trackBy: trackByPaymentId" class="table-row">
+            <td class="table-cell font-medium">
               {{ payment.installments?.loans?.clients?.name || 'Cliente não identificado' }}
             </td>
-            <td class="px-6 py-4">
+            <td class="table-cell">
               <span class="font-semibold text-emerald-600">
                 {{ payment.value | currency:'BRL':'symbol':'1.2-2' }}
               </span>
             </td>
-            <td class="px-6 py-4">
+            <td class="table-cell">
               <span *ngIf="payment.method === 'cash'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Dinheiro</span>
               <span *ngIf="payment.method === 'pix'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">PIX</span>
               <span *ngIf="payment.method === 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Cartão</span>
-              <span *ngIf="payment.method !== 'cash' && payment.method !== 'pix' && payment.method !== 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">{{ payment.method }}</span>
+              <span *ngIf="payment.method !== 'cash' && payment.method !== 'pix' && payment.method !== 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">{{ payment.method }}</span>
             </td>
-            <td class="px-6 py-4 text-slate-600">{{ payment.paid_on | date:'shortDate' }}</td>
-            <td class="px-6 py-4 text-slate-600">
+            <td class="table-cell text-muted-foreground">{{ payment.paid_on | date:'shortDate' }}</td>
+            <td class="table-cell text-muted-foreground">
               <span *ngIf="payment.installments?.index_no">Parcela {{ payment.installments.index_no }}</span>
-              <span *ngIf="!payment.installments?.index_no" class="text-slate-400">-</span>
+              <span *ngIf="!payment.installments?.index_no" class="text-muted-foreground">-</span>
             </td>
-            <td class="px-6 py-4">
+            <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="text-slate-600 hover:text-slate-800 transition-colors">
+                <button class="btn btn-ghost btn-icon-sm">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="text-red-600 hover:text-red-800 transition-colors">
+                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>
@@ -92,16 +94,16 @@
   }
 
   @if (!loading() && !error() && payments().length === 0) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Histórico de Pagamentos</h3>
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold text-foreground">Histórico de Pagamentos</h3>
       </div>
       <div class="p-6">
         <div class="flex flex-col items-center py-16">
-          <fa-icon [icon]="faCreditCard" class="text-5xl mb-4 text-slate-400"></fa-icon>
-          <p class="text-xl font-semibold text-slate-900">Nenhum pagamento registrado</p>
-          <p class="text-sm text-slate-400 mt-2">Os pagamentos aparecerão aqui quando forem registrados</p>
-          <button class="mt-6 bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2">
+          <fa-icon [icon]="faCreditCard" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
+          <p class="text-xl font-semibold text-foreground">Nenhum pagamento registrado</p>
+          <p class="text-sm text-muted-foreground mt-2">Os pagamentos aparecerão aqui quando forem registrados</p>
+          <button class="btn btn-primary mt-6">
             <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
             <span>Registrar Pagamento</span>
           </button>
