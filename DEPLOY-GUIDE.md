@@ -56,6 +56,7 @@ Install Command: npm ci
 
 ### Build falha na Vercel
 - Verificar se `npm run version:generate` está funcionando
+- Verificar se Angular CLI está nas dependencies (não devDependencies)
 - Verificar se todas as dependências estão no `package.json`
 
 ### Versão não aparece

@@ -2,14 +2,8 @@
   "version": 2,
   "buildCommand": "npm run version:generate && npm run build",
   "outputDirectory": "dist/prestamista-dashboard-ui",
-  "installCommand": "npm ci",
   "framework": "angular",
   "env": {
     "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
   }
 }
