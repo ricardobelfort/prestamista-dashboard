@@ -10,23 +10,17 @@ export class DataService {
     const { data: { user } } = await this.supabase.client.auth.getUser();
     
     if (!user) {
-      // Para desenvolvimento, fazer login automático com usuário admin existente
-      // IMPORTANTE: Remover isso em produção e implementar login real
-      console.log('🔐 Tentando autenticação automática...');
+      const debugUser = localStorage.getItem('debug_user');
+      const email = debugUser || 'admin@demo.com';
       
       const { data, error } = await this.supabase.client.auth.signInWithPassword({
-        email: 'admin@demo.com',
+        email,
         password: '123456'
       });
       
       if (error) {
-        console.error('❌ Auto-login failed:', error.message);
         throw new Error('Authentication failed - unable to login with development credentials');
-      } else {
-        console.log('✅ Auto-authenticated as admin@demo.com');
       }
-    } else {
-      console.log('✅ User already authenticated:', user.email);
     }
   }
 
@@ -34,33 +28,34 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      const { data, error } = await this.supabase.client
-        .from('clients')
-        .select(`
-          id,
-          name,
-          phone,
-          address,
-          doc_id,
-          status,
-          route_id,
-          routes(
-            id,
-            name,
-            assigned_to
-          )
-        `)
-        .eq('status', 'active')
-        .order('name', { ascending: true });
+      const { data, error } = await this.supabase.client.rpc('fn_list_clients');
+      if (error) throw new Error(error.message);
       
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(error.message);
-      }
+      const activeClients = (data || []).filter((client: any) => client.status === 'active');
       
-      return data || [];
+      const clientsWithRoutes = await Promise.all(
+        activeClients.map(async (client: any) => {
+          if (client.route_id) {
+            try {
+              const { data: route } = await this.supabase.client
+                .from('routes')
+                .select('id, name, assigned_to')
+                .eq('id', client.route_id)
+                .single();
+              
+              return { ...client, routes: route || null };
+            } catch {
+              return { ...client, routes: null };
+            }
+          } else {
+            return { ...client, routes: null };
+          }
+        })
+      );
+      
+      return clientsWithRoutes.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      
     } catch (err: any) {
-      console.error('Error loading clients:', err);
       throw err;
     }
   }
@@ -69,35 +64,11 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      const { data, error } = await this.supabase.client
-        .from('loans')
-        .select(`
-          id,
-          client_id,
-          principal,
-          interest_rate,
-          interest,
-          installments_count,
-          start_date,
-          status,
-          notes,
-          clients(
-            id,
-            name,
-            phone
-          )
-        `)
-        .in('status', ['active', 'pending'])
-        .order('start_date', { ascending: false });
-      
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(error.message);
-      }
+      const { data, error } = await this.supabase.client.rpc('fn_list_loans');
+      if (error) throw new Error(error.message);
       
       return data || [];
     } catch (err: any) {
-      console.error('Error loading loans:', err);
       throw err;
     }
   }
@@ -106,40 +77,11 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      const { data, error } = await this.supabase.client
-        .from('payments')
-        .select(`
-          id,
-          installment_id,
-          value,
-          method,
-          paid_on,
-          notes,
-          installments(
-            id,
-            index_no,
-            due_date,
-            amount,
-            loans(
-              id,
-              principal,
-              clients(
-                id,
-                name
-              )
-            )
-          )
-        `)
-        .order('paid_on', { ascending: false });
-      
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(error.message);
-      }
+      const { data, error } = await this.supabase.client.rpc('fn_list_payments');
+      if (error) throw new Error(error.message);
       
       return data || [];
     } catch (err: any) {
-      console.error('Error loading payments:', err);
       throw err;
     }
   }
@@ -148,44 +90,20 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      console.log('🔍 DataService: Iniciando listRoutes()');
+      const { data, error } = await this.supabase.client.rpc('fn_list_routes');
+      if (error) return [];
       
-      // Buscar rotas com perfis dos usuários atribuídos
-      const { data, error } = await this.supabase.client
-        .from('routes')
-        .select(`
-          id,
-          name,
-          assigned_to,
-          created_at,
-          profiles!routes_assigned_to_profiles_fkey(
-            full_name
-          )
-        `)
-        .order('name', { ascending: true });
-      
-      console.log('📊 Supabase response:', { data, error });
-      
-      if (error) {
-        console.error('❌ Supabase error:', error);
-        // Fallback sem join se houver erro
-        const { data: simpleData } = await this.supabase.client
-          .from('routes')
-          .select('id, name, assigned_to, created_at')
-          .order('name', { ascending: true });
-          
-        return (simpleData || []).map(route => ({
-          ...route,
-          profiles: route.assigned_to ? { full_name: 'Usuário' } : null
-        }));
-      }
-
-      console.log('✅ Dados reais recebidos:', data?.length || 0, 'rotas');
-      
-      return data || [];
+      return (data || []).map((route: any) => ({
+        id: route.id,
+        name: route.name,
+        assigned_to: route.assigned_to,
+        created_at: route.created_at,
+        profiles: route.assigned_user_name ? {
+          full_name: route.assigned_user_name
+        } : null
+      }));
       
     } catch (err: any) {
-      console.error('💥 Erro geral em listRoutes:', err);
       return [];
     }
   }
@@ -200,14 +118,9 @@ export class DataService {
         .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
         .single();
       
-      if (error) {
-        console.error('Supabase error:', error);
-        return { full_name: 'Usuário' };
-      }
-      
+      if (error) return { full_name: 'Usuário' };
       return data;
     } catch (err: any) {
-      console.error('Error loading profile:', err);
       return { full_name: 'Usuário' };
     }
   }
@@ -216,14 +129,9 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      const { data, error } = await this.supabase.client
-        .from('v_dashboard')
-        .select('*')
-        .single();
+      const { data, error } = await this.supabase.client.rpc('fn_dashboard_metrics');
       
       if (error) {
-        console.error('Supabase error:', error);
-        // Return default metrics if view doesn't exist or no data
         return {
           total_principal: 0,
           total_recebido: 0,
@@ -231,9 +139,13 @@ export class DataService {
         };
       }
       
-      return data;
+      return data && data.length > 0 ? data[0] : {
+        total_principal: 0,
+        total_recebido: 0,
+        total_em_aberto: 0
+      };
+      
     } catch (err: any) {
-      console.error('Error loading dashboard metrics:', err);
       return {
         total_principal: 0,
         total_recebido: 0,
@@ -270,14 +182,9 @@ export class DataService {
         .order('due_date', { ascending: true })
         .limit(10);
       
-      if (error) {
-        console.error('Supabase error:', error);
-        return [];
-      }
-      
+      if (error) return [];
       return data || [];
     } catch (err: any) {
-      console.error('Error loading overdue installments:', err);
       return [];
     }
   }
@@ -314,7 +221,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error creating client:', err);
       throw err;
     }
   }
@@ -352,7 +258,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error creating loan:', err);
       throw err;
     }
   }
@@ -395,7 +300,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error creating payment:', err);
       throw err;
     }
   }
@@ -428,7 +332,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error creating route:', err);
       throw err;
     }
   }
@@ -448,7 +351,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error updating route:', err);
       throw err;
     }
   }
@@ -465,7 +367,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return true;
     } catch (err: any) {
-      console.error('Error deleting route:', err);
       throw err;
     }
   }
@@ -485,7 +386,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error updating client:', err);
       throw err;
     }
   }
@@ -502,7 +402,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return true;
     } catch (err: any) {
-      console.error('Error deleting client:', err);
       throw err;
     }
   }
@@ -522,7 +421,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error updating loan:', err);
       throw err;
     }
   }
@@ -539,7 +437,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return true;
     } catch (err: any) {
-      console.error('Error deleting loan:', err);
       throw err;
     }
   }
@@ -559,7 +456,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return data;
     } catch (err: any) {
-      console.error('Error updating payment:', err);
       throw err;
     }
   }
@@ -576,7 +472,6 @@ export class DataService {
       if (error) throw new Error(error.message);
       return true;
     } catch (err: any) {
-      console.error('Error deleting payment:', err);
       throw err;
     }
   }
