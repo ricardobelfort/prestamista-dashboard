@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run version:generate && npm run build",
+  "buildCommand": "npm run version:generate && npx ng build",
   "outputDirectory": "dist/prestamista-dashboard-ui",
-  "framework": "angular",
+  "framework": null,
   "env": {
     "NODE_ENV": "production"
   }

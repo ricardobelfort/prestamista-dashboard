@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Development files
+.angular
+.vscode
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+coverage
+.nyc_output
+
+# Documentation (opcional - pode comentar se quiser incluir)
+*.md
+!README.md
