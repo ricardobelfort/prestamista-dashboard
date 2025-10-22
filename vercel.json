@@ -1,9 +1,15 @@
 {
   "version": 2,
   "buildCommand": "npx ng build",
-  "outputDirectory": "dist/prestamista-dashboard-ui",
-  "framework": null,
+  "outputDirectory": "dist/prestamista-dashboard-ui/browser",
+  "framework": "angular",
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
