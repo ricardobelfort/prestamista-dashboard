@@ -1,9 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [RouterOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<router-outlet></router-outlet>'
 })
 export class App {
 }
