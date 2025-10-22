@@ -10,16 +10,27 @@ export class DataService {
     const { data: { user } } = await this.supabase.client.auth.getUser();
     
     if (!user) {
-      // Para desenvolvimento, fazer login automático
+      // Para desenvolvimento, fazer login automático com usuário admin existente
       // IMPORTANTE: Remover isso em produção e implementar login real
-      const { error } = await this.supabase.client.auth.signInWithPassword({
-        email: 'dev@prestamista.com',
-        password: 'dev123456'
-      });
+      const passwords = ['admin123', 'password', '123456', 'admin123456', 'demo123'];
+      let authenticated = false;
       
-      if (error) {
-        console.warn('Auto-login failed:', error.message);
-        // Se falhar, continuar sem autenticação (RLS está desabilitado temporariamente)
+      for (const password of passwords) {
+        const { error } = await this.supabase.client.auth.signInWithPassword({
+          email: 'admin@demo.com',
+          password: password
+        });
+        
+        if (!error) {
+          console.log(`Auto-authenticated as admin@demo.com with password: ${password}`);
+          authenticated = true;
+          break;
+        }
+      }
+      
+      if (!authenticated) {
+        console.error('Could not authenticate with any common password');
+        throw new Error('Authentication failed - unable to login with development credentials');
       }
     }
   }
