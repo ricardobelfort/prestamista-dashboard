@@ -317,4 +317,195 @@
   .input-readonly:focus-visible {
     outline: none !important;
   }
+
+  /* Alert/Notification Components */
+  .alert {
+    position: relative;
+    width: 100%;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid hsl(var(--border));
+    padding: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .alert-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .alert-content {
+    flex: 1;
+  }
+
+  .alert-title {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+
+  .alert-description {
+    font-size: 0.875rem;
+    line-height: 1.25;
+    opacity: 0.9;
+  }
+
+  /* Alert Variants */
+  .alert-default {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+
+  .alert-destructive {
+    border-color: hsl(var(--destructive) / 0.5);
+    background-color: hsl(var(--destructive) / 0.05);
+    color: hsl(var(--destructive));
+  }
+
+  .alert-destructive .alert-title {
+    color: hsl(var(--destructive));
+  }
+
+  .alert-destructive .alert-description {
+    color: hsl(var(--destructive) / 0.8);
+  }
+
+  .alert-success {
+    border-color: hsl(142.1 76.2% 36.3% / 0.5);
+    background-color: hsl(142.1 76.2% 36.3% / 0.05);
+    color: hsl(142.1 70.6% 45.3%);
+  }
+
+  .alert-success .alert-title {
+    color: hsl(142.1 70.6% 45.3%);
+  }
+
+  .alert-success .alert-description {
+    color: hsl(142.1 70.6% 45.3% / 0.8);
+  }
+
+  .alert-warning {
+    border-color: hsl(45.4 93.4% 47.5% / 0.5);
+    background-color: hsl(45.4 93.4% 47.5% / 0.05);
+    color: hsl(25 95% 53%);
+  }
+
+  .alert-warning .alert-title {
+    color: hsl(25 95% 53%);
+  }
+
+  .alert-warning .alert-description {
+    color: hsl(25 95% 53% / 0.8);
+  }
+
+  .alert-info {
+    border-color: hsl(221.2 83.2% 53.3% / 0.5);
+    background-color: hsl(221.2 83.2% 53.3% / 0.05);
+    color: hsl(221.2 83.2% 53.3%);
+  }
+
+  .alert-info .alert-title {
+    color: hsl(221.2 83.2% 53.3%);
+  }
+
+  .alert-info .alert-description {
+    color: hsl(221.2 83.2% 53.3% / 0.8);
+  }
+
+  /* Toast Notification Styles (for ngx-sonner) */
+  .sonner-toast {
+    border-radius: calc(var(--radius) - 2px) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    font-family: 'DM Sans', sans-serif !important;
+  }
+
+  .sonner-toast[data-type="success"] {
+    background-color: hsl(var(--background)) !important;
+    border-color: hsl(142.1 76.2% 36.3% / 0.5) !important;
+    color: hsl(142.1 70.6% 45.3%) !important;
+  }
+
+  .sonner-toast[data-type="error"] {
+    background-color: hsl(var(--background)) !important;
+    border-color: hsl(var(--destructive) / 0.5) !important;
+    color: hsl(var(--destructive)) !important;
+  }
+
+  .sonner-toast[data-type="warning"] {
+    background-color: hsl(var(--background)) !important;
+    border-color: hsl(45.4 93.4% 47.5% / 0.5) !important;
+    color: hsl(25 95% 53%) !important;
+  }
+
+  .sonner-toast[data-type="info"] {
+    background-color: hsl(var(--background)) !important;
+    border-color: hsl(221.2 83.2% 53.3% / 0.5) !important;
+    color: hsl(221.2 83.2% 53.3%) !important;
+  }
+
+  /* Error State Utilities */
+  .error-container {
+    background-color: hsl(var(--destructive) / 0.05);
+    border: 1px solid hsl(var(--destructive) / 0.2);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 1rem;
+  }
+
+  .error-title {
+    color: hsl(var(--destructive));
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-message {
+    color: hsl(var(--destructive) / 0.8);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .success-container {
+    background-color: hsl(142.1 76.2% 36.3% / 0.05);
+    border: 1px solid hsl(142.1 76.2% 36.3% / 0.2);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 1rem;
+  }
+
+  .success-title {
+    color: hsl(142.1 70.6% 45.3%);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .success-message {
+    color: hsl(142.1 70.6% 45.3% / 0.8);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .warning-container {
+    background-color: hsl(45.4 93.4% 47.5% / 0.05);
+    border: 1px solid hsl(45.4 93.4% 47.5% / 0.2);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 1rem;
+  }
+
+  .warning-title {
+    color: hsl(25 95% 53%);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .warning-message {
+    color: hsl(25 95% 53% / 0.8);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
 }

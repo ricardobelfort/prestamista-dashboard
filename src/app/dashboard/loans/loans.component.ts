@@ -101,8 +101,15 @@ export class LoansComponent implements OnInit {
         notes: loan.notes
       });
     } else {
-      // Para novo empréstimo, resetar o formulário
-      this.form.reset();
+      // Para novo empréstimo, resetar o formulário com valores padrão
+      this.form.reset({
+        client_id: '',
+        principal: '',
+        interest_rate: '',
+        installments_count: '',
+        start_date: '',
+        notes: ''
+      });
     }
   }
   
