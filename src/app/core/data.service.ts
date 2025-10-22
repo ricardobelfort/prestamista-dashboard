@@ -5,8 +5,29 @@ import { SupabaseService } from './supabase.service';
 export class DataService {
   private supabase = inject(SupabaseService);
 
+  // Autenticação automática para desenvolvimento
+  private async ensureAuthenticated() {
+    const { data: { user } } = await this.supabase.client.auth.getUser();
+    
+    if (!user) {
+      // Para desenvolvimento, fazer login automático
+      // IMPORTANTE: Remover isso em produção e implementar login real
+      const { error } = await this.supabase.client.auth.signInWithPassword({
+        email: 'dev@prestamista.com',
+        password: 'dev123456'
+      });
+      
+      if (error) {
+        console.warn('Auto-login failed:', error.message);
+        // Se falhar, continuar sem autenticação (RLS está desabilitado temporariamente)
+      }
+    }
+  }
+
   async listClients() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('clients')
         .select(`
@@ -40,6 +61,8 @@ export class DataService {
 
   async listLoans() {
     try {
+      await this.ensureAuthenticated();
+      
       const { data, error } = await this.supabase.client
         .from('loans')
         .select(`
