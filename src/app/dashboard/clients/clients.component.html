@@ -10,97 +10,88 @@
     </button>
   </div>
 
-  @if (loading()) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
-      </div>
-      <div class="p-6">
-        <div class="flex flex-col items-center py-16">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-          <p class="text-slate-600 mt-4">Carregando clientes...</p>
-        </div>
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+      <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
+    </div>
+    <div class="p-6">
+      <div class="flex flex-col items-center py-16">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+        <p class="text-slate-600 mt-4">Carregando clientes...</p>
       </div>
     </div>
-  }
+  </div>
 
-  @if (error() && !loading()) {
-    <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
-      <div class="flex items-center">
-        <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-xl mr-3"></fa-icon>
-        <div>
-          <h3 class="text-red-800 font-semibold">Erro ao carregar clientes</h3>
-          <p class="text-red-600 text-sm mt-1">{{ error() }}</p>
-        </div>
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()" class="bg-red-50 border border-red-200 rounded-2xl p-6">
+    <div class="flex items-center">
+      <fa-icon [icon]="faExclamationTriangle" class="text-red-500 text-xl mr-3"></fa-icon>
+      <div>
+        <h3 class="text-red-800 font-semibold">Erro ao carregar clientes</h3>
+        <p class="text-red-600 text-sm mt-1">{{ error() }}</p>
       </div>
     </div>
-  }
+  </div>
 
-  @if (!loading() && !error() && clients().length > 0) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-slate-50">
-            <tr>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Nome</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Telefone</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Endereço</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Rota</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            @for (client of clients(); track client.id) {
-              <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 text-slate-900">{{ client.name }}</td>
-                <td class="px-6 py-4 text-slate-600">{{ client.phone }}</td>
-                <td class="px-6 py-4 text-slate-600">{{ client.address }}</td>
-                <td class="px-6 py-4 text-slate-600">
-                  @if (client.route_id) {
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                      Rota {{ client.route_id }}
-                    </span>
-                  } @else {
-                    <span class="text-slate-400">Sem rota</span>
-                  }
-                </td>
-                <td class="px-6 py-4">
-                  <div class="flex items-center space-x-2">
-                    <button class="text-slate-600 hover:text-slate-800 transition-colors">
-                      <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
-                    </button>
-                    <button class="text-red-600 hover:text-red-800 transition-colors">
-                      <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+  <!-- Data Table -->
+  <div *ngIf="!loading() && !error() && clients().length > 0" class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+      <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
     </div>
-  }
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Nome</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Telefone</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Endereço</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Rota</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          <tr *ngFor="let client of clients(); trackBy: trackByClientId" class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-slate-900">{{ client.name }}</td>
+            <td class="px-6 py-4 text-slate-600">{{ client.phone }}</td>
+            <td class="px-6 py-4 text-slate-600">{{ client.address }}</td>
+            <td class="px-6 py-4 text-slate-600">
+              <span *ngIf="client.route_id" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                Rota {{ client.route_id }}
+              </span>
+              <span *ngIf="!client.route_id" class="text-slate-400">Sem rota</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-2">
+                <button class="text-slate-600 hover:text-slate-800 transition-colors">
+                  <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition-colors">
+                  <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  @if (!loading() && !error() && clients().length === 0) {
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
-      </div>
-      <div class="p-6">
-        <div class="flex flex-col items-center py-16">
-          <fa-icon [icon]="faUsers" class="text-5xl mb-4 text-slate-400"></fa-icon>
-          <p class="text-xl font-semibold text-slate-900">Nenhum cliente cadastrado</p>
-          <p class="text-sm text-slate-400 mt-2">Comece adicionando seu primeiro cliente</p>
-          <button class="mt-6 bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2">
-            <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-            <span>Adicionar Cliente</span>
-          </button>
-        </div>
+  <!-- Empty State -->
+  <div *ngIf="!loading() && !error() && clients().length === 0" class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-slate-200 bg-slate-50">
+      <h3 class="text-xl font-bold text-slate-900">Lista de Clientes</h3>
+    </div>
+    <div class="p-6">
+      <div class="flex flex-col items-center py-16">
+        <fa-icon [icon]="faUsers" class="text-5xl mb-4 text-slate-400"></fa-icon>
+        <p class="text-xl font-semibold text-slate-900">Nenhum cliente cadastrado</p>
+        <p class="text-sm text-slate-400 mt-2">Comece adicionando seu primeiro cliente</p>
+        <button class="mt-6 bg-slate-800 text-white px-6 py-3 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg flex items-center space-x-2">
+          <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+          <span>Adicionar Cliente</span>
+        </button>
       </div>
     </div>
-  }
+  </div>
 </div>

@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 
 @Component({
   selector: 'app-clients',
-  imports: [FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './clients.component.html'
 })
@@ -36,5 +37,9 @@ export class ClientsComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  trackByClientId(index: number, client: any): any {
+    return client.id || index;
   }
 }

@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
@@ -6,7 +7,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-loans',
-  imports: [FontAwesomeModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule, FontAwesomeModule, CurrencyPipe, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './loans.component.html'
 })
@@ -37,5 +38,9 @@ export class LoansComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  trackByLoanId(index: number, loan: any): any {
+    return loan.id || index;
   }
 }
