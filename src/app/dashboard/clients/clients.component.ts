@@ -63,7 +63,6 @@ export class ClientsComponent implements OnInit {
       this.routes.set(routesData || []);
     } catch (err: any) {
       this.error.set(err.message || 'Erro ao carregar dados');
-      console.error('Error loading data:', err);
     } finally {
       this.loading.set(false);
     }

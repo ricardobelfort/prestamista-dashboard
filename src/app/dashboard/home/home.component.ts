@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CurrencyPipe } from '@angular/common';
 import { 
   faUsers, 
   faMoneyBillWave, 
@@ -8,10 +9,11 @@ import {
   faClipboardList,
   faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
+import { DataService } from '../../core/data.service';
 
 @Component({
   selector: 'app-home',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-8 mt-6">
@@ -25,7 +27,7 @@ import {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Total Clientes</p>
-              <p class="text-3xl font-bold text-foreground">0</p>
+              <p class="text-3xl font-bold text-foreground">{{ metrics().total_clients }}</p>
             </div>
             <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faUsers" class="text-muted-foreground text-xl"></fa-icon>
@@ -40,7 +42,7 @@ import {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Empréstimos Ativos</p>
-              <p class="text-3xl font-bold text-foreground">0</p>
+              <p class="text-3xl font-bold text-foreground">{{ metrics().total_loans }}</p>
             </div>
             <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faMoneyBillWave" class="text-emerald-600 text-xl"></fa-icon>
@@ -55,7 +57,7 @@ import {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Pagamentos Pendentes</p>
-              <p class="text-3xl font-bold text-foreground">0</p>
+              <p class="text-3xl font-bold text-foreground">{{ metrics().total_payments_pending }}</p>
             </div>
             <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faCreditCard" class="text-amber-600 text-xl"></fa-icon>
@@ -70,7 +72,7 @@ import {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-semibold text-muted-foreground">Valor Total</p>
-              <p class="text-3xl font-bold text-foreground">R$ 0,00</p>
+              <p class="text-3xl font-bold text-foreground">{{ (metrics().total_principal || 0) | currency:'BRL':'symbol':'1.2-2' }}</p>
             </div>
             <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
               <fa-icon [icon]="faGem" class="text-indigo-600 text-xl"></fa-icon>
@@ -108,7 +110,7 @@ import {
     </div>
   `
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   // FontAwesome icons
   faUsers = faUsers;
   faMoneyBillWave = faMoneyBillWave;
@@ -116,4 +118,55 @@ export class HomeComponent {
   faGem = faGem;
   faClipboardList = faClipboardList;
   faCalendarAlt = faCalendarAlt;
+
+  // Dashboard metrics
+  metrics = signal({
+    total_clients: 0,
+    total_loans: 0,
+    total_payments_pending: 0,
+    total_principal: 0,
+    total_recebido: 0,
+    total_em_aberto: 0
+  });
+
+  constructor(private dataService: DataService) {}
+
+  async ngOnInit() {
+    await this.loadMetrics();
+  }
+
+  private async loadMetrics() {
+    try {
+      console.log('🔍 Carregando métricas do dashboard...');
+      
+      // Carregar métricas do dashboard
+      const dashboardData = await this.dataService.getDashboardMetrics();
+      console.log('📊 Dashboard data:', dashboardData);
+      
+      // Carregar contadores adicionais
+      const clients = await this.dataService.listClients();
+      console.log('👥 Clientes:', clients);
+      
+      const loans = await this.dataService.listLoans();
+      console.log('💰 Empréstimos:', loans);
+      
+      const payments = await this.dataService.listPayments();
+      console.log('💳 Pagamentos:', payments);
+      
+      const metrics = {
+        total_clients: clients.length,
+        total_loans: loans.length,
+        total_payments_pending: payments.filter((p: any) => p.status === 'pending').length,
+        total_principal: dashboardData.total_principal || 0,
+        total_recebido: dashboardData.total_recebido || 0,
+        total_em_aberto: dashboardData.total_em_aberto || 0
+      };
+      
+      console.log('📈 Métricas calculadas:', metrics);
+      this.metrics.set(metrics);
+      
+    } catch (error) {
+      console.error('❌ Erro ao carregar métricas:', error);
+    }
+  }
 }

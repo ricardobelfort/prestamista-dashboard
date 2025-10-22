@@ -70,7 +70,6 @@ export class LoansComponent implements OnInit {
       this.clients.set(clientsData || []);
     } catch (err: any) {
       this.error.set(err.message || 'Erro ao carregar empréstimos');
-      console.error('Error loading loans:', err);
     } finally {
       this.loading.set(false);
     }
@@ -143,7 +142,6 @@ export class LoansComponent implements OnInit {
       this.closeModal();
       
     } catch (error: any) {
-      console.error('Erro ao salvar empréstimo:', error);
       this.toastService.error(error.message || 'Erro ao salvar empréstimo');
     } finally {
       this.loading.set(false);
@@ -168,7 +166,6 @@ export class LoansComponent implements OnInit {
       await this.ngOnInit();
       
     } catch (error: any) {
-      console.error('Erro ao excluir empréstimo:', error);
       this.toastService.error(error.message || 'Erro ao excluir empréstimo');
     } finally {
       this.loading.set(false);

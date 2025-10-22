@@ -78,7 +78,6 @@ export class PaymentsComponent implements OnInit {
       this.payments.set(data || []);
     } catch (err: any) {
       this.error.set(err.message || 'Erro ao carregar pagamentos');
-      console.error('Error loading payments:', err);
     } finally {
       this.loading.set(false);
     }
@@ -91,8 +90,6 @@ export class PaymentsComponent implements OnInit {
     this.showModal.set(true);
     
     if (payment) {
-      console.log('Payment data:', payment); // Debug
-      
       // Para edição, installment_id é obrigatório
       this.form.get('installment_id')?.setValidators([Validators.required]);
       this.form.get('installment_id')?.updateValueAndValidity();
@@ -169,7 +166,6 @@ export class PaymentsComponent implements OnInit {
       this.closeModal();
       
     } catch (error: any) {
-      console.error('Erro ao salvar pagamento:', error);
       this.toastService.error(error.message || 'Erro ao salvar pagamento');
     } finally {
       this.loading.set(false);
@@ -194,7 +190,6 @@ export class PaymentsComponent implements OnInit {
       await this.ngOnInit();
       
     } catch (error: any) {
-      console.error('Erro ao excluir pagamento:', error);
       this.toastService.error(error.message || 'Erro ao excluir pagamento');
     } finally {
       this.loading.set(false);

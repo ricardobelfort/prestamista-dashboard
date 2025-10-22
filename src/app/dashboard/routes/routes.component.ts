@@ -63,7 +63,6 @@ export class RoutesComponent implements OnInit {
       this.routes.set(data || []);
     } catch (err: any) {
       this.error.set(err.message || 'Erro ao carregar rotas');
-      console.error('Error loading routes:', err);
     } finally {
       this.loading.set(false);
     }
@@ -118,7 +117,6 @@ export class RoutesComponent implements OnInit {
       this.closeModal();
       
     } catch (error: any) {
-      console.error('Erro ao salvar rota:', error);
       this.toastService.error(error.message || 'Erro ao salvar rota');
     } finally {
       this.loading.set(false);
@@ -155,7 +153,6 @@ export class RoutesComponent implements OnInit {
       await this.ngOnInit();
       
     } catch (error: any) {
-      console.error('Erro ao excluir rota:', error);
       this.toastService.error(error.message || 'Erro ao excluir rota');
     } finally {
       this.loading.set(false);

@@ -8,6 +8,11 @@ export class SupabaseService {
 
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    
+    // Expor supabase globalmente para debug (apenas desenvolvimento)
+    if (!environment.production) {
+      (window as any)._supabase = this.supabase;
+    }
   }
 
   get client() {
