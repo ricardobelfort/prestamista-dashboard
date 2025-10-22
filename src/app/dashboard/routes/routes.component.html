@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold text-foreground">Rotas de Cobrança</h1>
       <p class="text-muted-foreground mt-2 text-lg">Organize suas rotas de cobrança por região</p>
     </div>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
       <span>Nova Rota</span>
     </button>
@@ -56,13 +56,14 @@
           </div>
         </div>
         <div class="mt-6 flex items-center space-x-2">
-          <button class="btn btn-primary btn-sm flex-1">
+          <button class="btn btn-primary btn-sm flex-1" (click)="viewDetails(route)">
+            <fa-icon [icon]="faEye" class="w-4 h-4 mr-2"></fa-icon>
             Ver Detalhes
           </button>
-          <button class="btn btn-ghost btn-icon-sm">
+          <button class="btn btn-ghost btn-icon-sm" (click)="openModal(route)">
             <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
           </button>
-          <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive">
+          <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteRoute(route)">
             <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
           </button>
         </div>
@@ -81,7 +82,7 @@
           <p class="text-sm text-muted-foreground mt-2 text-center max-w-md">
             Crie sua primeira rota de cobrança para organizar suas coletas por região e otimizar seu tempo
           </p>
-          <button class="btn btn-primary mt-6">
+          <button class="btn btn-primary mt-6" (click)="openModal()">
             <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
             <span>Criar Primeira Rota</span>
           </button>
@@ -89,3 +90,85 @@
       </div>
     </div>
 </div>
+
+<!-- Modal CRUD -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
+  <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
+    <h2 class="text-lg font-semibold mb-4 text-foreground">
+      {{ editing() ? 'Editar Rota' : 'Nova Rota' }}
+    </h2>
+
+    <form [formGroup]="form" (ngSubmit)="saveRoute()">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Nome da Rota *</label>
+          <input formControlName="name" placeholder="Ex: Centro, Zona Norte, etc." class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Responsável</label>
+          <input formControlName="assigned_to" placeholder="Nome do cobrador responsável" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Descrição</label>
+          <textarea formControlName="description" placeholder="Descrição da rota, bairros, referências..." class="input" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Detalhes -->
+<div *ngIf="showDetails()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeDetails()">
+  <div class="card w-full max-w-lg p-6 bg-card" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-foreground">Detalhes da Rota</h2>
+      <button class="btn btn-ghost btn-icon-sm" (click)="closeDetails()">
+        <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+      </button>
+    </div>
+
+    <div *ngIf="selectedRoute()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-muted-foreground mb-1">Nome</label>
+        <p class="text-foreground font-medium">{{ selectedRoute().name }}</p>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-muted-foreground mb-1">Responsável</label>
+        <p class="text-foreground">{{ selectedRoute().assigned_to || 'Não atribuído' }}</p>
+      </div>
+      
+      <div *ngIf="selectedRoute().description">
+        <label class="block text-sm font-medium text-muted-foreground mb-1">Descrição</label>
+        <p class="text-foreground">{{ selectedRoute().description }}</p>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-muted-foreground mb-1">Data de Criação</label>
+        <p class="text-foreground">{{ selectedRoute().created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button class="btn btn-outline" (click)="closeDetails()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<app-confirmation-modal 
+  *ngIf="showConfirmation()"
+  [title]="'Excluir Rota'"
+  [message]="'Tem certeza que deseja excluir esta rota? Esta ação não pode ser desfeita.'"
+  [confirmText]="'Excluir'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmDelete()"
+  (cancel)="closeConfirmation()"
+></app-confirmation-modal>

@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold text-foreground">Clientes</h1>
       <p class="text-muted-foreground mt-2">Gerencie sua base de clientes</p>
     </div>
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
       <span>Novo Cliente</span>
     </button>
@@ -66,10 +66,10 @@
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm">
+                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(client)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive">
+                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteClient(client)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>
@@ -90,7 +90,7 @@
         <fa-icon [icon]="faUsers" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
         <p class="text-xl font-semibold text-foreground">Nenhum cliente cadastrado</p>
         <p class="text-sm text-muted-foreground mt-2">Comece adicionando seu primeiro cliente</p>
-        <button class="btn btn-primary mt-6">
+        <button class="btn btn-primary mt-6" (click)="openModal()">
           <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
           <span>Adicionar Cliente</span>
         </button>
@@ -98,3 +98,47 @@
     </div>
   </div>
 </div>
+
+<!-- Modal CRUD -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
+  <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
+    <h2 class="text-lg font-semibold mb-4 text-foreground">
+      {{ editing() ? 'Editar Cliente' : 'Novo Cliente' }}
+    </h2>
+
+    <form [formGroup]="form" (ngSubmit)="saveClient()">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Nome *</label>
+          <input formControlName="name" placeholder="Nome completo" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Telefone</label>
+          <input formControlName="phone" placeholder="(11) 99999-9999" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Endereço</label>
+          <input formControlName="address" placeholder="Endereço completo" class="input" />
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<app-confirmation-modal 
+  *ngIf="showConfirmation()"
+  [title]="'Excluir Cliente'"
+  [message]="'Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.'"
+  [confirmText]="'Excluir'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmDelete()"
+  (cancel)="closeConfirmation()"
+></app-confirmation-modal>

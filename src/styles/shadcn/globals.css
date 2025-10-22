@@ -16,6 +16,39 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
+  /* Remove outline de todos os elementos de formulário */
+  input,
+  select,
+  textarea,
+  button,
+  [type="checkbox"],
+  [type="radio"],
+  [type="date"],
+  [type="datetime-local"],
+  [type="time"],
+  [type="number"],
+  [type="email"],
+  [type="password"],
+  [type="text"] {
+    outline: none !important;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus,
+  [type="checkbox"]:focus,
+  [type="radio"]:focus,
+  [type="date"]:focus,
+  [type="datetime-local"]:focus,
+  [type="time"]:focus,
+  [type="number"]:focus,
+  [type="email"]:focus,
+  [type="password"]:focus,
+  [type="text"]:focus {
+    outline: none !important;
+  }
 }
 
 @layer components {
@@ -40,16 +73,15 @@
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    outline: none !important;
     height: 2.5rem;
     padding: 0.5rem 1rem;
     gap: 0.5rem;
   }
 
+  .btn:focus,
   .btn:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
+    outline: none !important;
   }
 
   .btn:disabled {
@@ -252,19 +284,37 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     color: hsl(var(--foreground));
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    outline: none !important;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+  }
+
+  /* Permitir que textareas usem o atributo rows naturalmente */
+  textarea.input {
+    height: auto;
+    min-height: 2.5rem;
+    resize: vertical;
   }
 
   .input::placeholder {
     color: hsl(var(--muted-foreground));
   }
 
+  .input:focus,
   .input:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
+    outline: none !important;
+    border-color: hsl(var(--ring));
+  }
+
+  .input-readonly {
+    background-color: hsl(var(--muted)) !important;
+    color: hsl(var(--muted-foreground)) !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .input-readonly:focus-visible {
+    outline: none !important;
   }
 }

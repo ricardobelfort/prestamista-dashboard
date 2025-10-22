@@ -1,13 +1,16 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
+import { ToastService } from '../../core/toast.service';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-loans',
-  imports: [CommonModule, FontAwesomeModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './loans.component.html'
 })
@@ -16,6 +19,18 @@ export class LoansComponent implements OnInit {
   loans = signal<any[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  
+  // Modal state
+  showModal = signal(false);
+  editing = signal(false);
+  editingLoan = signal<any>(null);
+  
+  // Confirmation modal state
+  showConfirmation = signal(false);
+  loanToDelete = signal<any>(null);
+  
+  // Form
+  form: FormGroup;
 
   // FontAwesome icons
   faPlus = faPlus;
@@ -24,7 +39,20 @@ export class LoansComponent implements OnInit {
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private toastService: ToastService,
+    private fb: FormBuilder
+  ) {
+    this.form = this.fb.group({
+      client_id: ['', Validators.required],
+      principal: ['', [Validators.required, Validators.min(0.01)]],
+      interest_rate: ['', [Validators.min(0)]],
+      installments_count: ['', [Validators.required, Validators.min(1)]],
+      start_date: ['', Validators.required],
+      notes: ['']
+    });
+  }
 
   async ngOnInit() {
     try {
@@ -38,6 +66,104 @@ export class LoansComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  // Modal methods
+  openModal(loan?: any) {
+    this.editing.set(!!loan);
+    this.editingLoan.set(loan);
+    this.showModal.set(true);
+    
+    if (loan) {
+      // Formatar a data para o input type="date"
+      let formattedDate = loan.start_date;
+      if (loan.start_date) {
+        const date = new Date(loan.start_date);
+        // Formato: YYYY-MM-DD
+        formattedDate = date.toISOString().slice(0, 10);
+      }
+
+      // Para edição, preencher o formulário
+      this.form.patchValue({
+        client_id: loan.client_id,
+        principal: loan.principal,
+        interest_rate: loan.interest_rate,
+        installments_count: loan.installments_count,
+        start_date: formattedDate,
+        notes: loan.notes
+      });
+    } else {
+      // Para novo empréstimo, resetar o formulário
+      this.form.reset();
+    }
+  }
+  
+  closeModal() {
+    this.showModal.set(false);
+    this.editing.set(false);
+    this.editingLoan.set(null);
+    this.form.reset();
+  }
+  
+  async saveLoan() {
+    if (this.form.invalid) return;
+    
+    try {
+      this.loading.set(true);
+      const formData = this.form.value;
+      
+      if (this.editing()) {
+        // Editar empréstimo existente
+        const loan = this.editingLoan();
+        await this.dataService.updateLoan(loan.id, formData);
+        this.toastService.success('Empréstimo atualizado com sucesso!');
+      } else {
+        // Criar novo empréstimo
+        await this.dataService.createLoan(formData);
+        this.toastService.success('Empréstimo criado com sucesso!');
+      }
+      
+      // Recarregar lista
+      await this.ngOnInit();
+      this.closeModal();
+      
+    } catch (error: any) {
+      console.error('Erro ao salvar empréstimo:', error);
+      this.toastService.error(error.message || 'Erro ao salvar empréstimo');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+  
+  async deleteLoan(loan: any) {
+    this.loanToDelete.set(loan);
+    this.showConfirmation.set(true);
+  }
+  
+  async confirmDelete() {
+    const loan = this.loanToDelete();
+    if (!loan) return;
+    
+    try {
+      this.loading.set(true);
+      await this.dataService.deleteLoan(loan.id);
+      this.toastService.success('Empréstimo excluído com sucesso!');
+      
+      // Recarregar lista
+      await this.ngOnInit();
+      
+    } catch (error: any) {
+      console.error('Erro ao excluir empréstimo:', error);
+      this.toastService.error(error.message || 'Erro ao excluir empréstimo');
+    } finally {
+      this.loading.set(false);
+      this.closeConfirmation();
+    }
+  }
+  
+  closeConfirmation() {
+    this.showConfirmation.set(false);
+    this.loanToDelete.set(null);
   }
 
   trackByLoanId(index: number, loan: any): any {

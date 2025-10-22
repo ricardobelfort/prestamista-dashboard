@@ -44,6 +44,7 @@ export class DataService {
         .from('loans')
         .select(`
           id,
+          client_id,
           principal,
           interest_rate,
           interest,
@@ -78,6 +79,7 @@ export class DataService {
         .from('payments')
         .select(`
           id,
+          installment_id,
           value,
           method,
           paid_on,
@@ -296,16 +298,23 @@ export class DataService {
 
   async createPayment(payment: any) {
     try {
+      // Preparar dados para inserção, removendo installment_id se estiver vazio
+      const insertData: any = {
+        value: payment.value,
+        method: payment.method,
+        paid_on: payment.paid_on,
+        notes: payment.notes,
+        org_id: payment.org_id
+      };
+
+      // Só incluir installment_id se ele estiver presente e não vazio
+      if (payment.installment_id) {
+        insertData.installment_id = payment.installment_id;
+      }
+
       const { data, error } = await this.supabase.client
         .from('payments')
-        .insert([{
-          installment_id: payment.installment_id,
-          value: payment.value,
-          method: payment.method,
-          paid_on: payment.paid_on,
-          notes: payment.notes,
-          org_id: payment.org_id
-        }])
+        .insert([insertData])
         .select()
         .single();
       
@@ -333,6 +342,138 @@ export class DataService {
       return data;
     } catch (err: any) {
       console.error('Error creating route:', err);
+      throw err;
+    }
+  }
+
+  // Route CRUD methods
+  async updateRoute(id: string, updates: any) {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('routes')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (err: any) {
+      console.error('Error updating route:', err);
+      throw err;
+    }
+  }
+
+  async deleteRoute(id: string) {
+    try {
+      const { error } = await this.supabase.client
+        .from('routes')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw new Error(error.message);
+      return true;
+    } catch (err: any) {
+      console.error('Error deleting route:', err);
+      throw err;
+    }
+  }
+
+  // Client CRUD methods
+  async updateClient(id: string, updates: any) {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('clients')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (err: any) {
+      console.error('Error updating client:', err);
+      throw err;
+    }
+  }
+
+  async deleteClient(id: string) {
+    try {
+      const { error } = await this.supabase.client
+        .from('clients')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw new Error(error.message);
+      return true;
+    } catch (err: any) {
+      console.error('Error deleting client:', err);
+      throw err;
+    }
+  }
+
+  // Loan CRUD methods
+  async updateLoan(id: string, updates: any) {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('loans')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (err: any) {
+      console.error('Error updating loan:', err);
+      throw err;
+    }
+  }
+
+  async deleteLoan(id: string) {
+    try {
+      const { error } = await this.supabase.client
+        .from('loans')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw new Error(error.message);
+      return true;
+    } catch (err: any) {
+      console.error('Error deleting loan:', err);
+      throw err;
+    }
+  }
+
+  // Payment CRUD methods
+  async updatePayment(id: string, updates: any) {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('payments')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (err: any) {
+      console.error('Error updating payment:', err);
+      throw err;
+    }
+  }
+
+  async deletePayment(id: string) {
+    try {
+      const { error } = await this.supabase.client
+        .from('payments')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw new Error(error.message);
+      return true;
+    } catch (err: any) {
+      console.error('Error deleting payment:', err);
       throw err;
     }
   }

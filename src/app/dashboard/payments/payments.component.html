@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold text-foreground">Pagamentos</h1>
       <p class="text-muted-foreground mt-2 text-lg">Controle todos os pagamentos recebidos</p>
     </div>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
       <span>Registrar Pagamento</span>
     </button>
@@ -71,17 +71,17 @@
               <span *ngIf="payment.method === 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Cartão</span>
               <span *ngIf="payment.method !== 'cash' && payment.method !== 'pix' && payment.method !== 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">{{ payment.method }}</span>
             </td>
-            <td class="table-cell text-muted-foreground">{{ payment.paid_on | date:'shortDate' }}</td>
+            <td class="table-cell text-muted-foreground">{{ payment.paid_on | date:'dd/MM/yyyy' }}</td>
             <td class="table-cell text-muted-foreground">
               <span *ngIf="payment.installments?.index_no">Parcela {{ payment.installments.index_no }}</span>
               <span *ngIf="!payment.installments?.index_no" class="text-muted-foreground">-</span>
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm">
+                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(payment)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive">
+                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deletePayment(payment)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>
@@ -103,7 +103,7 @@
           <fa-icon [icon]="faCreditCard" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
           <p class="text-xl font-semibold text-foreground">Nenhum pagamento registrado</p>
           <p class="text-sm text-muted-foreground mt-2">Os pagamentos aparecerão aqui quando forem registrados</p>
-          <button class="btn btn-primary mt-6">
+          <button class="btn btn-primary mt-6" (click)="openModal()">
             <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
             <span>Registrar Pagamento</span>
           </button>
@@ -112,3 +112,68 @@
     </div>
   }
 </div>
+
+<!-- Modal CRUD -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
+  <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
+    <h2 class="text-lg font-semibold mb-4 text-foreground">
+      {{ editing() ? 'Editar Pagamento' : 'Registrar Pagamento' }}
+    </h2>
+
+    <form [formGroup]="form" (ngSubmit)="savePayment()">
+      <div class="space-y-4">
+        <div *ngIf="editing()">
+          <label class="block text-sm font-medium text-foreground mb-1">
+            ID da Parcela *
+          </label>
+          <input 
+            formControlName="installment_id" 
+            placeholder="ID da parcela" 
+            class="input input-readonly"
+            readonly />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Valor *</label>
+          <input formControlName="value" type="number" step="0.01" placeholder="0.00" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Método *</label>
+          <select formControlName="method" class="input">
+            <option value="money">Dinheiro</option>
+            <option value="pix">PIX</option>
+            <option value="card">Cartão</option>
+            <option value="bank_transfer">Transferência</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Data do Pagamento *</label>
+          <input formControlName="paid_on" type="date" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Observações</label>
+          <textarea formControlName="notes" placeholder="Observações sobre o pagamento" class="input" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<app-confirmation-modal 
+  *ngIf="showConfirmation()"
+  [title]="'Excluir Pagamento'"
+  [message]="'Tem certeza que deseja excluir este pagamento? Esta ação não pode ser desfeita.'"
+  [confirmText]="'Excluir'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmDelete()"
+  (cancel)="closeConfirmation()"
+></app-confirmation-modal>

@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold text-foreground">Empréstimos</h1>
       <p class="text-muted-foreground mt-2 text-lg">Gerencie seus empréstimos e financiamentos</p>
     </div>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
       <span>Novo Empréstimo</span>
     </button>
@@ -63,13 +63,13 @@
             </td>
             <td class="table-cell text-muted-foreground">{{ loan.interest_rate }}%</td>
             <td class="table-cell text-muted-foreground">{{ loan.installments_count }}x</td>
-            <td class="table-cell text-muted-foreground">{{ loan.start_date | date:'shortDate' }}</td>
+            <td class="table-cell text-muted-foreground">{{ loan.start_date | date:'dd/MM/yyyy' }}</td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm">
+                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(loan)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive">
+                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteLoan(loan)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>
@@ -90,7 +90,7 @@
         <fa-icon [icon]="faDollarSign" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
         <p class="text-xl font-semibold text-foreground">Nenhum empréstimo registrado</p>
         <p class="text-sm text-muted-foreground mt-2">Comece criando seu primeiro empréstimo</p>
-        <button class="btn btn-primary mt-6">
+        <button class="btn btn-primary mt-6" (click)="openModal()">
           <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
           <span>Criar Empréstimo</span>
         </button>
@@ -98,3 +98,67 @@
     </div>
   </div>
 </div>
+
+<!-- Modal CRUD -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
+  <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
+    <h2 class="text-lg font-semibold mb-4 text-foreground">
+      {{ editing() ? 'Editar Empréstimo' : 'Novo Empréstimo' }}
+    </h2>
+
+    <form [formGroup]="form" (ngSubmit)="saveLoan()">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Cliente *</label>
+          <input 
+            formControlName="client_id" 
+            placeholder="ID do cliente" 
+            class="input"
+            [class.input-readonly]="editing()"
+            [readonly]="editing()" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Valor Principal *</label>
+          <input formControlName="principal" type="number" step="0.01" placeholder="0.00" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Taxa de Juros (%)</label>
+          <input formControlName="interest_rate" type="number" step="0.01" placeholder="0.00" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Número de Parcelas *</label>
+          <input formControlName="installments_count" type="number" min="1" placeholder="12" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Data de Início *</label>
+          <input formControlName="start_date" type="date" class="input" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-1">Observações</label>
+          <textarea formControlName="notes" placeholder="Observações sobre o empréstimo" class="input" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 mt-6">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<app-confirmation-modal 
+  *ngIf="showConfirmation()"
+  [title]="'Excluir Empréstimo'"
+  [message]="'Tem certeza que deseja excluir este empréstimo? Esta ação não pode ser desfeita.'"
+  [confirmText]="'Excluir'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmDelete()"
+  (cancel)="closeConfirmation()"
+></app-confirmation-modal>
