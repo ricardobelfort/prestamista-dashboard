@@ -53,7 +53,7 @@
         </thead>
         <tbody class="divide-y divide-slate-200">
           <tr *ngFor="let loan of loans(); trackBy: trackByLoanId" class="hover:bg-slate-50 transition-colors">
-            <td class="px-6 py-4 text-slate-900">Cliente #{{ loan.client_id }}</td>
+            <td class="px-6 py-4 text-slate-900">{{ loan.clients?.name || 'Cliente #' + loan.client_id }}</td>
             <td class="px-6 py-4">
               <span class="font-semibold text-emerald-600">
                 {{ loan.principal | currency:'BRL':'symbol':'1.2-2' }}

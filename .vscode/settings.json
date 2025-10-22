@@ -1,6 +1,6 @@
 {
   "chat.mcp.serverSampling": {
-    "prestamista-dashboard-ui/.vscode/mcp.json: shadcn": {
+    "prestamista-dashboard-ui/.vscode/mcp.json: supabase": {
       "allowedModels": [
         "copilot/gpt-5-mini",
         "copilot/claude-sonnet-4"

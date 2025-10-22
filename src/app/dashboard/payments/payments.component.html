@@ -45,63 +45,46 @@
         <table class="w-full">
           <thead class="bg-slate-50">
             <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Cliente</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Valor</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Método</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Data</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Parcela</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Notas</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Ações</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200">
-            @for (payment of payments(); track payment.id) {
-              <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4">
-                  <span class="font-semibold text-emerald-600">
-                    {{ payment.value | currency:'BRL':'symbol':'1.2-2' }}
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                    @switch (payment.method) {
-                      @case ('cash') {
-                        <span class="bg-emerald-100 text-emerald-800">Dinheiro</span>
-                      }
-                      @case ('pix') {
-                        <span class="bg-blue-100 text-blue-800">PIX</span>
-                      }
-                      @case ('card') {
-                        <span class="bg-purple-100 text-purple-800">Cartão</span>
-                      }
-                      @default {
-                        <span class="bg-slate-100 text-slate-800">{{ payment.method }}</span>
-                      }
-                    }
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-slate-600">{{ payment.paid_on | date:'shortDate' }}</td>
-                <td class="px-6 py-4 text-slate-600">
-                  @if (payment.installment_id) {
-                    Parcela #{{ payment.installment_id }}
-                  } @else {
-                    <span class="text-slate-400">-</span>
-                  }
-                </td>
-                <td class="px-6 py-4 text-slate-600 text-sm">
-                  {{ payment.notes || '-' }}
-                </td>
-                <td class="px-6 py-4">
-                  <div class="flex items-center space-x-2">
-                    <button class="text-slate-600 hover:text-slate-800 transition-colors">
-                      <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
-                    </button>
-                    <button class="text-red-600 hover:text-red-800 transition-colors">
-                      <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
+          <tr *ngFor="let payment of payments(); trackBy: trackByPaymentId" class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-slate-900">
+              {{ payment.installments?.loans?.clients?.name || 'Cliente não identificado' }}
+            </td>
+            <td class="px-6 py-4">
+              <span class="font-semibold text-emerald-600">
+                {{ payment.value | currency:'BRL':'symbol':'1.2-2' }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span *ngIf="payment.method === 'cash'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Dinheiro</span>
+              <span *ngIf="payment.method === 'pix'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">PIX</span>
+              <span *ngIf="payment.method === 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Cartão</span>
+              <span *ngIf="payment.method !== 'cash' && payment.method !== 'pix' && payment.method !== 'card'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">{{ payment.method }}</span>
+            </td>
+            <td class="px-6 py-4 text-slate-600">{{ payment.paid_on | date:'shortDate' }}</td>
+            <td class="px-6 py-4 text-slate-600">
+              <span *ngIf="payment.installments?.index_no">Parcela {{ payment.installments.index_no }}</span>
+              <span *ngIf="!payment.installments?.index_no" class="text-slate-400">-</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-2">
+                <button class="text-slate-600 hover:text-slate-800 transition-colors">
+                  <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition-colors">
+                  <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>

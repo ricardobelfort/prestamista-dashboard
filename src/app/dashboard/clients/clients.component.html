@@ -53,13 +53,13 @@
         <tbody class="divide-y divide-slate-200">
           <tr *ngFor="let client of clients(); trackBy: trackByClientId" class="hover:bg-slate-50 transition-colors">
             <td class="px-6 py-4 text-slate-900">{{ client.name }}</td>
-            <td class="px-6 py-4 text-slate-600">{{ client.phone }}</td>
-            <td class="px-6 py-4 text-slate-600">{{ client.address }}</td>
+            <td class="px-6 py-4 text-slate-600">{{ client.phone || '-' }}</td>
+            <td class="px-6 py-4 text-slate-600">{{ client.address || '-' }}</td>
             <td class="px-6 py-4 text-slate-600">
-              <span *ngIf="client.route_id" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                Rota {{ client.route_id }}
+              <span *ngIf="client.routes?.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                {{ client.routes.name }}
               </span>
-              <span *ngIf="!client.route_id" class="text-slate-400">Sem rota</span>
+              <span *ngIf="!client.routes?.name" class="text-slate-400">Sem rota</span>
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center space-x-2">

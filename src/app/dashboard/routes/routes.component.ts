@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faRoute, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 
 @Component({
   selector: 'app-routes',
-  imports: [FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './routes.component.html'
 })
@@ -36,5 +37,9 @@ export class RoutesComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  trackByRouteId(index: number, route: any): string {
+    return route.id;
   }
 }
