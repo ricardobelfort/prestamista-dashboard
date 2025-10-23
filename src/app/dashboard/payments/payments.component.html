@@ -177,6 +177,7 @@
   [message]="'Tem certeza que deseja excluir este pagamento? Esta ação não pode ser desfeita.'"
   [confirmText]="'Excluir'"
   [cancelText]="'Cancelar'"
+  [isLoading]="deletingPayment()"
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"
 ></app-confirmation-modal>

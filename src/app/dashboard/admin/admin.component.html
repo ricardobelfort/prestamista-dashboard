@@ -318,6 +318,7 @@
     [message]="'Tem certeza que deseja excluir a organização &quot;' + (orgToDelete()?.name || '') + '&quot;? Esta ação não pode ser desfeita e todos os dados relacionados serão permanentemente removidos.'"
     [confirmText]="'Excluir'"
     [cancelText]="'Cancelar'"
+    [isLoading]="isDeletingOrg()"
     (confirm)="confirmDelete()"
     (cancel)="closeConfirmation()"
   ></app-confirmation-modal>

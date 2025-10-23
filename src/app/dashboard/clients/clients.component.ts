@@ -29,6 +29,7 @@ export class ClientsComponent implements OnInit {
   // Confirmation modal state
   showConfirmation = signal(false);
   clientToDelete = signal<any>(null);
+  deletingClient = signal(false);
   
   // Form for CRUD operations
   form;
@@ -123,6 +124,7 @@ export class ClientsComponent implements OnInit {
     const client = this.clientToDelete();
     if (!client) return;
     
+    this.deletingClient.set(true);
     try {
       await this.dataService.deleteClient(client.id);
       this.toast.success('Cliente removido com sucesso!');
@@ -130,6 +132,7 @@ export class ClientsComponent implements OnInit {
     } catch (err: any) {
       this.toast.error('Erro ao remover cliente: ' + err.message);
     } finally {
+      this.deletingClient.set(false);
       this.closeConfirmation();
     }
   }
@@ -137,5 +140,6 @@ export class ClientsComponent implements OnInit {
   closeConfirmation() {
     this.showConfirmation.set(false);
     this.clientToDelete.set(null);
+    this.deletingClient.set(false);
   }
 }

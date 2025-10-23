@@ -31,6 +31,7 @@ export class RoutesComponent implements OnInit {
   // Confirmation modal state
   showConfirmation = signal(false);
   routeToDelete = signal<any>(null);
+  deletingRoute = signal(false);
   
   // Form
   form: FormGroup;
@@ -144,8 +145,8 @@ export class RoutesComponent implements OnInit {
     const route = this.routeToDelete();
     if (!route) return;
     
+    this.deletingRoute.set(true);
     try {
-      this.loading.set(true);
       await this.dataService.deleteRoute(route.id);
       this.toastService.success('Rota excluída com sucesso!');
       
@@ -155,13 +156,14 @@ export class RoutesComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao excluir rota');
     } finally {
-      this.loading.set(false);
+      this.deletingRoute.set(false);
       this.closeConfirmation();
     }
   }
   
   closeConfirmation() {
     this.showConfirmation.set(false);
+    this.deletingRoute.set(false);
     this.routeToDelete.set(null);
   }
 

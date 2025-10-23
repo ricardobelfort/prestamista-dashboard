@@ -29,6 +29,7 @@ export class PaymentsComponent implements OnInit {
   // Confirmation modal state
   showConfirmation = signal(false);
   paymentToDelete = signal<any>(null);
+  deletingPayment = signal(false);
   
   // Form
   form: FormGroup;
@@ -182,8 +183,8 @@ export class PaymentsComponent implements OnInit {
     const payment = this.paymentToDelete();
     if (!payment) return;
     
+    this.deletingPayment.set(true);
     try {
-      this.loading.set(true);
       await this.dataService.deletePayment(payment.id);
       this.toastService.success('Pagamento excluído com sucesso!');
       
@@ -193,7 +194,7 @@ export class PaymentsComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao excluir pagamento');
     } finally {
-      this.loading.set(false);
+      this.deletingPayment.set(false);
       this.closeConfirmation();
     }
   }
@@ -201,6 +202,7 @@ export class PaymentsComponent implements OnInit {
   closeConfirmation() {
     this.showConfirmation.set(false);
     this.paymentToDelete.set(null);
+    this.deletingPayment.set(false);
   }
 
   trackByPaymentId(index: number, payment: any): any {

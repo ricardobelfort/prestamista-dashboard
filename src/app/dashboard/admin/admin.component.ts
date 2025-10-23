@@ -58,6 +58,7 @@ export class AdminComponent implements OnInit {
   
   // Loading states
   isCreatingOrg = signal(false);
+  isDeletingOrg = signal(false);
 
   // Forms
   createOrgForm = this.fb.group({
@@ -145,6 +146,7 @@ export class AdminComponent implements OnInit {
     const org = this.orgToDelete();
     if (!org) return;
 
+    this.isDeletingOrg.set(true);
     try {
       await this.adminService.deleteOrganization(org.id);
       // AdminService já mostra toast de sucesso
@@ -152,6 +154,7 @@ export class AdminComponent implements OnInit {
     } catch (error: any) {
       // AdminService já mostra toast de erro
     } finally {
+      this.isDeletingOrg.set(false);
       this.closeConfirmation();
     }
   }
@@ -159,6 +162,7 @@ export class AdminComponent implements OnInit {
   closeConfirmation() {
     this.showConfirmation.set(false);
     this.orgToDelete.set(null);
+    this.isDeletingOrg.set(false);
   }
 
   // =============================================

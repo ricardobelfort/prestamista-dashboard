@@ -165,6 +165,7 @@
   [message]="'Tem certeza que deseja excluir esta rota? Esta ação não pode ser desfeita.'"
   [confirmText]="'Excluir'"
   [cancelText]="'Cancelar'"
+  [isLoading]="deletingRoute()"
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"
 ></app-confirmation-modal>

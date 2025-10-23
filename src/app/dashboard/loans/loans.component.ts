@@ -30,6 +30,7 @@ export class LoansComponent implements OnInit {
   // Confirmation modal state
   showConfirmation = signal(false);
   loanToDelete = signal<any>(null);
+  deletingLoan = signal(false);
   
   // Form
   form: FormGroup;
@@ -165,8 +166,8 @@ export class LoansComponent implements OnInit {
     const loan = this.loanToDelete();
     if (!loan) return;
     
+    this.deletingLoan.set(true);
     try {
-      this.loading.set(true);
       await this.dataService.deleteLoan(loan.id);
       this.toastService.success('Empréstimo excluído com sucesso!');
       
@@ -176,7 +177,7 @@ export class LoansComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao excluir empréstimo');
     } finally {
-      this.loading.set(false);
+      this.deletingLoan.set(false);
       this.closeConfirmation();
     }
   }
@@ -184,6 +185,7 @@ export class LoansComponent implements OnInit {
   closeConfirmation() {
     this.showConfirmation.set(false);
     this.loanToDelete.set(null);
+    this.deletingLoan.set(false);
   }
 
   trackByLoanId(index: number, loan: any): any {
