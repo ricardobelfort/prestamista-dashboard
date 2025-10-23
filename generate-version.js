@@ -6,7 +6,6 @@ function safeExec(command, fallback = '') {
   try {
     return execSync(command, { encoding: 'utf8' }).trim();
   } catch (error) {
-    console.warn(`Warning: ${command} failed, using fallback: ${fallback}`);
     return fallback;
   }
 }

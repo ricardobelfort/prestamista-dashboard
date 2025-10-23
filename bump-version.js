@@ -23,15 +23,10 @@ function incrementVersion(version, type) {
 const args = process.argv.slice(2);
 const versionType = args[0];
 
-if (!versionType || !['patch', 'minor', 'major'].includes(versionType)) {
-  console.error('❌ Uso: node bump-version.js <patch|minor|major>');
-  console.error('   patch: 1.0.0 -> 1.0.1 (bugfixes)');
-  console.error('   minor: 1.0.0 -> 1.1.0 (new features)');
-  console.error('   major: 1.0.0 -> 2.0.0 (breaking changes)');
-  process.exit(1);
-}
-
-try {
+  if (!versionType || !['patch', 'minor', 'major'].includes(versionType)) {
+    console.error('Uso: node bump-version.js <patch|minor|major>');
+    process.exit(1);
+  }try {
   // Ler package.json
   const packagePath = './package.json';
   const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
@@ -40,7 +35,7 @@ try {
   // Incrementar versão
   const newVersion = incrementVersion(currentVersion, versionType);
   
-  console.log(`📦 Incrementando versão: ${currentVersion} -> ${newVersion}`);
+  console.log(`Incrementando versão: ${currentVersion} -> ${newVersion}`);
   
   // Atualizar package.json
   packageJson.version = newVersion;
@@ -56,12 +51,9 @@ try {
   // Criar tag
   execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
   
-  console.log(`✅ Versão ${newVersion} criada com sucesso!`);
-  console.log(`📋 Para publicar:`);
-  console.log(`   git push origin main`);
-  console.log(`   git push origin v${newVersion}`);
+  console.log(`Versão ${newVersion} criada com sucesso!`);
   
 } catch (error) {
-  console.error('❌ Erro ao incrementar versão:', error.message);
+  console.error('Erro ao incrementar versão:', error.message);
   process.exit(1);
 }

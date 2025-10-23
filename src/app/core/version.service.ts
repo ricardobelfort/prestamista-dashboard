@@ -37,12 +37,9 @@ export class VersionService {
       if (response.ok) {
         const data = await response.json();
         this.versionInfo.set(data);
-        console.log('✅ Versão carregada:', data.formatted);
-      } else {
-        console.warn('❌ Erro ao carregar version.json:', response.status);
       }
     } catch (error) {
-      console.warn('❌ Could not load version info, using default:', error);
+      // Falha silenciosa - usa valores padrão
     }
   }
 

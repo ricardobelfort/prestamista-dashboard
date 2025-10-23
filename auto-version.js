@@ -41,13 +41,8 @@ function analyzeCommits() {
     const commits = safeExec(`git log ${commitRange} --oneline`);
     
     if (!commits) {
-      console.log('📋 Nenhum commit novo encontrado desde a última versão.');
       return null;
     }
-    
-    console.log(`📊 Analisando commits desde ${lastTag || 'início'}:`);
-    console.log(commits);
-    console.log('');
     
     const commitLines = commits.split('\n');
     let hasMajor = false;
@@ -60,26 +55,18 @@ function analyzeCommits() {
       // BREAKING CHANGES (major)
       if (message.includes('breaking') || message.includes('!:')) {
         hasMajor = true;
-        console.log(`🔥 MAJOR: ${commit}`);
       }
       // Novas funcionalidades (minor)
       else if (message.includes('feat:') || message.includes('feature:')) {
         hasMinor = true;
-        console.log(`✨ MINOR: ${commit}`);
       }
       // Correções de bugs (patch)
       else if (message.includes('fix:') || message.includes('bugfix:')) {
         hasPatch = true;
-        console.log(`🐛 PATCH: ${commit}`);
       }
-      // Outros commits que não afetam versão
-      else if (message.includes('chore:') || message.includes('docs:') || message.includes('style:')) {
-        console.log(`🔧 CHORE: ${commit}`);
-      }
-      // Commits sem prefixo padrão - consideramos patch por segurança
-      else {
+      // Outros commits sem prefixo padrão - consideramos patch por segurança
+      else if (!message.includes('chore:') && !message.includes('docs:') && !message.includes('style:')) {
         hasPatch = true;
-        console.log(`📝 OTHER (patch): ${commit}`);
       }
     }
     
@@ -104,26 +91,18 @@ function autoVersion() {
     const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
     const currentVersion = packageJson.version;
     
-    console.log(`📦 Versão atual: ${currentVersion}`);
-    console.log('');
-    
     // Analisar commits
     const versionType = analyzeCommits();
     
     if (!versionType) {
-      console.log('📋 Nenhuma mudança de versão necessária.');
-      console.log('💡 Dica: Use prefixos nos commits:');
-      console.log('   feat: para novas funcionalidades (minor)');
-      console.log('   fix: para correções (patch)');
-      console.log('   feat!: ou BREAKING CHANGE para mudanças incompatíveis (major)');
+      console.log('Nenhuma mudança de versão necessária.');
       return;
     }
     
     // Incrementar versão
     const newVersion = incrementVersion(currentVersion, versionType);
     
-    console.log('');
-    console.log(`🚀 Incrementando versão: ${currentVersion} -> ${newVersion} (${versionType})`);
+    console.log(`Incrementando versão: ${currentVersion} -> ${newVersion} (${versionType})`);
     
     // Atualizar package.json
     packageJson.version = newVersion;
@@ -139,13 +118,10 @@ function autoVersion() {
     // Criar tag
     execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
     
-    console.log(`✅ Versão ${newVersion} criada com sucesso!`);
-    console.log(`📋 Para publicar:`);
-    console.log(`   git push origin main`);
-    console.log(`   git push origin v${newVersion}`);
+    console.log(`Versão ${newVersion} criada com sucesso!`);
     
   } catch (error) {
-    console.error('❌ Erro ao processar versionamento automático:', error.message);
+    console.error('Erro ao processar versionamento automático:', error.message);
     process.exit(1);
   }
 }
@@ -158,12 +134,8 @@ if (args.length > 0) {
   const versionType = args[0];
   
   if (!['patch', 'minor', 'major'].includes(versionType)) {
-    console.error('❌ Uso: node auto-version.js <patch|minor|major>');
-    console.error('   patch: 1.0.0 -> 1.0.1 (bugfixes)');
-    console.error('   minor: 1.0.0 -> 1.1.0 (new features)');
-    console.error('   major: 1.0.0 -> 2.0.0 (breaking changes)');
-    console.error('');
-    console.error('💡 Ou execute sem argumentos para análise automática baseada nos commits');
+    console.error('Uso: node auto-version.js <patch|minor|major>');
+    console.error('Ou execute sem argumentos para análise automática baseada nos commits');
     process.exit(1);
   }
   
@@ -174,7 +146,7 @@ if (args.length > 0) {
     const currentVersion = packageJson.version;
     const newVersion = incrementVersion(currentVersion, versionType);
     
-    console.log(`📦 Incrementando versão: ${currentVersion} -> ${newVersion}`);
+    console.log(`Incrementando versão: ${currentVersion} -> ${newVersion}`);
     
     packageJson.version = newVersion;
     fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
@@ -184,13 +156,10 @@ if (args.length > 0) {
     execSync(`git commit -m "chore: bump version to ${newVersion}"`, { stdio: 'inherit' });
     execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
     
-    console.log(`✅ Versão ${newVersion} criada com sucesso!`);
-    console.log(`📋 Para publicar:`);
-    console.log(`   git push origin main`);
-    console.log(`   git push origin v${newVersion}`);
+    console.log(`Versão ${newVersion} criada com sucesso!`);
     
   } catch (error) {
-    console.error('❌ Erro ao incrementar versão:', error.message);
+    console.error('Erro ao incrementar versão:', error.message);
     process.exit(1);
   }
 } else {
