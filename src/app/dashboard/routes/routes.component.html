@@ -52,14 +52,14 @@
           </div>
         </div>
         <div class="mt-6 flex items-center space-x-2">
-          <button class="btn btn-primary btn-sm flex-1" (click)="viewDetails(route)">
-            <fa-icon [icon]="faEye" class="w-4 h-4 mr-2"></fa-icon>
-            Ver Detalhes
+          <button class="btn btn-primary flex-1 h-8" (click)="viewDetails(route)">
+            <fa-icon [icon]="faEye" class="w-4 h-4"></fa-icon>
+            <span class="text-xs">Ver Detalhes</span>
           </button>
-          <button class="btn btn-ghost btn-icon-sm" (click)="openModal(route)">
+          <button class="btn btn-outline btn-icon-sm" (click)="openModal(route)">
             <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
           </button>
-          <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteRoute(route)">
+          <button class="btn btn-outline btn-icon-sm text-destructive hover:bg-destructive hover:text-destructive-foreground" (click)="deleteRoute(route)">
             <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
           </button>
         </div>
@@ -130,25 +130,25 @@
       </button>
     </div>
 
-    <div *ngIf="selectedRoute()" class="space-y-4">
+    <div *ngIf="selectedRoute()" class="space-y-6">
       <div>
-        <label class="block text-sm font-medium text-muted-foreground mb-1">Nome</label>
-        <p class="text-foreground font-medium">{{ selectedRoute().name }}</p>
+        <label class="block text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Nome</label>
+        <p class="text-sm font-medium text-gray-500">{{ selectedRoute().name }}</p>
       </div>
       
       <div>
-        <label class="block text-sm font-medium text-muted-foreground mb-1">Responsável</label>
-        <p class="text-foreground">{{ selectedRoute().assigned_to || 'Não atribuído' }}</p>
+        <label class="block text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Responsável</label>
+        <p class="text-sm font-medium text-gray-500">{{ selectedRoute().assigned_to || 'Não atribuído' }}</p>
       </div>
       
       <div *ngIf="selectedRoute().description">
-        <label class="block text-sm font-medium text-muted-foreground mb-1">Descrição</label>
-        <p class="text-foreground">{{ selectedRoute().description }}</p>
+        <label class="block text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Descrição</label>
+        <p class="text-sm text-foreground leading-relaxed">{{ selectedRoute().description }}</p>
       </div>
       
       <div>
-        <label class="block text-sm font-medium text-muted-foreground mb-1">Data de Criação</label>
-        <p class="text-foreground">{{ selectedRoute().created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+        <label class="block text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Data de Criação</label>
+        <p class="text-sm font-medium text-gray-500">{{ selectedRoute().created_at | date:'dd/MM/yyyy HH:mm' }}</p>
       </div>
     </div>
 

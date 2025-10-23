@@ -64,10 +64,10 @@
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(client)">
+                <button class="btn btn-outline btn-icon-sm" (click)="openModal(client)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteClient(client)">
+                <button class="btn btn-outline btn-icon-sm text-destructive hover:bg-destructive hover:text-destructive-foreground" (click)="deleteClient(client)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>

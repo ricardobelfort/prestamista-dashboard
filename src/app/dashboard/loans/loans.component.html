@@ -4,10 +4,12 @@
       <h1 class="text-3xl font-bold text-foreground">{{ 'loans.title' | translate }}</h1>
       <p class="text-muted-foreground mt-2 text-lg">{{ 'loans.subtitle' | translate }}</p>
     </div>
-    <button class="btn btn-primary" (click)="openModal()">
-      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>{{ 'loans.newLoan' | translate }}</span>
-    </button>
+    @if (loans().length > 0) {
+      <button class="btn btn-primary" (click)="openModal()">
+        <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+        <span>{{ 'loans.newLoan' | translate }}</span>
+      </button>
+    }
   </div>
 
   <!-- Loading State -->
@@ -62,10 +64,10 @@
             <td class="table-cell text-muted-foreground">{{ loan.start_date | date:'dd/MM/yyyy' }}</td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(loan)">
+                <button class="btn btn-outline btn-icon-sm" (click)="openModal(loan)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deleteLoan(loan)">
+                <button class="btn btn-outline btn-icon-sm text-destructive hover:bg-destructive hover:text-destructive-foreground" (click)="deleteLoan(loan)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>

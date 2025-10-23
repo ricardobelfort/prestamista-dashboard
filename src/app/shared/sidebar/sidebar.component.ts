@@ -24,51 +24,62 @@ import {
   imports: [RouterModule, FontAwesomeModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <aside [class]="'fixed top-0 left-0 transition-all duration-300 bg-slate-900 h-screen shadow-xl flex flex-col z-20 ' + (sidebarService.expanded() ? 'w-64' : 'w-16')">
-      <div [class]="'flex items-center border-b border-slate-700 py-4 ' + (sidebarService.expanded() ? 'justify-between px-4' : 'justify-center px-3')">
-        <div [class]="'flex items-center ' + (sidebarService.expanded() ? 'space-x-3' : '')">
-          <div class="w-9 h-9 bg-linear-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-            <span class="text-white font-bold text-base">P</span>
+    <aside [class]="'fixed top-0 left-0 transition-all duration-300 bg-neutral-900 h-screen shadow-xl flex flex-col z-50 ' + (sidebarService.expanded() ? 'w-64' : 'w-16')">
+      <!-- Header com Logo e Botão Hambúrguer -->
+      <div [class]="'flex items-center h-16 border-b border-neutral-800 ' + (sidebarService.expanded() ? 'justify-between px-4' : 'justify-center px-2')">
+        @if (sidebarService.expanded()) {
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md">
+              <span class="text-white font-bold text-sm">P</span>
+            </div>
+            <span class="text-xl font-bold text-white">Prestamista</span>
           </div>
-          @if (sidebarService.expanded()) {
-            <span class="text-xl font-bold text-slate-100">Prestamista</span>
-          }
-        </div>
+        }
+        
+        <button 
+          (click)="sidebarService.toggle()"
+          [class]="'flex items-center justify-center hover:bg-neutral-800 rounded transition-colors duration-200 shrink-0 ' + (sidebarService.expanded() ? 'w-9 h-9' : 'w-12 h-12')"
+          [title]="(sidebarService.expanded() ? ('nav.collapseMenu' | translate) : ('nav.expandMenu' | translate))"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
 
-      <nav class="flex-1 px-3 py-6">
+      <nav class="flex-1 px-2 py-4">
         @for (item of navItems; track item.route) {
           <a [routerLink]="item.route" 
-             routerLinkActive="bg-slate-700 text-slate-100 shadow-lg" 
+             routerLinkActive="bg-neutral-700 text-white" 
              [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
-             [class]="'flex items-center p-3 mb-2 cursor-pointer rounded-xl hover:bg-slate-800 transition-all duration-200 group ' + (!sidebarService.expanded() ? 'justify-center' : '')"
+             [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
              [title]="!sidebarService.expanded() ? (item.label | translate) : ''">
-            <fa-icon [icon]="item.icon" class="w-5 h-5 text-slate-400 group-hover:text-slate-200 transition-colors"></fa-icon>
+            <fa-icon [icon]="item.icon" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></fa-icon>
             @if (sidebarService.expanded()) {
-              <span class="ml-3 text-slate-300 text-sm font-medium group-hover:text-slate-100 transition-colors">{{ item.label | translate }}</span>
+              <span class="ml-3 text-neutral-300 text-sm font-medium group-hover:text-neutral-100 transition-colors">{{ item.label | translate }}</span>
             }
           </a>
         }
         
         <!-- Menu Admin (apenas para owners/admins) -->
         @if (isAdmin()) {
-          <div class="mt-4 pt-4 border-t border-slate-700">
+          <div class="mt-2 pt-2 border-t border-neutral-800">
             <a [routerLink]="'/dashboard/admin'" 
-               routerLinkActive="bg-slate-700 text-slate-100 shadow-lg"
-               [class]="'flex items-center p-3 mb-2 cursor-pointer rounded-xl hover:bg-slate-800 transition-all duration-200 group ' + (!sidebarService.expanded() ? 'justify-center' : '')"
+               routerLinkActive="bg-neutral-700 text-white"
+               [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
                [title]="!sidebarService.expanded() ? ('nav.admin' | translate) : ''">
-              <fa-icon [icon]="faCog" class="w-5 h-5 text-slate-400 group-hover:text-slate-200 transition-colors"></fa-icon>
+              <fa-icon [icon]="faCog" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></fa-icon>
               @if (sidebarService.expanded()) {
-                <span class="ml-3 text-slate-300 text-sm font-medium group-hover:text-slate-100 transition-colors">{{ 'nav.admin' | translate }}</span>
+                <span class="ml-3 text-neutral-300 text-sm font-medium group-hover:text-neutral-100 transition-colors">{{ 'nav.admin' | translate }}</span>
               }
             </a>
           </div>
         }
       </nav>
 
-      <div class="h-16 border-t border-slate-700 flex items-center px-3">
+      <div [class]="'h-16 border-t border-neutral-800 flex items-center ' + (sidebarService.expanded() ? 'px-3' : 'px-2')">
         <button (click)="logout()" 
-                [class]="'flex items-center w-full p-3 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-xl transition-all duration-200 ' + (!sidebarService.expanded() ? 'justify-center' : '')"
+                [class]="'flex items-center text-neutral-400 hover:text-red-400 hover:bg-neutral-800 rounded transition-all duration-200 ' + (sidebarService.expanded() ? 'w-full px-3 py-2.5' : 'w-12 h-12 justify-center')"
                 [title]="!sidebarService.expanded() ? ('nav.logout' | translate) : ''">
           <fa-icon [icon]="faSignOutAlt" class="w-5 h-5"></fa-icon>
           @if (sidebarService.expanded()) {

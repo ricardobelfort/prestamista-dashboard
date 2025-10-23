@@ -4,7 +4,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { AuthService } from '../../core/auth.service';
-import { SidebarService } from '../../core/sidebar.service';
 import { LanguageService, Language } from '../../core/language.service';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -13,27 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [CommonModule, FontAwesomeModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-        <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
-      <div class="flex items-center gap-4">
-        <!-- Logo -->
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md">
-            <span class="text-white font-bold text-sm">P</span>
-          </div>
-          <span class="text-xl font-bold text-slate-800 hidden sm:block">Prestamista</span>
-        </div>
-        <!-- Hamburger Menu -->
-        <button 
-          (click)="sidebarService.toggle()"
-          class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 rounded-lg transition-colors duration-200 shrink-0"
-          [title]="(sidebarService.expanded() ? 'nav.collapseMenu' : 'nav.expandMenu') | translate"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
-
+    <header class="bg-white border-b border-slate-200 px-6 h-16 flex items-center justify-end sticky top-0 z-40">
       <div class="flex items-center gap-6">
         <!-- Language Selector -->
         <div class="relative">
@@ -97,7 +76,6 @@ import { TranslateModule } from '@ngx-translate/core';
 export class NavbarComponent implements OnInit {
   private data = inject(DataService);
   private auth = inject(AuthService);
-  sidebarService = inject(SidebarService);
   languageService = inject(LanguageService);
 
   userName = signal('Carregando...');

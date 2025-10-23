@@ -4,10 +4,12 @@
       <h1 class="text-3xl font-bold text-foreground">{{ 'payments.title' | translate }}</h1>
       <p class="text-muted-foreground mt-2 text-lg">{{ 'payments.subtitle' | translate }}</p>
     </div>
-    <button class="btn btn-primary" (click)="openModal()">
-      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>{{ 'payments.newPayment' | translate }}</span>
-    </button>
+    @if (payments().length > 0) {
+      <button class="btn btn-primary" (click)="openModal()">
+        <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+        <span>{{ 'payments.newPayment' | translate }}</span>
+      </button>
+    }
   </div>
 
   @if (loading()) {
@@ -74,10 +76,10 @@
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
-                <button class="btn btn-ghost btn-icon-sm" (click)="openModal(payment)">
+                <button class="btn btn-outline btn-icon-sm" (click)="openModal(payment)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
-                <button class="btn btn-ghost btn-icon-sm text-destructive hover:text-destructive" (click)="deletePayment(payment)">
+                <button class="btn btn-outline btn-icon-sm text-destructive hover:bg-destructive hover:text-destructive-foreground" (click)="deletePayment(payment)">
                   <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                 </button>
               </div>
