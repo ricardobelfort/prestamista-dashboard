@@ -69,7 +69,6 @@
     border-radius: calc(var(--radius) - 2px);
     font-size: 0.875rem;
     font-weight: 500;
-    line-height: 1.25;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;

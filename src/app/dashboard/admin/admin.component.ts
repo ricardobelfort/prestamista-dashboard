@@ -50,6 +50,9 @@ export class AdminComponent implements OnInit {
   showCreateOrgModal = signal(false);
   showMembersModal = signal(false);
   showInviteModal = signal(false);
+  
+  // Loading states
+  isCreatingOrg = signal(false);
 
   // Forms
   createOrgForm = this.fb.group({
@@ -109,6 +112,7 @@ export class AdminComponent implements OnInit {
   async createOrganization() {
     if (this.createOrgForm.invalid) return;
 
+    this.isCreatingOrg.set(true);
     try {
       const formData = this.createOrgForm.value;
       await this.adminService.createOrganization({
@@ -122,6 +126,8 @@ export class AdminComponent implements OnInit {
       await this.loadData();
     } catch (error: any) {
       // AdminService já mostra toast de erro
+    } finally {
+      this.isCreatingOrg.set(false);
     }
   }
 
