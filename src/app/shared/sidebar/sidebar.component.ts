@@ -1,7 +1,9 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { SidebarService } from '../../core/sidebar.service';
+import { DataService } from '../../core/data.service';
+import { ToastService } from '../../core/toast.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { 
   faHome, 
@@ -11,7 +13,8 @@ import {
   faRoute, 
   faSignOutAlt,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faCog
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -51,6 +54,21 @@ import {
             }
           </a>
         }
+        
+        <!-- Menu Admin (apenas para owners/admins) -->
+        @if (isAdmin()) {
+          <div class="mt-4 pt-4 border-t border-slate-700">
+            <a [routerLink]="'/dashboard/admin'" 
+               routerLinkActive="bg-slate-700 text-slate-100 shadow-lg"
+               class="flex items-center p-3 mb-2 cursor-pointer rounded-xl hover:bg-slate-800 transition-all duration-200 group"
+               [title]="!sidebarService.expanded() ? 'Administração' : ''">
+              <fa-icon [icon]="faCog" class="w-5 h-5 text-slate-400 group-hover:text-slate-200 transition-colors"></fa-icon>
+              @if (sidebarService.expanded()) {
+                <span class="ml-3 text-slate-300 text-sm font-medium group-hover:text-slate-100 transition-colors">Administração</span>
+              }
+            </a>
+          </div>
+        }
       </nav>
 
       <div class="p-3 border-t border-slate-700">
@@ -66,10 +84,15 @@ import {
     </aside>
   `
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private router = inject(Router);
   private auth = inject(AuthService);
+  private dataService = inject(DataService);
+  private toastService = inject(ToastService);
   sidebarService = inject(SidebarService);
+
+  // State
+  isAdmin = signal(false);
 
   // FontAwesome icons
   faHome = faHome;
@@ -80,6 +103,25 @@ export class SidebarComponent {
   faSignOutAlt = faSignOutAlt;
   faChevronLeft = faChevronLeft;
   faChevronRight = faChevronRight;
+  faCog = faCog;
+
+  async ngOnInit() {
+    await this.checkUserRole();
+  }
+
+  async checkUserRole() {
+    try {
+      const role = await this.dataService.getCurrentUserRole();
+      
+      const isAdminRole = role === 'owner' || role === 'admin';
+      
+      this.isAdmin.set(isAdminRole);
+    } catch (error) {
+      // Log interno para debug, sem mostrar toast pois é uma verificação silenciosa
+      console.error('❌ Erro ao verificar role do usuário:', error);
+      this.isAdmin.set(false);
+    }
+  }
 
   navItems = [
     { 

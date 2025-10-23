@@ -1,9 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private supabase = inject(SupabaseService);
+  private toastService = inject(ToastService);
 
   // Autenticação automática para desenvolvimento
   private async ensureAuthenticated() {
@@ -122,6 +124,29 @@ export class DataService {
       return data;
     } catch (err: any) {
       return { full_name: 'Usuário' };
+    }
+  }
+
+  async getCurrentUserRole() {
+    try {
+      await this.ensureAuthenticated();
+      
+      const { data: user } = await this.supabase.client.auth.getUser();
+      
+      if (!user.user) throw new Error('Usuário não autenticado');
+      
+      // Usar função RPC para obter o role (bypassa RLS)
+      const { data, error } = await this.supabase.client.rpc('fn_get_user_role');
+      
+      if (error) {
+        return 'viewer';
+      }
+      
+      return data || 'viewer';
+    } catch (err: any) {
+      // Log interno para debug, sem mostrar toast para o usuário
+      console.error('❌ Erro ao verificar role do usuário:', err);
+      return 'viewer';
     }
   }
 

@@ -11,7 +11,7 @@ import { SidebarService } from '../../core/sidebar.service';
       <div class="flex items-center space-x-4">
         <div class="text-right">
           <div class="text-sm font-semibold text-slate-800">{{ userName() }}</div>
-          <div class="text-xs text-slate-500">Administrador</div>
+          <div class="text-xs text-slate-500">{{ userRoleLabel() }}</div>
         </div>
         <div class="w-10 h-10 rounded-full bg-linear-to-br from-slate-600 to-slate-800 flex items-center justify-center shadow-lg ring-2 ring-slate-200">
           <span class="text-white font-bold text-sm">{{ getInitials() }}</span>
@@ -26,13 +26,18 @@ export class NavbarComponent implements OnInit {
   sidebarService = inject(SidebarService);
 
   userName = signal('Carregando...');
+  userRole = signal<string | null>(null);
 
   async ngOnInit() {
     try {
       const profile = await this.data.getProfile();
       this.userName.set(profile?.full_name ?? 'Usuário');
+      
+      const role = await this.data.getCurrentUserRole();
+      this.userRole.set(role);
     } catch {
       this.userName.set('Usuário');
+      this.userRole.set(null);
     }
   }
 
@@ -45,5 +50,19 @@ export class NavbarComponent implements OnInit {
       .map(n => n.charAt(0))
       .join('')
       .toUpperCase();
+  }
+
+  userRoleLabel(): string {
+    const role = this.userRole();
+    if (!role) return 'Carregando...';
+    
+    const roleLabels: Record<string, string> = {
+      'owner': 'Proprietário',
+      'admin': 'Administrador',
+      'collector': 'Cobrador',
+      'viewer': 'Visualizador'
+    };
+    
+    return roleLabels[role] || 'Usuário';
   }
 }

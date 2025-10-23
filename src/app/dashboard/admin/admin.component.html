@@ -1,0 +1,304 @@
+<div class="space-y-8 mt-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-foreground">Administração do Sistema</h1>
+      <p class="text-muted-foreground mt-2 text-lg">Gerencie organizações e usuários</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateOrgModal()">
+      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+      <span>Nova Organização</span>
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-semibold text-muted-foreground">Organizações</p>
+          <p class="text-3xl font-bold text-foreground">{{ stats().total_organizations }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+          <fa-icon [icon]="faBuilding" class="text-blue-600 text-xl"></fa-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-semibold text-muted-foreground">Usuários Totais</p>
+          <p class="text-3xl font-bold text-foreground">{{ stats().total_users }}</p>
+        </div>
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+          <fa-icon [icon]="faUsers" class="text-green-600 text-xl"></fa-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-semibold text-muted-foreground">Empréstimos Totais</p>
+          <p class="text-3xl font-bold text-foreground">{{ stats().total_loans }}</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+          <fa-icon [icon]="faEnvelope" class="text-purple-600 text-xl"></fa-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Organizations List -->
+  <div class="card">
+    <div class="px-6 py-4 border-b">
+      <h3 class="text-lg font-semibold text-foreground">Organizações</h3>
+    </div>
+    
+    @if (loading()) {
+      <div class="p-6">
+        <div class="flex flex-col items-center py-16">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p class="text-muted-foreground mt-4">Carregando organizações...</p>
+        </div>
+      </div>
+    } @else if (organizations().length === 0) {
+      <div class="p-6">
+        <div class="flex flex-col items-center py-16">
+          <fa-icon [icon]="faBuilding" class="text-muted-foreground text-4xl mb-4"></fa-icon>
+          <p class="text-muted-foreground text-lg font-medium">Nenhuma organização encontrada</p>
+          <p class="text-muted-foreground mt-2">Crie a primeira organização para começar</p>
+        </div>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-muted/50">
+            <tr class="border-b">
+              <th class="text-left p-4 font-medium text-muted-foreground">Nome</th>
+              <th class="text-left p-4 font-medium text-muted-foreground">Criada em</th>
+              <th class="text-right p-4 font-medium text-muted-foreground">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (org of organizations(); track trackByOrgId($index, org)) {
+              <tr class="border-b hover:bg-muted/50 transition-colors">
+                <td class="p-4">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <fa-icon [icon]="faBuilding" class="text-blue-600"></fa-icon>
+                    </div>
+                    <div>
+                      <p class="font-medium text-foreground">{{ org.name }}</p>
+                      <p class="text-sm text-muted-foreground">ID: {{ org.id }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4 text-muted-foreground">
+                  {{ org.created_at | date:'dd/MM/yyyy HH:mm' }}
+                </td>
+                <td class="p-4">
+                  <div class="flex justify-end space-x-2">
+                    <button 
+                      class="btn btn-outline btn-sm"
+                      (click)="viewMembers(org)"
+                      title="Ver membros">
+                      <fa-icon [icon]="faUsers" class="w-4 h-4"></fa-icon>
+                    </button>
+                    <button 
+                      class="btn btn-outline btn-sm"
+                      (click)="deleteOrganization(org)"
+                      title="Excluir">
+                      <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal: Criar Organização -->
+@if (showCreateOrgModal()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+      <h3 class="text-xl font-semibold text-foreground mb-4">Nova Organização</h3>
+      
+      <form [formGroup]="createOrgForm" (ngSubmit)="createOrganization()">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Nome da Organização</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="input"
+              placeholder="Ex: Empresa ABC Ltda"
+              required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Email do Proprietário</label>
+            <input
+              type="email"
+              formControlName="owner_email"
+              class="input"
+              placeholder="proprietario@empresa.com"
+              required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Nome do Proprietário</label>
+            <input
+              type="text"
+              formControlName="owner_name"
+              class="input"
+              placeholder="João Silva"
+              required>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 mt-6">
+          <button type="button" class="btn btn-outline" (click)="closeCreateOrgModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="createOrgForm.invalid">
+            Criar Organização
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal: Membros da Organização -->
+@if (showMembersModal() && selectedOrg()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold text-foreground">
+          Membros - {{ selectedOrg()?.name }}
+        </h3>
+        <div class="flex space-x-2">
+          <button class="btn btn-primary btn-sm" (click)="openInviteModal()">
+            <fa-icon [icon]="faUserPlus" class="w-4 h-4"></fa-icon>
+            Convidar
+          </button>
+          <button class="btn btn-outline btn-sm" (click)="closeMembersModal()">
+            Fechar
+          </button>
+        </div>
+      </div>
+      
+      @if (orgMembers().length === 0) {
+        <div class="text-center py-8">
+          <fa-icon [icon]="faUsers" class="text-muted-foreground text-4xl mb-4"></fa-icon>
+          <p class="text-muted-foreground">Nenhum membro encontrado</p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-muted/50">
+              <tr class="border-b">
+                <th class="text-left p-3 font-medium text-muted-foreground">Usuário</th>
+                <th class="text-left p-3 font-medium text-muted-foreground">Role</th>
+                <th class="text-right p-3 font-medium text-muted-foreground">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (member of orgMembers(); track trackByMemberId($index, member)) {
+                <tr class="border-b hover:bg-muted/50">
+                  <td class="p-3">
+                    <div>
+                      <p class="font-medium text-foreground">{{ member.user_name || 'Nome não disponível' }}</p>
+                      <p class="text-sm text-muted-foreground">{{ member.user_email }}</p>
+                    </div>
+                  </td>
+                  <td class="p-3">
+                    <select 
+                      class="input text-sm py-1 px-2"
+                      [value]="member.role"
+                      (change)="updateMemberRole(member, $any($event.target).value)">
+                      @for (role of roles; track role.value) {
+                        <option [value]="role.value">{{ role.label }}</option>
+                      }
+                    </select>
+                  </td>
+                  <td class="p-3">
+                    <div class="flex justify-end">
+                      <button 
+                        class="btn btn-outline btn-sm"
+                        (click)="removeMember(member)"
+                        [disabled]="member.role === 'owner'"
+                        title="Remover membro">
+                        <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Modal: Convidar Usuário -->
+@if (showInviteModal()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+      <h3 class="text-xl font-semibold text-foreground mb-4">Convidar Usuário</h3>
+      
+      <form [formGroup]="inviteForm" (ngSubmit)="sendInvite()">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="input"
+              placeholder="usuario@email.com"
+              required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Nome</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="input"
+              placeholder="Nome do usuário"
+              required>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">Permissão</label>
+            <select formControlName="role" class="input">
+              @for (role of roles; track role.value) {
+                <option [value]="role.value">
+                  {{ role.label }} - {{ role.description }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 mt-6">
+          <button type="button" class="btn btn-outline" (click)="closeInviteModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="inviteForm.invalid">
+            <fa-icon [icon]="faEnvelope" class="w-4 h-4 mr-2"></fa-icon>
+            Enviar Convite
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
