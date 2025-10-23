@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { SidebarComponent } from '../shared/sidebar/sidebar.component';
 import { SidebarService } from '../core/sidebar.service';
+import { VersionService } from '../core/version.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -22,6 +23,9 @@ import { SidebarService } from '../core/sidebar.service';
           <div class="text-center md:text-left">
             <p class="text-sm text-slate-600">
               © {{ currentYear }} Prestamista. Todos os direitos reservados.
+            </p>
+            <p class="text-xs text-slate-500">
+              {{ versionService.getVersionFormatted() }}
             </p>
           </div>
           
@@ -43,5 +47,6 @@ import { SidebarService } from '../core/sidebar.service';
 })
 export class DashboardLayoutComponent {
   sidebarService = inject(SidebarService);
+  protected versionService = inject(VersionService);
   currentYear = new Date().getFullYear();
 }

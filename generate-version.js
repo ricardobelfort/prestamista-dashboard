@@ -30,7 +30,13 @@ const buildNumber = process.env.GITHUB_RUN_NUMBER ||
 // Gerar versão baseada no ambiente
 let version = baseVersion;
 
-if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+// Detectar se é produção de forma mais robusta
+const isProduction = process.env.NODE_ENV === 'production' || 
+                     process.env.VERCEL_ENV === 'production' ||
+                     process.env.VERCEL ||  // Se está no Vercel (qualquer branch)
+                     gitBranch === 'main' && (process.env.CI || process.env.VERCEL);
+
+if (isProduction) {
   // Produção: usar versão do package.json + build number
   version = `${baseVersion}.${buildNumber}`;
 } else if (gitBranch !== 'main' && gitBranch !== 'master') {
@@ -38,7 +44,7 @@ if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'product
   const branchName = gitBranch.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
   version = `${baseVersion}-${branchName}.${buildNumber}`;
 } else {
-  // Main/master em desenvolvimento
+  // Main/master em desenvolvimento local
   version = `${baseVersion}-dev.${buildNumber}`;
 }
 
@@ -51,7 +57,7 @@ const buildInfo = {
   gitBranch,
   environment: process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
   buildTime: new Date().toISOString(),
-  isProduction: process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
+  isProduction: isProduction
 };
 
 // Criar o arquivo de versão
@@ -65,7 +71,7 @@ const versionInfo = {
     gitBranch,
     environment: buildInfo.environment,
     buildTime: buildInfo.buildTime,
-    isProduction: buildInfo.isProduction
+    isProduction: isProduction
   }
 };
 
