@@ -7,10 +7,11 @@ import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, InputMaskDirective],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, InputMaskDirective, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './clients.component.html'
 })

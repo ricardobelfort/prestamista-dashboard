@@ -11,23 +11,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
-  imports: [FontAwesomeModule, CurrencyPipe],
+  imports: [FontAwesomeModule, CurrencyPipe, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-8 mt-6">
       <div>
-        <h1 class="text-3xl font-bold text-foreground">Bem-vindo ao Painel</h1>
-        <p class="text-muted-foreground mt-2 text-lg">Gerencie seus empréstimos, clientes e rotas de cobrança</p>
+        <h1 class="text-3xl font-bold text-foreground">{{ 'home.welcome' | translate }}</h1>
+        <p class="text-muted-foreground mt-2 text-lg">{{ 'home.subtitle' | translate }}</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-muted-foreground">Total Clientes</p>
+              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.totalClients' | translate }}</p>
               @if (loading()) {
                 <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
               } @else {
@@ -42,7 +43,7 @@ import { ToastService } from '../../core/toast.service';
             @if (loading()) {
               <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
             } @else {
-              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_clients > 0 ? 'Ativos' : 'Nenhum cliente' }}</span>
+              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_clients > 0 ? ('home.active' | translate) : ('home.noClients' | translate) }}</span>
             }
           </div>
         </div>
@@ -50,7 +51,7 @@ import { ToastService } from '../../core/toast.service';
         <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-muted-foreground">Empréstimos Ativos</p>
+              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.activeLoans' | translate }}</p>
               @if (loading()) {
                 <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
               } @else {
@@ -65,7 +66,7 @@ import { ToastService } from '../../core/toast.service';
             @if (loading()) {
               <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
             } @else {
-              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_loans > 0 ? 'Em andamento' : 'Nenhum ativo' }}</span>
+              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_loans > 0 ? ('home.inProgress' | translate) : ('home.noActive' | translate) }}</span>
             }
           </div>
         </div>
@@ -73,7 +74,7 @@ import { ToastService } from '../../core/toast.service';
         <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-muted-foreground">Pagamentos Pendentes</p>
+              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.pendingPayments' | translate }}</p>
               @if (loading()) {
                 <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
               } @else {
@@ -88,7 +89,7 @@ import { ToastService } from '../../core/toast.service';
             @if (loading()) {
               <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
             } @else {
-              <span class="text-sm text-amber-600 font-medium">{{ metrics().total_payments_pending > 0 ? 'Aguardando' : 'Nenhum pendente' }}</span>
+              <span class="text-sm text-amber-600 font-medium">{{ metrics().total_payments_pending > 0 ? ('home.waiting' | translate) : ('home.noPending' | translate) }}</span>
             }
           </div>
         </div>
@@ -96,7 +97,7 @@ import { ToastService } from '../../core/toast.service';
         <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-semibold text-muted-foreground">Valor Total</p>
+              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.totalValue' | translate }}</p>
               @if (loading()) {
                 <div class="h-8 w-24 bg-muted rounded animate-pulse"></div>
               } @else {
@@ -111,7 +112,7 @@ import { ToastService } from '../../core/toast.service';
             @if (loading()) {
               <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
             } @else {
-              <span class="text-sm text-indigo-600 font-medium">{{ metrics().total_principal > 0 ? 'Em circulação' : 'Nenhum valor' }}</span>
+              <span class="text-sm text-indigo-600 font-medium">{{ metrics().total_principal > 0 ? ('home.inCirculation' | translate) : ('home.noValue' | translate) }}</span>
             }
           </div>
         </div>
@@ -119,23 +120,23 @@ import { ToastService } from '../../core/toast.service';
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="card p-6">
-          <h3 class="text-xl font-bold text-foreground mb-6">Atividade Recente</h3>
+          <h3 class="text-xl font-bold text-foreground mb-6">{{ 'home.recentActivity' | translate }}</h3>
           <div class="space-y-3">
             <div class="text-center py-12 text-muted-foreground">
               <fa-icon [icon]="faClipboardList" class="text-5xl block mb-4 text-muted-foreground"></fa-icon>
-              <p class="text-lg font-medium">Nenhuma atividade recente</p>
-              <p class="text-sm text-muted-foreground mt-1">As atividades aparecerão aqui quando houver</p>
+              <p class="text-lg font-medium">{{ 'home.noRecentActivity' | translate }}</p>
+              <p class="text-sm text-muted-foreground mt-1">{{ 'home.activitiesWillAppear' | translate }}</p>
             </div>
           </div>
         </div>
 
         <div class="card p-6">
-          <h3 class="text-xl font-bold text-foreground mb-6">Próximos Vencimentos</h3>
+          <h3 class="text-xl font-bold text-foreground mb-6">{{ 'home.upcomingDueDates' | translate }}</h3>
           <div class="space-y-3">
             <div class="text-center py-12 text-muted-foreground">
               <fa-icon [icon]="faCalendarAlt" class="text-5xl block mb-4 text-muted-foreground"></fa-icon>
-              <p class="text-lg font-medium">Nenhum vencimento próximo</p>
-              <p class="text-sm text-muted-foreground mt-1">Os vencimentos aparecerão aqui</p>
+              <p class="text-lg font-medium">{{ 'home.noDueDates' | translate }}</p>
+              <p class="text-sm text-muted-foreground mt-1">{{ 'home.dueDatesWillAppear' | translate }}</p>
             </div>
           </div>
         </div>

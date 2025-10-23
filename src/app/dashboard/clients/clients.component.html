@@ -2,24 +2,24 @@
   <!-- Header -->
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">Clientes</h1>
-      <p class="text-muted-foreground mt-2">Gerencie sua base de clientes</p>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'clients.title' | translate }}</h1>
+      <p class="text-muted-foreground mt-2">{{ 'clients.subtitle' | translate }}</p>
     </div>
         <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>Novo Cliente</span>
+      <span>{{ 'clients.newClient' | translate }}</span>
     </button>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading()" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Clientes</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'clients.list' | translate }}</h3>
     </div>
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <p class="text-muted-foreground mt-4">Carregando clientes...</p>
+        <p class="text-muted-foreground mt-4">{{ 'clients.loading' | translate }}</p>
       </div>
     </div>
   </div>
@@ -28,7 +28,7 @@
   <div *ngIf="error() && !loading()" class="alert alert-destructive">
     <fa-icon [icon]="faExclamationTriangle" class="alert-icon"></fa-icon>
     <div class="alert-content">
-      <div class="alert-title">Erro ao carregar clientes</div>
+      <div class="alert-title">{{ 'clients.errorLoading' | translate }}</div>
       <div class="alert-description">{{ error() }}</div>
     </div>
   </div>
@@ -36,18 +36,18 @@
   <!-- Data Table -->
   <div *ngIf="!loading() && !error() && clients().length > 0" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Clientes</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'clients.list' | translate }}</h3>
     </div>
     <div class="table-container">
       <table class="table">
         <thead class="table-header">
           <tr class="table-row">
-            <th class="table-head">Nome</th>
-            <th class="table-head">Telefone</th>
-            <th class="table-head">Documento</th>
-            <th class="table-head">Endereço</th>
-            <th class="table-head">Rota</th>
-            <th class="table-head">Ações</th>
+            <th class="table-head">{{ 'clients.name' | translate }}</th>
+            <th class="table-head">{{ 'clients.phone' | translate }}</th>
+            <th class="table-head">{{ 'clients.document' | translate }}</th>
+            <th class="table-head">{{ 'clients.address' | translate }}</th>
+            <th class="table-head">{{ 'clients.route' | translate }}</th>
+            <th class="table-head">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="table-body">
@@ -60,7 +60,7 @@
               <span *ngIf="client.routes?.name" class="text-muted-foreground">
                 {{ client.routes.name }}
               </span>
-              <span *ngIf="!client.routes?.name" class="text-muted-foreground">Sem rota</span>
+              <span *ngIf="!client.routes?.name" class="text-muted-foreground">{{ 'clients.noRoute' | translate }}</span>
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
@@ -81,16 +81,16 @@
   <!-- Empty State -->
   <div *ngIf="!loading() && !error() && clients().length === 0" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Clientes</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'clients.list' | translate }}</h3>
     </div>
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
         <fa-icon [icon]="faUsers" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
-        <p class="text-xl font-semibold text-foreground">Nenhum cliente cadastrado</p>
-        <p class="text-sm text-muted-foreground mt-2">Comece adicionando seu primeiro cliente</p>
+        <p class="text-xl font-semibold text-foreground">{{ 'clients.noClients' | translate }}</p>
+        <p class="text-sm text-muted-foreground mt-2">{{ 'clients.addFirstClient' | translate }}</p>
         <button class="btn btn-primary mt-6" (click)="openModal()">
           <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-          <span>Adicionar Cliente</span>
+          <span>{{ 'clients.addClient' | translate }}</span>
         </button>
       </div>
     </div>
@@ -101,18 +101,18 @@
 <div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
   <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
     <h2 class="text-lg font-semibold mb-4 text-foreground">
-      {{ editing() ? 'Editar Cliente' : 'Novo Cliente' }}
+      {{ editing() ? ('clients.editClient' | translate) : ('clients.newClient' | translate) }}
     </h2>
 
     <form [formGroup]="form" (ngSubmit)="saveClient()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Nome *</label>
-          <input formControlName="name" placeholder="Nome completo" class="input" />
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'clients.name' | translate }} *</label>
+          <input formControlName="name" [placeholder]="'clients.namePlaceholder' | translate" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Telefone</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'clients.phone' | translate }}</label>
           <input 
             formControlName="phone" 
             placeholder="(11) 99999-9999" 
@@ -121,7 +121,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Documento (CPF/CNPJ)</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'clients.document' | translate }}</label>
           <input 
             formControlName="doc_id" 
             placeholder="000.000.000-00" 
@@ -130,14 +130,14 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Endereço</label>
-          <input formControlName="address" placeholder="Endereço completo" class="input" />
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'clients.address' | translate }}</label>
+          <input formControlName="address" [placeholder]="'clients.addressPlaceholder' | translate" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Rota</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'clients.route' | translate }}</label>
           <select formControlName="route_id" class="input">
-            <option value="">Selecione uma rota</option>
+            <option value="">{{ 'clients.selectRoute' | translate }}</option>
             <option *ngFor="let route of routes()" [value]="route.id">
               {{ route.name }}
             </option>
@@ -146,15 +146,15 @@
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
-        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingClient()">Cancelar</button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingClient()">{{ 'common.cancel' | translate }}</button>
         <button type="submit" class="btn btn-primary" [disabled]="form.invalid || savingClient()">
           @if (savingClient()) {
             <div class="flex items-center space-x-2">
               <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-              <span>{{ editing() ? 'Atualizando...' : 'Salvando...' }}</span>
+              <span>{{ editing() ? ('clients.updating' | translate) : ('clients.saving' | translate) }}</span>
             </div>
           } @else {
-            <span>Salvar</span>
+            <span>{{ 'common.save' | translate }}</span>
           }
         </button>
       </div>
@@ -165,10 +165,10 @@
 <!-- Modal de Confirmação -->
 <app-confirmation-modal 
   *ngIf="showConfirmation()"
-  [title]="'Excluir Cliente'"
-  [message]="'Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.'"
-  [confirmText]="'Excluir'"
-  [cancelText]="'Cancelar'"
+  [title]="'clients.deleteClient' | translate"
+  [message]="'clients.deleteConfirmation' | translate"
+  [confirmText]="'common.delete' | translate"
+  [cancelText]="'common.cancel' | translate"
   [isLoading]="deletingClient()"
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"

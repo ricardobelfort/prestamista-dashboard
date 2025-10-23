@@ -40,6 +40,7 @@
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@ngx-translate/core": "^17.0.0",
     "@supabase/supabase-js": "^2.76.1",
     "@tailwindcss/postcss": "^4.1.15",
     "ngx-sonner": "^3.1.0",

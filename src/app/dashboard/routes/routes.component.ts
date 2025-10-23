@@ -6,10 +6,11 @@ import { faPlus, faRoute, faEdit, faTrash, faExclamationTriangle, faEye } from '
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-routes',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './routes.component.html'
 })

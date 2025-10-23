@@ -1,12 +1,12 @@
 <div class="space-y-8 mt-6">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">Rotas de Cobrança</h1>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'routes.title' | translate }}</h1>
       <p class="text-muted-foreground mt-2 text-lg">Organize suas rotas de cobrança por região</p>
     </div>
     <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>Nova Rota</span>
+      <span>{{ 'routes.newRoute' | translate }}</span>
     </button>
   </div>
 
@@ -17,7 +17,7 @@
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <p class="text-muted-foreground mt-4">Carregando rotas...</p>
+        <p class="text-muted-foreground mt-4">{{ 'routes.loading' | translate }}</p>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
   <div *ngIf="error() && !loading()" class="alert alert-destructive">
     <fa-icon [icon]="faExclamationTriangle" class="alert-icon"></fa-icon>
     <div class="alert-content">
-      <div class="alert-title">Erro ao carregar rotas</div>
+      <div class="alert-title">{{ 'routes.errorLoading' | translate }}</div>
       <div class="alert-description">{{ error() }}</div>
     </div>
   </div>
@@ -91,7 +91,7 @@
 <div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
   <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
     <h2 class="text-lg font-semibold mb-4 text-foreground">
-      {{ editing() ? 'Editar Rota' : 'Nova Rota' }}
+      {{ editing() ? ('routes.editRoute' | translate) : ('routes.newRoute' | translate) }}
     </h2>
 
     <form [formGroup]="form" (ngSubmit)="saveRoute()">
@@ -153,7 +153,7 @@
     </div>
 
     <div class="flex justify-end mt-6">
-      <button class="btn btn-outline" (click)="closeDetails()">Fechar</button>
+      <button class="btn btn-outline" (click)="closeDetails()">{{ 'common.close' | translate }}</button>
     </div>
   </div>
 </div>
@@ -161,10 +161,10 @@
 <!-- Modal de Confirmação -->
 <app-confirmation-modal 
   *ngIf="showConfirmation()"
-  [title]="'Excluir Rota'"
-  [message]="'Tem certeza que deseja excluir esta rota? Esta ação não pode ser desfeita.'"
-  [confirmText]="'Excluir'"
-  [cancelText]="'Cancelar'"
+  [title]="'routes.deleteRoute' | translate"
+  [message]="'routes.deleteConfirmation' | translate"
+  [confirmText]="'common.delete' | translate"
+  [cancelText]="'common.cancel' | translate"
   [isLoading]="deletingRoute()"
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"

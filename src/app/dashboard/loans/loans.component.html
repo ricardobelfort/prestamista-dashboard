@@ -1,24 +1,24 @@
 <div class="space-y-8 mt-6">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">Empréstimos</h1>
-      <p class="text-muted-foreground mt-2 text-lg">Gerencie seus empréstimos e financiamentos</p>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'loans.title' | translate }}</h1>
+      <p class="text-muted-foreground mt-2 text-lg">{{ 'loans.subtitle' | translate }}</p>
     </div>
     <button class="btn btn-primary" (click)="openModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>Novo Empréstimo</span>
+      <span>{{ 'loans.newLoan' | translate }}</span>
     </button>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading()" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Empréstimos</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'loans.list' | translate }}</h3>
     </div>
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <p class="text-muted-foreground mt-4">Carregando empréstimos...</p>
+        <p class="text-muted-foreground mt-4">{{ 'loans.loading' | translate }}</p>
       </div>
     </div>
   </div>
@@ -27,7 +27,7 @@
   <div *ngIf="error() && !loading()" class="alert alert-destructive">
     <fa-icon [icon]="faExclamationTriangle" class="alert-icon"></fa-icon>
     <div class="alert-content">
-      <div class="alert-title">Erro ao carregar empréstimos</div>
+      <div class="alert-title">{{ 'loans.errorLoading' | translate }}</div>
       <div class="alert-description">{{ error() }}</div>
     </div>
   </div>
@@ -35,18 +35,18 @@
   <!-- Data Table -->
   <div *ngIf="!loading() && !error() && loans().length > 0" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Empréstimos</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'loans.list' | translate }}</h3>
     </div>
     <div class="table-container">
       <table class="table">
         <thead class="table-header">
           <tr class="table-row">
-            <th class="table-head">Cliente</th>
-            <th class="table-head">Valor</th>
-            <th class="table-head">Taxa (%)</th>
-            <th class="table-head">Parcelas</th>
-            <th class="table-head">Data</th>
-            <th class="table-head">Ações</th>
+            <th class="table-head">{{ 'loans.client' | translate }}</th>
+            <th class="table-head">{{ 'loans.amount' | translate }}</th>
+            <th class="table-head">{{ 'loans.rate' | translate }}</th>
+            <th class="table-head">{{ 'loans.installments' | translate }}</th>
+            <th class="table-head">{{ 'loans.date' | translate }}</th>
+            <th class="table-head">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="table-body">
@@ -79,16 +79,16 @@
   <!-- Empty State -->
   <div *ngIf="!loading() && !error() && loans().length === 0" class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Lista de Empréstimos</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'loans.list' | translate }}</h3>
     </div>
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
         <fa-icon [icon]="faDollarSign" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
-        <p class="text-xl font-semibold text-foreground">Nenhum empréstimo registrado</p>
-        <p class="text-sm text-muted-foreground mt-2">Comece criando seu primeiro empréstimo</p>
+        <p class="text-xl font-semibold text-foreground">{{ 'loans.noLoans' | translate }}</p>
+        <p class="text-sm text-muted-foreground mt-2">{{ 'loans.createFirstLoan' | translate }}</p>
         <button class="btn btn-primary mt-6" (click)="openModal()">
           <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-          <span>Criar Empréstimo</span>
+          <span>{{ 'loans.createLoan' | translate }}</span>
         </button>
       </div>
     </div>
@@ -99,19 +99,19 @@
 <div *ngIf="showModal()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="closeModal()">
   <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
     <h2 class="text-lg font-semibold mb-4 text-foreground">
-      {{ editing() ? 'Editar Empréstimo' : 'Novo Empréstimo' }}
+      {{ editing() ? ('loans.editLoan' | translate) : ('loans.newLoan' | translate) }}
     </h2>
 
     <form [formGroup]="form" (ngSubmit)="saveLoan()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Cliente *</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.client' | translate }} *</label>
           <select
             formControlName="client_id" 
             class="input"
             [class.input-readonly]="editing()"
             [disabled]="editing()">
-            <option value="">Selecione um cliente</option>
+            <option value="">{{ 'loans.selectClient' | translate }}</option>
             <option *ngFor="let client of clients(); trackBy: trackByClientId" [value]="client.id">
               {{ client.name }}
             </option>
@@ -119,41 +119,41 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Valor Principal *</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.principalAmount' | translate }} *</label>
           <input formControlName="principal" type="number" step="0.01" placeholder="0.00" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Taxa de Juros (%)</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.interestRate' | translate }}</label>
           <input formControlName="interest_rate" type="number" step="0.01" placeholder="0.00" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Número de Parcelas *</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.installmentsNumber' | translate }} *</label>
           <input formControlName="installments_count" type="number" min="1" placeholder="12" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Data de Início *</label>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.startDate' | translate }} *</label>
           <input formControlName="start_date" type="date" class="input" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-foreground mb-1">Observações</label>
-          <textarea formControlName="notes" placeholder="Observações sobre o empréstimo" class="input" rows="3"></textarea>
+          <label class="block text-sm font-medium text-foreground mb-1">{{ 'loans.notes' | translate }}</label>
+          <textarea formControlName="notes" [placeholder]="'loans.notesPlaceholder' | translate" class="input" rows="3"></textarea>
         </div>
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
-        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingLoan()">Cancelar</button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingLoan()">{{ 'common.cancel' | translate }}</button>
         <button type="submit" class="btn btn-primary" [disabled]="form.invalid || savingLoan()">
           @if (savingLoan()) {
             <div class="flex items-center space-x-2">
               <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-              <span>{{ editing() ? 'Atualizando...' : 'Salvando...' }}</span>
+              <span>{{ editing() ? ('loans.updating' | translate) : ('loans.saving' | translate) }}</span>
             </div>
           } @else {
-            <span>Salvar</span>
+            <span>{{ 'common.save' | translate }}</span>
           }
         </button>
       </div>
@@ -164,10 +164,10 @@
 <!-- Modal de Confirmação -->
 <app-confirmation-modal 
   *ngIf="showConfirmation()"
-  [title]="'Excluir Empréstimo'"
-  [message]="'Tem certeza que deseja excluir este empréstimo? Esta ação não pode ser desfeita.'"
-  [confirmText]="'Excluir'"
-  [cancelText]="'Cancelar'"
+  [title]="'loans.deleteLoan' | translate"
+  [message]="'loans.deleteConfirmation' | translate"
+  [confirmText]="'common.delete' | translate"
+  [cancelText]="'common.cancel' | translate"
   [isLoading]="deletingLoan()"
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"

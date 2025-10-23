@@ -7,10 +7,11 @@ import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payments',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments.component.html'
 })

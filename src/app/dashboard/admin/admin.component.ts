@@ -17,10 +17,11 @@ import {
 import { AdminService, Organization, OrganizationMember } from '../../core/admin.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, ConfirmationModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, ConfirmationModalComponent, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin.component.html'
 })
