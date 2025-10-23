@@ -54,55 +54,29 @@ export class AdminService {
 
   async createOrganization(orgData: CreateOrganizationData): Promise<Organization> {
     try {
-      // 1. Criar a organização
-      const { data: org, error: orgError } = await this.supabase.client
-        .from('orgs')
-        .insert([{ name: orgData.name }])
-        .select()
-        .single();
-      
-      if (orgError) {
-        this.toastService.error(`Erro ao criar organização: ${orgError.message}`);
-        throw new Error(orgError.message);
-      }
-
-      // 2. Criar usuário diretamente (simplificado para desenvolvimento)
-      const tempPassword = 'temp123456';
-      const { data: newUser, error: userError } = await this.supabase.client.auth.admin.createUser({
-        email: orgData.owner_email,
-        password: tempPassword,
-        email_confirm: true,
-        user_metadata: {
-          full_name: orgData.owner_name
+      // Chamar Edge Function para criar organização com owner
+      const { data, error } = await this.supabase.client.functions.invoke('create-organization', {
+        body: {
+          name: orgData.name,
+          owner_email: orgData.owner_email,
+          owner_name: orgData.owner_name
         }
       });
-      
-      if (userError) {
-        this.toastService.error(`Erro ao criar usuário: ${userError.message}`);
-        throw new Error(userError.message);
+
+      if (error) {
+        this.toastService.error(`Erro ao criar organização: ${error.message}`);
+        throw new Error(error.message);
       }
-      const userId = newUser.user.id;
 
-      // 3. Criar perfil do usuário
-      await this.supabase.client
-        .from('profiles')
-        .upsert([{
-          user_id: userId,
-          full_name: orgData.owner_name,
-          default_org: org.id
-        }]);
-
-      // 4. Adicionar usuário como owner da organização
-      await this.supabase.client
-        .from('org_members')
-        .insert([{
-          org_id: org.id,
-          user_id: userId,
-          role: 'owner'
-        }]);
+      if (data?.error) {
+        this.toastService.error(`Erro ao criar organização: ${data.error}`);
+        throw new Error(data.error);
+      }
 
       this.toastService.success(`Organização "${orgData.name}" criada com sucesso!`);
-      return org;
+      
+      // Retornar a organização criada
+      return data.organization;
     } catch (err: any) {
       if (!err.message.includes('Erro ao criar')) {
         this.toastService.error('Erro inesperado ao criar organização');

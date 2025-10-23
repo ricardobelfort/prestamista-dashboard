@@ -7,6 +7,11 @@ export class DataService {
   private supabase = inject(SupabaseService);
   private toastService = inject(ToastService);
 
+  // Cache para getUserRole
+  private userRoleCache: string | null = null;
+  private userRoleCacheTimestamp = 0;
+  private readonly ROLE_CACHE_DURATION = 60000; // 60 segundos
+
   // Autenticação automática para desenvolvimento
   private async ensureAuthenticated() {
     const { data: { user } } = await this.supabase.client.auth.getUser();
@@ -129,6 +134,12 @@ export class DataService {
 
   async getCurrentUserRole() {
     try {
+      // Verificar se o cache é válido
+      const now = Date.now();
+      if (this.userRoleCache && (now - this.userRoleCacheTimestamp) < this.ROLE_CACHE_DURATION) {
+        return this.userRoleCache;
+      }
+
       await this.ensureAuthenticated();
       
       const { data: user } = await this.supabase.client.auth.getUser();
@@ -139,15 +150,29 @@ export class DataService {
       const { data, error } = await this.supabase.client.rpc('fn_get_user_role');
       
       if (error) {
+        this.userRoleCache = 'viewer';
+        this.userRoleCacheTimestamp = now;
         return 'viewer';
       }
       
-      return data || 'viewer';
+      const role = data || 'viewer';
+      
+      // Atualizar cache
+      this.userRoleCache = role;
+      this.userRoleCacheTimestamp = now;
+      
+      return role;
     } catch (err: any) {
       // Log interno para debug, sem mostrar toast para o usuário
       console.error('❌ Erro ao verificar role do usuário:', err);
       return 'viewer';
     }
+  }
+
+  // Método público para limpar o cache do role (útil após mudanças de permissão)
+  clearRoleCache() {
+    this.userRoleCache = null;
+    this.userRoleCacheTimestamp = 0;
   }
 
   async getDashboardMetrics() {
