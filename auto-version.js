@@ -133,7 +133,7 @@ function autoVersion() {
     execSync('node generate-version.js', { stdio: 'inherit' });
     
     // Commit das mudanças
-    execSync(`git add package.json src/assets/version.json`, { stdio: 'inherit' });
+    execSync(`git add package.json public/version.json`, { stdio: 'inherit' });
     execSync(`git commit -m "chore: bump version to ${newVersion}"`, { stdio: 'inherit' });
     
     // Criar tag
@@ -180,7 +180,7 @@ if (args.length > 0) {
     fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
     
     execSync('node generate-version.js', { stdio: 'inherit' });
-    execSync(`git add package.json src/assets/version.json`, { stdio: 'inherit' });
+    execSync(`git add package.json public/version.json`, { stdio: 'inherit' });
     execSync(`git commit -m "chore: bump version to ${newVersion}"`, { stdio: 'inherit' });
     execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
     

@@ -23,20 +23,38 @@ export class VersionService {
     formatted: 'v1.0.0'
   });
 
+  private loadingPromise: Promise<void>;
+
   constructor() {
-    this.loadVersionInfo();
+    this.loadingPromise = this.loadVersionInfo();
   }
 
   private async loadVersionInfo(): Promise<void> {
     try {
-      const response = await fetch('/assets/version.json');
+      // Cache busting mais agressivo
+      const cacheBuster = `?v=${Date.now()}&r=${Math.random()}`;
+      const response = await fetch(`/version.json${cacheBuster}`);
       if (response.ok) {
         const data = await response.json();
         this.versionInfo.set(data);
+        console.log('✅ Versão carregada:', data.formatted);
+      } else {
+        console.warn('❌ Erro ao carregar version.json:', response.status);
       }
     } catch (error) {
-      console.warn('Could not load version info, using default');
+      console.warn('❌ Could not load version info, using default:', error);
     }
+  }
+
+  // Método para forçar recarregamento
+  async forceReload(): Promise<void> {
+    this.loadingPromise = this.loadVersionInfo();
+    return this.loadingPromise;
+  }
+
+  // Método para aguardar o carregamento
+  async waitForLoad(): Promise<void> {
+    return this.loadingPromise;
   }
 
   getVersion(): string {

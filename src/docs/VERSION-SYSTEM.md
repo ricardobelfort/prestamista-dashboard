@@ -8,7 +8,7 @@ O sistema usa versionamento semântico (SemVer) com build numbers automáticos.
 
 ### 1. `generate-version.js`
 - Gera versão com build number baseado no timestamp
-- Cria o arquivo `src/assets/version.json`
+- Cria o arquivo `public/version.json`
 
 ### 2. `bump-version.js` 
 - Incrementa versão semântica no package.json

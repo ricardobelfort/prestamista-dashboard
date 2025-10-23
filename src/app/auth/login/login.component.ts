@@ -63,6 +63,11 @@ export class LoginComponent {
     password: ['', Validators.required]
   });
 
+  constructor() {
+    // Garantir que a versão seja carregada
+    this.versionService.waitForLoad();
+  }
+
   async onSubmit() {
     if (this.form.invalid) return;
     

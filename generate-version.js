@@ -71,7 +71,7 @@ const versionInfo = {
 };
 
 // Escrever o arquivo version.json
-fs.writeFileSync('./src/assets/version.json', JSON.stringify(versionInfo, null, 2));
+fs.writeFileSync('./public/version.json', JSON.stringify(versionInfo, null, 2));
 
 console.log(`✅ Version generated: v${version}`);
 console.log(`   Environment: ${buildInfo.environment}`);

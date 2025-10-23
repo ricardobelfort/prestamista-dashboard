@@ -60,7 +60,7 @@ Install Command: npm ci
 - Verificar se todas as dependências estão no `package.json`
 
 ### Versão não aparece
-- Verificar se o arquivo `src/assets/version.json` foi gerado
+- Verificar se o arquivo `public/version.json` foi gerado
 - Verificar se o build command inclui `npm run version:generate`
 
 ### GitHub Actions falha
