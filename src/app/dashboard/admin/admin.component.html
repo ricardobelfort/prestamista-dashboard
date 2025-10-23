@@ -2,12 +2,12 @@
   <!-- Header -->
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">Administração do Sistema</h1>
-      <p class="text-muted-foreground mt-2 text-lg">Gerencie organizações e usuários</p>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'admin.title' | translate }}</h1>
+      <p class="text-muted-foreground mt-2 text-lg">{{ 'admin.subtitle' | translate }}</p>
     </div>
     <button class="btn btn-primary" (click)="openCreateOrgModal()">
       <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>Nova Organização</span>
+      <span>{{ 'admin.newOrganization' | translate }}</span>
     </button>
   </div>
 
@@ -16,7 +16,7 @@
     <div class="card p-6">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-semibold text-muted-foreground">Organizações</p>
+          <p class="text-sm font-semibold text-muted-foreground">{{ 'admin.organizations' | translate }}</p>
           <p class="text-3xl font-bold text-foreground">{{ stats().total_organizations }}</p>
         </div>
         <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -28,7 +28,7 @@
     <div class="card p-6">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-semibold text-muted-foreground">Usuários Totais</p>
+          <p class="text-sm font-semibold text-muted-foreground">{{ 'admin.totalUsers' | translate }}</p>
           <p class="text-3xl font-bold text-foreground">{{ stats().total_users }}</p>
         </div>
         <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -40,7 +40,7 @@
     <div class="card p-6">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-semibold text-muted-foreground">Empréstimos Totais</p>
+          <p class="text-sm font-semibold text-muted-foreground">{{ 'admin.totalLoans' | translate }}</p>
           <p class="text-3xl font-bold text-foreground">{{ stats().total_loans }}</p>
         </div>
         <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -53,22 +53,22 @@
   <!-- Organizations List -->
   <div class="card">
     <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">Organizações</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ 'admin.organizationList' | translate }}</h3>
     </div>
     
     @if (loading()) {
       <div class="p-6">
         <div class="flex flex-col items-center py-16">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p class="text-muted-foreground mt-4">Carregando organizações...</p>
+          <p class="text-muted-foreground mt-4">{{ 'admin.loading' | translate }}</p>
         </div>
       </div>
     } @else if (organizations().length === 0) {
       <div class="p-6">
         <div class="flex flex-col items-center py-16">
           <fa-icon [icon]="faBuilding" class="text-muted-foreground text-4xl mb-4"></fa-icon>
-          <p class="text-muted-foreground text-lg font-medium">Nenhuma organização encontrada</p>
-          <p class="text-muted-foreground mt-2">Crie a primeira organização para começar</p>
+          <p class="text-muted-foreground text-lg font-medium">{{ 'common.noData' | translate }}</p>
+          <p class="text-muted-foreground mt-2">{{ 'admin.newOrganization' | translate }}</p>
         </div>
       </div>
     } @else {
@@ -76,9 +76,9 @@
         <table class="w-full">
           <thead class="bg-muted/50">
             <tr class="border-b">
-              <th class="text-left p-4 font-medium text-muted-foreground">Nome</th>
-              <th class="text-left p-4 font-medium text-muted-foreground">Criada em</th>
-              <th class="text-right p-4 font-medium text-muted-foreground">Ações</th>
+              <th class="text-left p-4 font-medium text-muted-foreground">{{ 'admin.orgName' | translate }}</th>
+              <th class="text-left p-4 font-medium text-muted-foreground">{{ 'admin.created' | translate }}</th>
+              <th class="text-right p-4 font-medium text-muted-foreground">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -103,13 +103,13 @@
                     <button 
                       class="btn btn-outline btn-sm"
                       (click)="viewMembers(org)"
-                      title="Ver membros">
+                      [title]="'admin.viewMembers' | translate">
                       <fa-icon [icon]="faUsers" class="w-4 h-4"></fa-icon>
                     </button>
                     <button 
                       class="btn btn-outline btn-sm"
                       (click)="deleteOrganization(org)"
-                      title="Excluir">
+                      [title]="'admin.deleteOrg' | translate">
                       <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
                     </button>
                   </div>
@@ -127,44 +127,44 @@
 @if (showCreateOrgModal()) {
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-      <h3 class="text-xl font-semibold text-foreground mb-4">Nova Organização</h3>
+      <h3 class="text-xl font-semibold text-foreground mb-4">{{ 'admin.createOrganization' | translate }}</h3>
       
       <form [formGroup]="createOrgForm" (ngSubmit)="createOrganization()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Nome da Organização</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.organizationName' | translate }}</label>
             <input
               type="text"
               formControlName="name"
               class="input"
-              placeholder="Ex: Empresa ABC Ltda"
+              [placeholder]="'admin.orgNamePlaceholder' | translate"
               required>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Email do Proprietário</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.ownerEmail' | translate }}</label>
             <input
               type="email"
               formControlName="owner_email"
               class="input"
-              placeholder="proprietario@empresa.com"
+              [placeholder]="'admin.ownerEmailPlaceholder' | translate"
               required>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Nome do Proprietário</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.ownerName' | translate }}</label>
             <input
               type="text"
               formControlName="owner_name"
               class="input"
-              placeholder="João Silva"
+              [placeholder]="'admin.ownerNamePlaceholder' | translate"
               required>
           </div>
         </div>
 
         <div class="flex justify-end space-x-2 mt-6">
           <button type="button" class="btn btn-outline" [disabled]="isCreatingOrg()" (click)="closeCreateOrgModal()">
-            Cancelar
+            {{ 'common.cancel' | translate }}
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="createOrgForm.invalid || isCreatingOrg()">
             @if (isCreatingOrg()) {
@@ -172,9 +172,9 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Criando...
+              {{ 'common.loading' | translate }}
             } @else {
-              Criar Organização
+              {{ 'admin.createOrganization' | translate }}
             }
           </button>
         </div>
@@ -189,15 +189,15 @@
     <div class="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[80vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-semibold text-foreground">
-          Membros - {{ selectedOrg()?.name }}
+          {{ 'admin.membersOf' | translate }} {{ selectedOrg()?.name }}
         </h3>
         <div class="flex space-x-2">
           <button class="btn btn-primary btn-sm" (click)="openInviteModal()">
             <fa-icon [icon]="faUserPlus" class="w-4 h-4"></fa-icon>
-            Convidar
+            {{ 'admin.inviteUser' | translate }}
           </button>
           <button class="btn btn-outline btn-sm" (click)="closeMembersModal()">
-            Fechar
+            {{ 'common.close' | translate }}
           </button>
         </div>
       </div>
@@ -261,39 +261,39 @@
 @if (showInviteModal()) {
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-      <h3 class="text-xl font-semibold text-foreground mb-2">Convidar Usuário</h3>
+      <h3 class="text-xl font-semibold text-foreground mb-2">{{ 'admin.inviteUser' | translate }}</h3>
       <p class="text-sm text-muted-foreground mb-4">
-        Um email de convite será enviado para o usuário com instruções para acessar a plataforma.
+        {{ 'admin.inviteUserSubtitle' | translate }}
       </p>
       
       <form [formGroup]="inviteForm" (ngSubmit)="sendInvite()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Email</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.email' | translate }}</label>
             <input
               type="email"
               formControlName="email"
               class="input"
-              placeholder="usuario@email.com"
+              [placeholder]="'admin.emailPlaceholder' | translate"
               required>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Nome</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.name' | translate }}</label>
             <input
               type="text"
               formControlName="name"
               class="input"
-              placeholder="Nome do usuário"
+              [placeholder]="'admin.namePlaceholder' | translate"
               required>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">Permissão</label>
+            <label class="block text-sm font-medium text-foreground mb-2">{{ 'admin.permission' | translate }}</label>
             <select formControlName="role" class="input">
               @for (role of roles; track role.value) {
                 <option [value]="role.value">
-                  {{ role.label }} - {{ role.description }}
+                  {{ 'admin.roles.' + role.value | translate }}
                 </option>
               }
             </select>
@@ -302,11 +302,11 @@
 
         <div class="flex justify-end space-x-2 mt-6">
           <button type="button" class="btn btn-outline" (click)="closeInviteModal()">
-            Cancelar
+            {{ 'common.cancel' | translate }}
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="inviteForm.invalid">
             <fa-icon [icon]="faEnvelope" class="w-4 h-4 mr-2"></fa-icon>
-            Enviar Convite
+            {{ 'admin.sendInvite' | translate }}
           </button>
         </div>
       </form>
@@ -317,10 +317,10 @@
 <!-- Modal de Confirmação: Excluir Organização -->
 @if (showConfirmation()) {
   <app-confirmation-modal 
-    [title]="'Excluir Organização'"
-    [message]="'Tem certeza que deseja excluir a organização &quot;' + (orgToDelete()?.name || '') + '&quot;? Esta ação não pode ser desfeita e todos os dados relacionados serão permanentemente removidos.'"
-    [confirmText]="'Excluir'"
-    [cancelText]="'Cancelar'"
+    [title]="'admin.deleteOrgConfirm' | translate"
+    [message]="('admin.deleteOrgWarning' | translate)"
+    [confirmText]="'admin.deleteOrg' | translate"
+    [cancelText]="'common.cancel' | translate"
     [isLoading]="isDeletingOrg()"
     (confirm)="confirmDelete()"
     (cancel)="closeConfirmation()"

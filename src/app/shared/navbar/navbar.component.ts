@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
@@ -76,6 +76,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class NavbarComponent implements OnInit {
   private data = inject(DataService);
   private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
   languageService = inject(LanguageService);
 
   userName = signal('Carregando...');
@@ -132,5 +133,7 @@ export class NavbarComponent implements OnInit {
   selectLanguage(langCode: string): void {
     this.languageService.setLanguage(langCode);
     this.showLanguageDropdown.set(false);
+    // Forçar detecção de mudanças
+    this.cdr.markForCheck();
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, ApplicationRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 export interface Language {
@@ -15,13 +15,17 @@ export class LanguageService {
   // Idiomas disponíveis
   readonly availableLanguages: Language[] = [
     { code: 'pt-BR', name: 'Português', flag: '🇧🇷', nativeName: 'Português (Brasil)' },
-    { code: 'es-PY', name: 'Español', flag: '🇵🇾', nativeName: 'Español (Paraguay)' }
+    { code: 'es-PY', name: 'Español', flag: '🇵🇾', nativeName: 'Español (Paraguay)' },
+    { code: 'en-US', name: 'English', flag: '🇺🇸', nativeName: 'English (US)' }
   ];
 
   // Signal para idioma atual
   currentLanguage = signal<Language>(this.availableLanguages[0]);
 
-  constructor(private translate: TranslateService) {
+  constructor(
+    private translate: TranslateService,
+    private appRef: ApplicationRef
+  ) {
     this.initializeLanguage();
   }
 
@@ -55,6 +59,10 @@ export class LanguageService {
       return 'es-PY';
     }
     
+    if (browserLang.startsWith('en')) {
+      return 'en-US';
+    }
+    
     // Padrão: pt-BR
     return 'pt-BR';
   }
@@ -77,8 +85,14 @@ export class LanguageService {
       langCode = 'pt-BR';
     }
 
-    // Atualizar TranslateService
-    this.translate.use(langCode);
+    // Atualizar TranslateService e forçar reload
+    this.translate.use(langCode).subscribe(() => {
+      // Força a atualização de todas as traduções
+      this.translate.reloadLang(langCode);
+      
+      // Força detecção de mudanças em toda a aplicação
+      this.appRef.tick();
+    });
     
     // Salvar preferência
     localStorage.setItem('app_language', langCode);
