@@ -57,7 +57,7 @@
             <td class="table-cell text-muted-foreground">{{ client.doc_id || '-' }}</td>
             <td class="table-cell text-muted-foreground">{{ client.address || '-' }}</td>
             <td class="table-cell">
-              <span *ngIf="client.routes?.name" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+              <span *ngIf="client.routes?.name" class="text-muted-foreground">
                 {{ client.routes.name }}
               </span>
               <span *ngIf="!client.routes?.name" class="text-muted-foreground">Sem rota</span>
@@ -113,12 +113,20 @@
         
         <div>
           <label class="block text-sm font-medium text-foreground mb-1">Telefone</label>
-          <input formControlName="phone" placeholder="(11) 99999-9999" class="input" />
+          <input 
+            formControlName="phone" 
+            placeholder="(11) 99999-9999" 
+            class="input"
+            mask="phone" />
         </div>
         
         <div>
           <label class="block text-sm font-medium text-foreground mb-1">Documento (CPF/CNPJ)</label>
-          <input formControlName="doc_id" placeholder="000.000.000-00" class="input" />
+          <input 
+            formControlName="doc_id" 
+            placeholder="000.000.000-00" 
+            class="input"
+            mask="cpf" />
         </div>
         
         <div>
@@ -138,8 +146,17 @@
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingClient()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || savingClient()">
+          @if (savingClient()) {
+            <div class="flex items-center space-x-2">
+              <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              <span>{{ editing() ? 'Atualizando...' : 'Salvando...' }}</span>
+            </div>
+          } @else {
+            <span>Salvar</span>
+          }
+        </button>
       </div>
     </form>
   </div>

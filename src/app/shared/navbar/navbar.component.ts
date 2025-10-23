@@ -7,7 +7,7 @@ import { SidebarService } from '../../core/sidebar.service';
   selector: 'app-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="fixed top-0 right-0 h-16 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-end px-6 z-10 border-b border-slate-200 transition-all duration-300" [class.left-64]="sidebarService.expanded()" [class.left-20]="!sidebarService.expanded()">
+    <header class="fixed top-0 right-0 h-16 bg-white/95 flex items-center justify-end px-6 z-10 border-b border-slate-200 transition-all duration-300" [class.left-64]="sidebarService.expanded()" [class.left-20]="!sidebarService.expanded()">
       <div class="flex items-center space-x-4">
         <div class="text-right">
           <div class="text-sm font-semibold text-slate-800">{{ userName() }}</div>

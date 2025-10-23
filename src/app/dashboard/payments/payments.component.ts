@@ -24,6 +24,7 @@ export class PaymentsComponent implements OnInit {
   showModal = signal(false);
   editing = signal(false);
   editingPayment = signal<any>(null);
+  savingPayment = signal(false);
   
   // Confirmation modal state
   showConfirmation = signal(false);
@@ -133,10 +134,10 @@ export class PaymentsComponent implements OnInit {
   }
   
   async savePayment() {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.savingPayment()) return;
     
     try {
-      this.loading.set(true);
+      this.savingPayment.set(true);
       const formData = { ...this.form.value };
       
       // Converter a data para o formato ISO se necessário
@@ -168,7 +169,7 @@ export class PaymentsComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao salvar pagamento');
     } finally {
-      this.loading.set(false);
+      this.savingPayment.set(false);
     }
   }
   

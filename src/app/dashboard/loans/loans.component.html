@@ -145,8 +145,17 @@
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="savingLoan()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || savingLoan()">
+          @if (savingLoan()) {
+            <div class="flex items-center space-x-2">
+              <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              <span>{{ editing() ? 'Atualizando...' : 'Salvando...' }}</span>
+            </div>
+          } @else {
+            <span>Salvar</span>
+          }
+        </button>
       </div>
     </form>
   </div>

@@ -156,8 +156,15 @@
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
-        <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Salvar</button>
+        <button type="button" class="btn btn-outline" [disabled]="savingPayment()" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || savingPayment()">
+          @if (savingPayment()) {
+            <span class="loading loading-spinner loading-xs mr-2"></span>
+            {{ editingPayment() ? 'Atualizando...' : 'Salvando...' }}
+          } @else {
+            Salvar
+          }
+        </button>
       </div>
     </form>
   </div>

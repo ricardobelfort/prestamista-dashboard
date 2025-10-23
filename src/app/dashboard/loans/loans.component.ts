@@ -25,6 +25,7 @@ export class LoansComponent implements OnInit {
   showModal = signal(false);
   editing = signal(false);
   editingLoan = signal<any>(null);
+  savingLoan = signal(false);
   
   // Confirmation modal state
   showConfirmation = signal(false);
@@ -127,10 +128,10 @@ export class LoansComponent implements OnInit {
   }
   
   async saveLoan() {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.savingLoan()) return;
     
     try {
-      this.loading.set(true);
+      this.savingLoan.set(true);
       const formData = this.form.value;
       
       if (this.editing()) {
@@ -151,7 +152,7 @@ export class LoansComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao salvar empréstimo');
     } finally {
-      this.loading.set(false);
+      this.savingLoan.set(false);
     }
   }
   

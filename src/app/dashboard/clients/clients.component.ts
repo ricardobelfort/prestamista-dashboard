@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, InputMaskDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './clients.component.html'
 })
@@ -23,6 +24,7 @@ export class ClientsComponent implements OnInit {
   // Modal state
   showModal = signal(false);
   editing = signal<any | null>(null);
+  savingClient = signal(false);
   
   // Confirmation modal state
   showConfirmation = signal(false);
@@ -90,9 +92,11 @@ export class ClientsComponent implements OnInit {
   }
 
   async saveClient() {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.savingClient()) return;
     
+    this.savingClient.set(true);
     const value = this.form.value;
+    
     try {
       if (this.editing()) {
         await this.dataService.updateClient(this.editing().id, value);
@@ -105,6 +109,8 @@ export class ClientsComponent implements OnInit {
       await this.ngOnInit(); // Recarrega a lista
     } catch (err: any) {
       this.toast.error('Erro ao salvar cliente: ' + err.message);
+    } finally {
+      this.savingClient.set(false);
     }
   }
 
