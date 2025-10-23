@@ -1,8 +1,28 @@
 # PrestamistaDashboardUi
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.6.
+Dashboard para sistema de empréstimos com área administrativa completa.
 
 [![Deploy Status](https://img.shields.io/badge/Vercel-Deployed-brightgreen)](https://vercel.com)
+[![Version](https://img.shields.io/badge/Version-v1.1.0-blue)](./src/assets/version.json)
+
+## 🚀 Versionamento Automático
+
+Este projeto usa **versionamento automático** baseado em Conventional Commits:
+
+```bash
+# Versionamento automático baseado nos commits
+npm run version:auto
+
+# Release completo (versiona + faz push)  
+npm run release
+```
+
+**Padrões de commit:**
+- `feat:` → incrementa **minor** (nova funcionalidade)
+- `fix:` → incrementa **patch** (correção)  
+- `feat!:` → incrementa **major** (breaking change)
+
+[📖 Documentação completa do versionamento](./src/docs/AUTO-VERSIONING.md)
 
 ## Development server
 

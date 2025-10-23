@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 interface VersionInfo {
   version: string;
@@ -18,10 +18,10 @@ interface VersionInfo {
   providedIn: 'root'
 })
 export class VersionService {
-  private versionInfo: VersionInfo = {
+  private versionInfo = signal<VersionInfo>({
     version: '1.0.0',
     formatted: 'v1.0.0'
-  };
+  });
 
   constructor() {
     this.loadVersionInfo();
@@ -31,7 +31,8 @@ export class VersionService {
     try {
       const response = await fetch('/assets/version.json');
       if (response.ok) {
-        this.versionInfo = await response.json();
+        const data = await response.json();
+        this.versionInfo.set(data);
       }
     } catch (error) {
       console.warn('Could not load version info, using default');
@@ -39,26 +40,26 @@ export class VersionService {
   }
 
   getVersion(): string {
-    return this.versionInfo.version;
+    return this.versionInfo().version;
   }
 
   getVersionFormatted(): string {
-    return this.versionInfo.formatted;
+    return this.versionInfo().formatted;
   }
 
   getBuildInfo() {
-    return this.versionInfo.buildInfo;
+    return this.versionInfo().buildInfo;
   }
 
   isProduction(): boolean {
-    return this.versionInfo.buildInfo?.isProduction ?? false;
+    return this.versionInfo().buildInfo?.isProduction ?? false;
   }
 
   getCommitHash(): string {
-    return this.versionInfo.buildInfo?.gitCommit ?? '';
+    return this.versionInfo().buildInfo?.gitCommit ?? '';
   }
 
   getBranch(): string {
-    return this.versionInfo.buildInfo?.gitBranch ?? '';
+    return this.versionInfo().buildInfo?.gitBranch ?? '';
   }
 }

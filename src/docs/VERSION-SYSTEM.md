@@ -1,55 +1,76 @@
-# Sistema de Versão Automática
+# Sistema de Versionamento
 
-## Como Funciona
+## 📋 Visão Geral
 
-O sistema de versão é automaticamente gerado e exibido em duas localizações:
+O sistema usa versionamento semântico (SemVer) com build numbers automáticos.
 
-1. **Tela de Login**: No rodapé do formulário de login
-2. **Sidebar do Dashboard**: No final da sidebar quando expandida
-
-## Arquivos Envolvidos
+### 🔧 Componentes
 
 ### 1. `generate-version.js`
-Script que gera automaticamente as informações de versão:
-- Lê a versão do `package.json`
+- Gera versão com build number baseado no timestamp
 - Cria o arquivo `src/assets/version.json`
 
-### 2. `src/app/core/version.service.ts`
-Serviço Angular que fornece as informações de versão para os componentes.
+### 2. `bump-version.js` 
+- Incrementa versão semântica no package.json
+- Faz commit e cria tag automaticamente
 
-### 3. Componentes que exibem a versão:
-- `src/app/auth/login/login.component.ts` - Tela de login
-- `src/app/shared/sidebar/sidebar.component.ts` - Sidebar do dashboard
+### 3. `src/app/core/version.service.ts`
+- Carrega e exibe versão na aplicação usando signals
+- Atualização reativa da versão
 
-## Scripts Automatizados
+## 🚀 Como Usar
 
-No `package.json`, os seguintes scripts foram configurados para gerar a versão automaticamente:
+### Incrementar Versão Semântica:
+
+```bash
+# Patch (bugfixes): 1.0.1 -> 1.0.2
+npm run version:patch
+
+# Minor (features): 1.0.1 -> 1.1.0  
+npm run version:minor
+
+# Major (breaking): 1.0.1 -> 2.0.0
+npm run version:major
+```
+
+### Scripts Disponíveis:
 
 ```json
 {
-  "scripts": {
-    "start": "node generate-version.js && ng serve",
-    "build": "node generate-version.js && ng build",
-    "version:generate": "node generate-version.js"
-  }
+  "version:generate": "node generate-version.js",
+  "version:patch": "node bump-version.js patch",
+  "version:minor": "node bump-version.js minor", 
+  "version:major": "node bump-version.js major"
 }
 ```
 
-## Como Atualizar a Versão
+## 📊 Formatos de Versão
 
-1. **Manualmente**: Edite a versão no `package.json`
-2. **Via npm**: Use `npm version patch|minor|major`
+### Desenvolvimento (Branch main):
+- Formato: `1.0.1-dev.{buildNumber}`
+- Exemplo: `v1.0.1-dev.798808`
 
-Exemplo:
-```bash
-npm version patch  # 1.0.0 -> 1.0.1
-npm version minor  # 1.0.0 -> 1.1.0
-npm version major  # 1.0.0 -> 2.0.0
-```
+### Produção:
+- Formato: `1.0.1.{buildNumber}`
+- Exemplo: `v1.0.1.45`
 
-## Formato de Exibição
+### Feature Branches:
+- Formato: `1.0.1-{branch}.{buildNumber}`
+- Exemplo: `v1.0.1-auth-system.123456`
 
-A versão é exibida no formato: `v1.0.0`
+## 🔄 Workflow Recomendado
+
+1. **Desenvolvimento**: Build number incrementa automaticamente
+2. **Novas Features**: `npm run version:minor` 
+3. **Bugfixes**: `npm run version:patch`
+4. **Breaking Changes**: `npm run version:major`
+5. **Deploy**: Push tags para trigger do CI/CD
+
+## 📱 Exibição na UI
+
+A versão é exibida no formato: `v1.0.1-dev.798808`
+- Tela de login (canto inferior)
+- Carregamento reativo via VersionService
 
 ## Localização Visual
 
