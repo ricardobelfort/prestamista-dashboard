@@ -218,50 +218,41 @@ export class AdminService {
   // CONVITES
   // =============================================
 
-  async inviteUser(orgId: string, email: string, role: string, name?: string): Promise<string> {
+  async inviteUser(orgId: string, email: string, role: string, name?: string): Promise<void> {
     try {
-      // Gerar token único para o convite
-      const inviteToken = crypto.randomUUID();
-      
-      // Criar convite temporário (pode usar uma tabela de convites ou localStorage)
-      const inviteData = {
-        token: inviteToken,
-        org_id: orgId,
-        email,
-        role,
-        name,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 dias
-      };
-      
-      // Salvar convite (implementar tabela de convites se necessário)
-      localStorage.setItem(`invite_${inviteToken}`, JSON.stringify(inviteData));
-      
-      // Retornar link de convite
-      const inviteLink = `${window.location.origin}/register?invite=${inviteToken}`;
-      
-      this.toastService.success('Convite criado com sucesso!');
-      return inviteLink;
-    } catch (err: any) {
-      this.toastService.error('Erro inesperado ao criar convite');
-      throw err;
-    }
-  }
+      // Chamar Edge Function para enviar convite via Supabase Auth
+      const { data, error } = await this.supabase.client.functions.invoke('invite-user', {
+        body: {
+          org_id: orgId,
+          email,
+          role,
+          name
+        }
+      });
 
-  async getInviteData(token: string): Promise<any> {
-    try {
-      const inviteData = localStorage.getItem(`invite_${token}`);
-      if (!inviteData) throw new Error('Convite não encontrado');
-      
-      const invite = JSON.parse(inviteData);
-      
-      // Verificar se convite não expirou
-      if (new Date() > new Date(invite.expires_at)) {
-        localStorage.removeItem(`invite_${token}`);
-        throw new Error('Convite expirado');
+      if (error) {
+        this.toastService.error(`Erro ao enviar convite: ${error.message}`);
+        throw new Error(error.message);
       }
-      
-      return invite;
+
+      if (data?.error) {
+        if (data.alreadyMember) {
+          this.toastService.error('Este usuário já é membro desta organização');
+        } else {
+          this.toastService.error(`Erro ao enviar convite: ${data.error}`);
+        }
+        throw new Error(data.error);
+      }
+
+      if (data?.userExists) {
+        this.toastService.success('Usuário adicionado à organização com sucesso!');
+      } else {
+        this.toastService.success('Convite enviado por email com sucesso!');
+      }
     } catch (err: any) {
+      if (!err.message.includes('Erro ao enviar convite')) {
+        this.toastService.error('Erro inesperado ao enviar convite');
+      }
       throw err;
     }
   }

@@ -239,18 +239,20 @@ export class AdminComponent implements OnInit {
 
     try {
       const formData = this.inviteForm.value;
-      const inviteLink = await this.adminService.inviteUser(
+      await this.adminService.inviteUser(
         this.selectedOrg()!.id,
         formData.email!,
         formData.role!,
         formData.name!
       );
 
-      // Copiar link para clipboard
-      await navigator.clipboard.writeText(inviteLink);
-      
-      this.toastService.success('Link de convite copiado para a área de transferência!');
       this.closeInviteModal();
+      
+      // Recarregar membros se o modal de membros estiver aberto
+      if (this.showMembersModal()) {
+        const members = await this.adminService.getOrganizationMembers(this.selectedOrg()!.id);
+        this.orgMembers.set(members);
+      }
     } catch (error: any) {
       // AdminService já mostra toast de erro
     }
