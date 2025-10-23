@@ -35,15 +35,17 @@ export class AdminService {
 
   async listOrganizations(): Promise<Organization[]> {
     try {
-      // Usar função RPC para obter organizações (bypassa RLS)
+      // IMPORTANTE: Usar função RPC para evitar problemas de stack depth com RLS
+      // A consulta direta causa "stack depth limit exceeded" devido a políticas RLS recursivas
       const { data, error } = await this.supabase.client.rpc('fn_list_organizations');
       
       if (error) {
+        console.error('Erro ao chamar fn_list_organizations:', error);
         this.toastService.error(`Erro ao carregar organizações: ${error.message}`);
         throw new Error(error.message);
       }
+      
       return data || [];
-    return data || [];
     } catch (err: any) {
       if (!err.message.includes('Erro ao carregar organizações')) {
         this.toastService.error('Erro inesperado ao carregar organizações');
@@ -111,10 +113,11 @@ export class AdminService {
 
   async deleteOrganization(id: string): Promise<boolean> {
     try {
-      const { error } = await this.supabase.client
-        .from('orgs')
-        .delete()
-        .eq('id', id);
+      // IMPORTANTE: Usar função RPC para evitar problemas de stack depth com RLS
+      // O DELETE direto causa "stack depth limit exceeded" devido a políticas RLS recursivas
+      const { data, error } = await this.supabase.client.rpc('fn_delete_organization', {
+        org_id_param: id
+      });
       
       if (error) {
         this.toastService.error(`Erro ao excluir organização: ${error.message}`);

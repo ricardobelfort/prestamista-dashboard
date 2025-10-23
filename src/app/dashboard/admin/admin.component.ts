@@ -16,10 +16,11 @@ import {
 
 import { AdminService, Organization, OrganizationMember } from '../../core/admin.service';
 import { ToastService } from '../../core/toast.service';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, ConfirmationModalComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin.component.html'
 })
@@ -50,6 +51,10 @@ export class AdminComponent implements OnInit {
   showCreateOrgModal = signal(false);
   showMembersModal = signal(false);
   showInviteModal = signal(false);
+  showConfirmation = signal(false);
+  
+  // Deletion tracking
+  orgToDelete = signal<Organization | null>(null);
   
   // Loading states
   isCreatingOrg = signal(false);
@@ -132,9 +137,13 @@ export class AdminComponent implements OnInit {
   }
 
   async deleteOrganization(org: Organization) {
-    if (!confirm(`Tem certeza que deseja excluir "${org.name}"? Esta ação não pode ser desfeita.`)) {
-      return;
-    }
+    this.orgToDelete.set(org);
+    this.showConfirmation.set(true);
+  }
+
+  async confirmDelete() {
+    const org = this.orgToDelete();
+    if (!org) return;
 
     try {
       await this.adminService.deleteOrganization(org.id);
@@ -142,7 +151,14 @@ export class AdminComponent implements OnInit {
       await this.loadData();
     } catch (error: any) {
       // AdminService já mostra toast de erro
+    } finally {
+      this.closeConfirmation();
     }
+  }
+
+  closeConfirmation() {
+    this.showConfirmation.set(false);
+    this.orgToDelete.set(null);
   }
 
   // =============================================
