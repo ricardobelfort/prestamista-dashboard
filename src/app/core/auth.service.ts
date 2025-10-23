@@ -43,6 +43,11 @@ export class AuthService {
     return user;
   }
 
+  async getSession() {
+    const { data } = await this.supabase.client.auth.getSession();
+    return data?.session ?? null;
+  }
+
   private clearUserCache() {
     this.userCache = null;
     this.userCacheTimestamp = 0;

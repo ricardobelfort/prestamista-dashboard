@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth.service';
 import { SidebarService } from '../../core/sidebar.service';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { Logger } from '../../core/logger.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { 
   faHome, 
@@ -118,7 +119,7 @@ export class SidebarComponent implements OnInit {
       this.isAdmin.set(isAdminRole);
     } catch (error) {
       // Log interno para debug, sem mostrar toast pois é uma verificação silenciosa
-      console.error('❌ Erro ao verificar role do usuário:', error);
+      Logger.error('Erro ao verificar role do usuário:', error);
       this.isAdmin.set(false);
     }
   }

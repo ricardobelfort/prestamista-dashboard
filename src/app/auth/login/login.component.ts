@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { VersionService } from '../../core/version.service';
+import { RateLimiterService } from '../../core/rate-limiter.service';
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -54,6 +56,8 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private rateLimiter = inject(RateLimiterService);
+  private toast = inject(ToastService);
   protected versionService = inject(VersionService);
 
   loading = signal(false);
@@ -71,14 +75,44 @@ export class LoginComponent {
   async onSubmit() {
     if (this.form.invalid) return;
     
-    this.loading.set(true);
     const { email, password } = this.form.value;
+    const rateLimitKey = `login:${email}`;
+    
+    // Verifica se está bloqueado por rate limiting
+    if (this.rateLimiter.isRateLimited(rateLimitKey)) {
+      const minutesRemaining = this.rateLimiter.getBlockedTimeRemaining(rateLimitKey);
+      this.toast.error(
+        `Muitas tentativas de login. Tente novamente em ${minutesRemaining} minutos.`
+      );
+      return;
+    }
+    
+    // Verifica se pode tentar
+    if (!this.rateLimiter.attempt(rateLimitKey)) {
+      const minutesRemaining = this.rateLimiter.getBlockedTimeRemaining(rateLimitKey);
+      this.toast.error(
+        `Conta bloqueada temporariamente por segurança. Tente novamente em ${minutesRemaining} minutos.`
+      );
+      return;
+    }
+    
+    this.loading.set(true);
     
     try {
       await this.auth.signIn(email!, password!);
+      // Login bem-sucedido - reseta o rate limiter
+      this.rateLimiter.reset(rateLimitKey);
       this.router.navigate(['/dashboard']);
     } catch (err: any) {
-      alert(err.message);
+      // Mostra mensagem de erro mas não revela se o usuário existe ou não (segurança)
+      this.toast.error('E-mail ou senha inválidos');
+      
+      const attemptsRemaining = this.rateLimiter.getRemainingAttempts(rateLimitKey);
+      if (attemptsRemaining > 0 && attemptsRemaining <= 2) {
+        this.toast.warning(
+          `Atenção: você tem ${attemptsRemaining} tentativa(s) restante(s) antes do bloqueio temporário.`
+        );
+      }
     } finally {
       this.loading.set(false);
     }

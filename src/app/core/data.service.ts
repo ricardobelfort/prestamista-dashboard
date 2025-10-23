@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { Logger } from './logger.service';
 import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
@@ -164,7 +165,7 @@ export class DataService {
       return role;
     } catch (err: any) {
       // Log interno para debug, sem mostrar toast para o usuário
-      console.error('❌ Erro ao verificar role do usuário:', err);
+      Logger.error('Erro ao verificar role do usuário:', err);
       return 'viewer';
     }
   }
