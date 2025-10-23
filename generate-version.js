@@ -30,11 +30,9 @@ const buildNumber = process.env.GITHUB_RUN_NUMBER ||
 // Gerar versão baseada no ambiente
 let version = baseVersion;
 
-// Detectar se é produção de forma mais robusta
-const isProduction = process.env.NODE_ENV === 'production' || 
-                     process.env.VERCEL_ENV === 'production' ||
-                     process.env.VERCEL ||  // Se está no Vercel (qualquer branch)
-                     gitBranch === 'main' && (process.env.CI || process.env.VERCEL);
+// Detectar se é produção usando as variáveis oficiais da Vercel
+// Ref: https://vercel.com/docs/environment-variables/system-environment-variables
+const isProduction = process.env.VERCEL_ENV === 'production';
 
 if (isProduction) {
   // Produção: usar versão do package.json + build number
