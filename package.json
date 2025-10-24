@@ -1,6 +1,6 @@
 {
   "name": "prestamista-dashboard-ui",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "scripts": {
     "ng": "ng",
     "start": "node generate-version.js && ng serve",
