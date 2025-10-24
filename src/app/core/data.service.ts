@@ -116,6 +116,131 @@ export class DataService {
     }
   }
 
+  async listInstallments(loanId?: number) {
+    try {
+      await this.ensureAuthenticated();
+      
+      let query = this.supabase.client
+        .from('installments')
+        .select(`
+          *,
+          loans!inner(
+            id,
+            client_id,
+            principal,
+            clients!inner(
+              id,
+              name
+            )
+          )
+        `)
+        .order('due_date', { ascending: true });
+      
+      // Se fornecido um loan_id, filtrar por ele
+      if (loanId) {
+        query = query.eq('loan_id', loanId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw new Error(error.message);
+      
+      return data || [];
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  // =============================================
+  // MÉTODOS DO DASHBOARD
+  // =============================================
+
+  async getDashboardMetrics() {
+    try {
+      await this.ensureAuthenticated();
+      
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
+        .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      const { data, error } = await this.supabase.client
+        .rpc('fn_get_dashboard_metrics', { p_org_id: orgId });
+      
+      if (error) throw new Error(error.message);
+      return data;
+    } catch (err: any) {
+      Logger.error('Error getting dashboard metrics', err);
+      throw err;
+    }
+  }
+
+  async getMonthlyEvolution(months: number = 6) {
+    try {
+      await this.ensureAuthenticated();
+      
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
+        .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      const { data, error } = await this.supabase.client
+        .rpc('fn_get_monthly_evolution', { 
+          p_org_id: orgId,
+          p_months: months 
+        });
+      
+      if (error) throw new Error(error.message);
+      return data || [];
+    } catch (err: any) {
+      Logger.error('Error getting monthly evolution', err);
+      throw err;
+    }
+  }
+
+  async getUpcomingInstallments(days: number = 7) {
+    try {
+      await this.ensureAuthenticated();
+      
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
+        .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      const { data, error } = await this.supabase.client
+        .rpc('fn_get_upcoming_installments', { 
+          p_org_id: orgId,
+          p_days: days 
+        });
+      
+      if (error) throw new Error(error.message);
+      return data || [];
+    } catch (err: any) {
+      Logger.error('Error getting upcoming installments', err);
+      throw err;
+    }
+  }
+
   async getProfile() {
     try {
       await this.ensureAuthenticated();
@@ -174,35 +299,6 @@ export class DataService {
   clearRoleCache() {
     this.userRoleCache = null;
     this.userRoleCacheTimestamp = 0;
-  }
-
-  async getDashboardMetrics() {
-    try {
-      await this.ensureAuthenticated();
-      
-      const { data, error } = await this.supabase.client.rpc('fn_dashboard_metrics');
-      
-      if (error) {
-        return {
-          total_principal: 0,
-          total_recebido: 0,
-          total_em_aberto: 0
-        };
-      }
-      
-      return data && data.length > 0 ? data[0] : {
-        total_principal: 0,
-        total_recebido: 0,
-        total_em_aberto: 0
-      };
-      
-    } catch (err: any) {
-      return {
-        total_principal: 0,
-        total_recebido: 0,
-        total_em_aberto: 0
-      };
-    }
   }
 
   async getInstallmentsDue() {
@@ -280,31 +376,30 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      // Obter organização do usuário atual se não fornecida
-      if (!loan.org_id) {
-        const { data: profile } = await this.supabase.client
-          .from('profiles')
-          .select('default_org')
-          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
-          .single();
-        
-        loan.org_id = profile?.default_org;
-      }
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
       
-      const { data, error } = await this.supabase.client
-        .from('loans')
-        .insert([{
-          client_id: loan.client_id,
-          principal: loan.principal,
-          interest_rate: loan.interest_rate,
-          interest: loan.interest || 'simple',
-          installments_count: loan.installments_count,
-          start_date: loan.start_date,
-          notes: loan.notes,
-          org_id: loan.org_id
-        }])
-        .select()
+      // Obter org_id do perfil do usuário
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
         .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      // Chamar função RPC que cria o empréstimo E gera as parcelas automaticamente
+      const { data, error } = await this.supabase.client
+        .rpc('create_loan_with_installments', {
+          p_org_id: orgId,
+          p_client_id: loan.client_id,
+          p_principal: loan.principal,
+          p_interest_rate: loan.interest_rate || 0,
+          p_start_date: loan.start_date,
+          p_installments_count: loan.installments_count,
+          p_notes: loan.notes || ''
+        });
       
       if (error) throw new Error(error.message);
       return data;
@@ -317,34 +412,30 @@ export class DataService {
     try {
       await this.ensureAuthenticated();
       
-      // Obter organização do usuário atual se não fornecida
-      if (!payment.org_id) {
-        const { data: profile } = await this.supabase.client
-          .from('profiles')
-          .select('default_org')
-          .eq('user_id', (await this.supabase.client.auth.getUser()).data.user?.id)
-          .single();
-        
-        payment.org_id = profile?.default_org;
-      }
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
       
-      // Preparar dados para inserção, removendo installment_id se estiver vazio
-      const insertData: any = {
-        value: payment.value,
-        method: payment.method,
-        paid_on: payment.paid_on,
-        notes: payment.notes,
-        org_id: payment.org_id
-      };
-
-      // Só incluir installment_id se ele estiver presente e não vazio
-      if (payment.installment_id) {
-        insertData.installment_id = payment.installment_id;
-      }
-
+      // Obter org_id do perfil do usuário
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
+        .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      // Inserir pagamento - o trigger vai atualizar a parcela automaticamente
       const { data, error } = await this.supabase.client
         .from('payments')
-        .insert([insertData])
+        .insert([{
+          org_id: orgId,
+          installment_id: payment.installment_id || null,
+          value: payment.value,
+          method: payment.method,
+          paid_on: payment.paid_on,
+          notes: payment.notes
+        }])
         .select()
         .single();
       

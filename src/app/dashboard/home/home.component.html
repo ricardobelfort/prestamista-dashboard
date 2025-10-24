@@ -1,0 +1,256 @@
+<div class="space-y-8">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-foreground">Dashboard</h1>
+    <p class="text-muted-foreground mt-2 text-lg">Visão geral do seu negócio</p>
+  </div>
+
+  <!-- Metrics Cards -->
+  @if (loading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="card p-6">
+          <div class="h-8 w-32 bg-muted rounded animate-pulse mb-2"></div>
+          <div class="h-10 w-24 bg-muted rounded animate-pulse"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Emprestado -->
+      <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <fa-icon [icon]="faDollarSign" class="text-blue-600 text-xl"></fa-icon>
+          </div>
+        </div>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">Total Emprestado</p>
+        <p class="text-3xl font-bold text-foreground">{{ metrics().total_loaned | currency:'BRL':'symbol':'1.0-0' }}</p>
+        <p class="text-xs text-muted-foreground mt-2">{{ metrics().active_loans }} empréstimos ativos</p>
+      </div>
+
+      <!-- Total Recebido -->
+      <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4 border-emerald-500">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <fa-icon [icon]="faMoneyBillWave" class="text-emerald-600 text-xl"></fa-icon>
+          </div>
+        </div>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">Total Recebido</p>
+        <p class="text-3xl font-bold text-foreground">{{ metrics().total_received | currency:'BRL':'symbol':'1.0-0' }}</p>
+        <div class="flex items-center mt-2 text-xs">
+          @if (profitPercentage() > 0) {
+            <fa-icon [icon]="faArrowUp" class="text-emerald-600 mr-1"></fa-icon>
+            <span class="text-emerald-600 font-medium">{{ profitPercentage() | number:'1.1-1' }}%</span>
+          } @else {
+            <span class="text-muted-foreground">0%</span>
+          }
+          <span class="text-muted-foreground ml-1">de recuperação</span>
+        </div>
+      </div>
+
+      <!-- Lucro -->
+      <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4" 
+           [class.border-emerald-500]="metrics().profit >= 0"
+           [class.border-red-500]="metrics().profit < 0">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+               [class.bg-emerald-100]="metrics().profit >= 0"
+               [class.bg-red-100]="metrics().profit < 0">
+            <fa-icon [icon]="faChartLine" 
+                     [class.text-emerald-600]="metrics().profit >= 0"
+                     [class.text-red-600]="metrics().profit < 0"
+                     class="text-xl"></fa-icon>
+          </div>
+        </div>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">Lucro</p>
+        <p class="text-3xl font-bold"
+           [class.text-emerald-600]="metrics().profit >= 0"
+           [class.text-red-600]="metrics().profit < 0">
+          {{ metrics().profit | currency:'BRL':'symbol':'1.0-0' }}
+        </p>
+        <p class="text-xs text-muted-foreground mt-2">
+          Esperado: {{ metrics().expected_profit | currency:'BRL':'symbol':'1.0-0' }}
+        </p>
+      </div>
+
+      <!-- Inadimplência -->
+      <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4"
+           [class.border-red-500]="metrics().default_rate > 10"
+           [class.border-amber-500]="metrics().default_rate > 0 && metrics().default_rate <= 10"
+           [class.border-emerald-500]="metrics().default_rate === 0">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+               [class.bg-red-100]="metrics().default_rate > 10"
+               [class.bg-amber-100]="metrics().default_rate > 0 && metrics().default_rate <= 10"
+               [class.bg-emerald-100]="metrics().default_rate === 0">
+            <fa-icon [icon]="faExclamationTriangle"
+                     [class.text-red-600]="metrics().default_rate > 10"
+                     [class.text-amber-600]="metrics().default_rate > 0 && metrics().default_rate <= 10"
+                     [class.text-emerald-600]="metrics().default_rate === 0"
+                     class="text-xl"></fa-icon>
+          </div>
+        </div>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">Taxa de Inadimplência</p>
+        <p class="text-3xl font-bold"
+           [class.text-red-600]="metrics().default_rate > 10"
+           [class.text-amber-600]="metrics().default_rate > 0 && metrics().default_rate <= 10"
+           [class.text-emerald-600]="metrics().default_rate === 0">
+          {{ metrics().default_rate }}%
+        </p>
+        <p class="text-xs text-muted-foreground mt-2">
+          {{ metrics().overdue_installments }} parcelas vencidas
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Upcoming Installments -->
+  <div class="card">
+    <div class="px-6 py-4 border-b">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-foreground flex items-center">
+          <fa-icon [icon]="faCalendarAlt" class="mr-2 text-muted-foreground"></fa-icon>
+          Próximos Vencimentos
+        </h3>
+        <span class="text-sm text-muted-foreground">Próximos 7 dias</span>
+      </div>
+    </div>
+    
+    @if (loadingInstallments()) {
+      <div class="p-6">
+        <div class="space-y-4">
+          @for (i of [1,2,3]; track i) {
+            <div class="h-16 bg-muted rounded animate-pulse"></div>
+          }
+        </div>
+      </div>
+    } @else if (upcomingInstallments().length === 0) {
+      <div class="p-12 text-center">
+        <fa-icon [icon]="faCalendarAlt" class="text-4xl text-muted-foreground mb-4"></fa-icon>
+        <p class="text-muted-foreground">Nenhum pagamento próximo</p>
+      </div>
+    } @else {
+      <div class="divide-y">
+        @for (inst of upcomingInstallments(); track inst.installment_id) {
+          <div class="px-6 py-4 hover:bg-muted/50 transition-colors">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <p class="font-medium text-foreground">{{ inst.client_name }}</p>
+                <p class="text-sm text-muted-foreground">
+                  Parcela {{ inst.index_no }} • 
+                  {{ inst.due_date | date:'dd/MM/yyyy' }}
+                  @if (inst.days_until_due === 0) {
+                    <span class="ml-2 text-amber-600 font-medium">Vence hoje</span>
+                  } @else if (inst.days_until_due === 1) {
+                    <span class="ml-2 text-amber-600 font-medium">Vence amanhã</span>
+                  } @else {
+                    <span class="ml-2 text-muted-foreground">Em {{ inst.days_until_due }} dias</span>
+                  }
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="font-semibold text-foreground">{{ inst.remaining_amount | currency:'BRL':'symbol':'1.2-2' }}</p>
+                @if (inst.paid_amount > 0) {
+                  <p class="text-xs text-emerald-600">
+                    Pago: {{ inst.paid_amount | currency:'BRL':'symbol':'1.2-2' }}
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="card p-6">
+      <div class="flex items-center">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+          <fa-icon [icon]="faUsers" class="text-blue-600"></fa-icon>
+        </div>
+        <div>
+          <p class="text-sm text-muted-foreground">Total de Clientes</p>
+          <p class="text-2xl font-bold text-foreground">{{ metrics().total_clients }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <div class="flex items-center">
+        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
+          <fa-icon [icon]="faCreditCard" class="text-emerald-600"></fa-icon>
+        </div>
+        <div>
+          <p class="text-sm text-muted-foreground">Total Esperado</p>
+          <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | currency:'BRL':'symbol':'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <div class="flex items-center">
+        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+          <fa-icon [icon]="faExclamationTriangle" class="text-red-600"></fa-icon>
+        </div>
+        <div>
+          <p class="text-sm text-muted-foreground">Total Vencido</p>
+          <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | currency:'BRL':'symbol':'1.0-0' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Line Chart - Evolução Mensal -->
+    <div class="card p-6">
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-foreground flex items-center">
+          <fa-icon [icon]="faChartLine" class="text-blue-600 mr-2"></fa-icon>
+          Evolução Mensal
+        </h3>
+        <p class="text-sm text-muted-foreground mt-1">Emprestado vs Recebido (últimos 6 meses)</p>
+      </div>
+      @if (loadingCharts()) {
+        <div class="h-64 flex items-center justify-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      } @else {
+        <div class="h-64">
+          <canvas baseChart
+            [data]="lineChartData()"
+            [options]="lineChartOptions"
+            type="line">
+          </canvas>
+        </div>
+      }
+    </div>
+
+    <!-- Doughnut Chart - Status das Parcelas -->
+    <div class="card p-6">
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-foreground flex items-center">
+          <fa-icon [icon]="faChartLine" class="text-emerald-600 mr-2"></fa-icon>
+          Status das Parcelas
+        </h3>
+        <p class="text-sm text-muted-foreground mt-1">Distribuição de todas as parcelas</p>
+      </div>
+      @if (loadingCharts()) {
+        <div class="h-64 flex items-center justify-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+        </div>
+      } @else {
+        <div class="h-64">
+          <canvas baseChart
+            [data]="doughnutChartData()"
+            [options]="doughnutChartOptions"
+            type="doughnut">
+          </canvas>
+        </div>
+      }
+    </div>
+  </div>
+</div>

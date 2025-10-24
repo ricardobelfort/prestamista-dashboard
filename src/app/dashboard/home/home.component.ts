@@ -1,169 +1,96 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, computed } from '@angular/core';
+import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CurrencyPipe } from '@angular/common';
 import { 
-  faUsers, 
+  faDollarSign,
   faMoneyBillWave, 
-  faCreditCard, 
-  faGem,
-  faClipboardList,
-  faCalendarAlt
+  faChartLine,
+  faExclamationTriangle,
+  faUsers,
+  faCreditCard,
+  faCalendarAlt,
+  faArrowUp
 } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-home',
-  imports: [FontAwesomeModule, CurrencyPipe, TranslateModule],
+  standalone: true,
+  imports: [CommonModule, FontAwesomeModule, CurrencyPipe, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="space-y-8 mt-6">
-      <div>
-        <h1 class="text-3xl font-bold text-foreground">{{ 'home.welcome' | translate }}</h1>
-        <p class="text-muted-foreground mt-2 text-lg">{{ 'home.subtitle' | translate }}</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.totalClients' | translate }}</p>
-              @if (loading()) {
-                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
-              } @else {
-                <p class="text-3xl font-bold text-foreground">{{ metrics().total_clients }}</p>
-              }
-            </div>
-            <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
-              <fa-icon [icon]="faUsers" class="text-muted-foreground text-xl"></fa-icon>
-            </div>
-          </div>
-          <div class="mt-4">
-            @if (loading()) {
-              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
-            } @else {
-              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_clients > 0 ? ('home.active' | translate) : ('home.noClients' | translate) }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.activeLoans' | translate }}</p>
-              @if (loading()) {
-                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
-              } @else {
-                <p class="text-3xl font-bold text-foreground">{{ metrics().total_loans }}</p>
-              }
-            </div>
-            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <fa-icon [icon]="faMoneyBillWave" class="text-emerald-600 text-xl"></fa-icon>
-            </div>
-          </div>
-          <div class="mt-4">
-            @if (loading()) {
-              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
-            } @else {
-              <span class="text-sm text-emerald-600 font-medium">{{ metrics().total_loans > 0 ? ('home.inProgress' | translate) : ('home.noActive' | translate) }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.pendingPayments' | translate }}</p>
-              @if (loading()) {
-                <div class="h-8 w-16 bg-muted rounded animate-pulse"></div>
-              } @else {
-                <p class="text-3xl font-bold text-foreground">{{ metrics().total_payments_pending }}</p>
-              }
-            </div>
-            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-              <fa-icon [icon]="faCreditCard" class="text-amber-600 text-xl"></fa-icon>
-            </div>
-          </div>
-          <div class="mt-4">
-            @if (loading()) {
-              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
-            } @else {
-              <span class="text-sm text-amber-600 font-medium">{{ metrics().total_payments_pending > 0 ? ('home.waiting' | translate) : ('home.noPending' | translate) }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="card p-6 hover:shadow-lg transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold text-muted-foreground">{{ 'home.totalValue' | translate }}</p>
-              @if (loading()) {
-                <div class="h-8 w-24 bg-muted rounded animate-pulse"></div>
-              } @else {
-                <p class="text-3xl font-bold text-foreground">{{ (metrics().total_principal || 0) | currency:'BRL':'symbol':'1.2-2' }}</p>
-              }
-            </div>
-            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <fa-icon [icon]="faGem" class="text-indigo-600 text-xl"></fa-icon>
-            </div>
-          </div>
-          <div class="mt-4">
-            @if (loading()) {
-              <div class="h-4 w-20 bg-muted rounded animate-pulse"></div>
-            } @else {
-              <span class="text-sm text-indigo-600 font-medium">{{ metrics().total_principal > 0 ? ('home.inCirculation' | translate) : ('home.noValue' | translate) }}</span>
-            }
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card p-6">
-          <h3 class="text-xl font-bold text-foreground mb-6">{{ 'home.recentActivity' | translate }}</h3>
-          <div class="space-y-3">
-            <div class="text-center py-12 text-muted-foreground">
-              <fa-icon [icon]="faClipboardList" class="text-5xl block mb-4 text-muted-foreground"></fa-icon>
-              <p class="text-lg font-medium">{{ 'home.noRecentActivity' | translate }}</p>
-              <p class="text-sm text-muted-foreground mt-1">{{ 'home.activitiesWillAppear' | translate }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-6">
-          <h3 class="text-xl font-bold text-foreground mb-6">{{ 'home.upcomingDueDates' | translate }}</h3>
-          <div class="space-y-3">
-            <div class="text-center py-12 text-muted-foreground">
-              <fa-icon [icon]="faCalendarAlt" class="text-5xl block mb-4 text-muted-foreground"></fa-icon>
-              <p class="text-lg font-medium">{{ 'home.noDueDates' | translate }}</p>
-              <p class="text-sm text-muted-foreground mt-1">{{ 'home.dueDatesWillAppear' | translate }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-  // FontAwesome icons
-  faUsers = faUsers;
+  faDollarSign = faDollarSign;
   faMoneyBillWave = faMoneyBillWave;
+  faChartLine = faChartLine;
+  faExclamationTriangle = faExclamationTriangle;
+  faUsers = faUsers;
   faCreditCard = faCreditCard;
-  faGem = faGem;
-  faClipboardList = faClipboardList;
   faCalendarAlt = faCalendarAlt;
-
-  // Dashboard metrics
-  metrics = signal({
-    total_clients: 0,
-    total_loans: 0,
-    total_payments_pending: 0,
-    total_principal: 0,
-    total_recebido: 0,
-    total_em_aberto: 0
-  });
+  faArrowUp = faArrowUp;
 
   loading = signal(true);
+  loadingInstallments = signal(true);
+  metrics = signal({
+    total_loaned: 0,
+    total_received: 0,
+    total_expected: 0,
+    total_overdue: 0,
+    profit: 0,
+    expected_profit: 0,
+    active_loans: 0,
+    total_clients: 0,
+    overdue_installments: 0,
+    default_rate: 0
+  });
+  upcomingInstallments = signal<any[]>([]);
+  monthlyEvolution = signal<any[]>([]);
+  loadingCharts = signal(true);
+
+  // Chart data
+  lineChartData = signal<ChartData<'line'>>({
+    labels: [],
+    datasets: []
+  });
+
+  lineChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'top' },
+      tooltip: { mode: 'index', intersect: false }
+    },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: (value) => `R$ ${value}` } }
+    }
+  };
+
+  doughnutChartData = signal<ChartData<'doughnut'>>({
+    labels: ['Pagas', 'Pendentes', 'Vencidas'],
+    datasets: [{
+      data: [0, 0, 0],
+      backgroundColor: ['#10b981', '#3b82f6', '#ef4444']
+    }]
+  });
+
+  doughnutChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom' }
+    }
+  };
+
+  profitPercentage = computed(() => {
+    const loaned = this.metrics().total_loaned;
+    if (loaned === 0) return 0;
+    return (this.metrics().total_received / loaned) * 100;
+  });
 
   constructor(
     private dataService: DataService,
@@ -171,36 +98,100 @@ export class HomeComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadMetrics();
+    await Promise.all([
+      this.loadMetrics(),
+      this.loadUpcomingInstallments(),
+      this.loadMonthlyEvolution()
+    ]);
   }
 
-  private async loadMetrics() {
+  async loadMetrics() {
     try {
       this.loading.set(true);
-      
-      // Carregar métricas do dashboard
-      const dashboardData = await this.dataService.getDashboardMetrics();
-      
-      // Carregar contadores adicionais
-      const clients = await this.dataService.listClients();
-      const loans = await this.dataService.listLoans();
-      const payments = await this.dataService.listPayments();
-      
-      const metrics = {
-        total_clients: clients.length,
-        total_loans: loans.length,
-        total_payments_pending: payments.filter((p: any) => p.status === 'pending').length,
-        total_principal: dashboardData.total_principal || 0,
-        total_recebido: dashboardData.total_recebido || 0,
-        total_em_aberto: dashboardData.total_em_aberto || 0
-      };
-      
-      this.metrics.set(metrics);
-      
+      const data = await this.dataService.getDashboardMetrics();
+      this.metrics.set(data);
     } catch (error: any) {
-      this.toastService.error('Erro ao carregar dados do dashboard');
+      this.toastService.error(error.message || 'Erro ao carregar métricas');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async loadUpcomingInstallments() {
+    try {
+      this.loadingInstallments.set(true);
+      const data = await this.dataService.getUpcomingInstallments(7);
+      this.upcomingInstallments.set(data);
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao carregar parcelas');
+    } finally {
+      this.loadingInstallments.set(false);
+    }
+  }
+
+  async loadMonthlyEvolution() {
+    try {
+      this.loadingCharts.set(true);
+      const data = await this.dataService.getMonthlyEvolution(6);
+      this.monthlyEvolution.set(data);
+      
+      // Update line chart
+      const labels = data.map((d: any) => d.month_label);
+      const loanedData = data.map((d: any) => d.total_loaned || 0);
+      const receivedData = data.map((d: any) => d.total_received || 0);
+      
+      this.lineChartData.set({
+        labels,
+        datasets: [
+          {
+            label: 'Emprestado',
+            data: loanedData,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'Recebido',
+            data: receivedData,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+          }
+        ]
+      });
+
+      // Update doughnut chart with installment status
+      await this.loadInstallmentStats();
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao carregar evolução mensal');
+    } finally {
+      this.loadingCharts.set(false);
+    }
+  }
+
+  async loadInstallmentStats() {
+    try {
+      const installments = await this.dataService.listInstallments();
+      
+      const paid = installments.filter((i: any) => i.paid_amount >= i.amount).length;
+      const overdue = installments.filter((i: any) => 
+        new Date(i.due_date) < new Date() && i.paid_amount < i.amount
+      ).length;
+      const pending = installments.filter((i: any) => 
+        new Date(i.due_date) >= new Date() && i.paid_amount < i.amount
+      ).length;
+
+      this.doughnutChartData.set({
+        labels: ['Pagas', 'Pendentes', 'Vencidas'],
+        datasets: [{
+          data: [paid, pending, overdue],
+          backgroundColor: ['#10b981', '#3b82f6', '#ef4444']
+        }]
+      });
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas de parcelas:', error);
     }
   }
 }
