@@ -1,13 +1,14 @@
 import { Component, signal, inject, ChangeDetectionStrategy, input, output, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { LucideAngularModule, X, CheckCircle2, AlertCircle, Clock, Banknote, TrendingUp, Trophy, Calendar, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
+import { LocalizedCurrencyPipe } from '../pipes/localized-currency.pipe';
 
 @Component({
   selector: 'app-client-history-modal',
-  imports: [CommonModule, LucideAngularModule, CurrencyPipe, DatePipe, DecimalPipe],
+  imports: [CommonModule, LucideAngularModule, DatePipe, DecimalPipe, LocalizedCurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './client-history-modal.component.html'
 })

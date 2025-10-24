@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, signal, OnInit, computed, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
+import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Users, CreditCard, CalendarDays, ArrowUp, FileSpreadsheet } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
@@ -7,11 +7,12 @@ import { ExportService } from '../../core/export.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { LocalizedCurrencyPipe } from '../../shared/pipes/localized-currency.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, CurrencyPipe, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective],
+  imports: [CommonModule, LucideAngularModule, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective, LocalizedCurrencyPipe],
   changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './home.component.html'
 })

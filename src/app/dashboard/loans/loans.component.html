@@ -88,7 +88,7 @@
             <td class="table-cell font-medium">{{ loan.client_name}}</td>
             <td class="table-cell">
               <span class="font-semibold text-emerald-600">
-                {{ loan.principal | currency:'BRL':'symbol':'1.2-2' }}
+                {{ loan.principal | localizedCurrency:'symbol':'1.2-2' }}
               </span>
             </td>
             <td class="table-cell text-muted-foreground">{{ loan.interest_rate }}%</td>

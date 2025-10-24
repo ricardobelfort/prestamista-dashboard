@@ -6,12 +6,13 @@ import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { LocalizedCurrencyPipe } from '../../shared/pipes/localized-currency.pipe';
 
 @Component({
   selector: 'app-loans',
-  imports: [CommonModule, LucideAngularModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe, TranslateModule],
+  imports: [CommonModule, LucideAngularModule, ReactiveFormsModule, ConfirmationModalComponent, DatePipe, TranslateModule, LocalizedCurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './loans.component.html'
 })

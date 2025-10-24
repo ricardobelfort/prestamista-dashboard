@@ -1,11 +1,17 @@
-import { Injectable, signal, ApplicationRef } from '@angular/core';
+import { Injectable, signal, ApplicationRef, LOCALE_ID, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+import localeEs from '@angular/common/locales/es-PY';
+import localeEn from '@angular/common/locales/en';
 
 export interface Language {
   code: string;
   name: string;
   flag: string;
   nativeName: string;
+  currency: string;
+  locale: string;
 }
 
 @Injectable({
@@ -14,9 +20,30 @@ export interface Language {
 export class LanguageService {
   // Idiomas disponíveis
   readonly availableLanguages: Language[] = [
-    { code: 'pt-BR', name: 'Português', flag: '🇧🇷', nativeName: 'Português (Brasil)' },
-    { code: 'es-PY', name: 'Español', flag: '🇵🇾', nativeName: 'Español (Paraguay)' },
-    { code: 'en-US', name: 'English', flag: '🇺🇸', nativeName: 'English (US)' }
+    { 
+      code: 'pt-BR', 
+      name: 'Português', 
+      flag: '🇧🇷', 
+      nativeName: 'Português (Brasil)',
+      currency: 'BRL',
+      locale: 'pt-BR'
+    },
+    { 
+      code: 'es-PY', 
+      name: 'Español', 
+      flag: '🇵🇾', 
+      nativeName: 'Español (Paraguay)',
+      currency: 'PYG',
+      locale: 'es-PY'
+    },
+    { 
+      code: 'en-US', 
+      name: 'English', 
+      flag: '🇺🇸', 
+      nativeName: 'English (US)',
+      currency: 'USD',
+      locale: 'en-US'
+    }
   ];
 
   // Signal para idioma atual
@@ -26,6 +53,11 @@ export class LanguageService {
     private translate: TranslateService,
     private appRef: ApplicationRef
   ) {
+    // Registrar locales
+    registerLocaleData(localePt, 'pt-BR');
+    registerLocaleData(localeEs, 'es-PY');
+    registerLocaleData(localeEn, 'en-US');
+    
     this.initializeLanguage();
   }
 
@@ -116,5 +148,19 @@ export class LanguageService {
    */
   getCurrentLanguageCode(): string {
     return this.currentLanguage().code;
+  }
+
+  /**
+   * Obtém a moeda do idioma atual
+   */
+  getCurrentCurrency(): string {
+    return this.currentLanguage().currency;
+  }
+
+  /**
+   * Obtém o locale do idioma atual
+   */
+  getCurrentLocale(): string {
+    return this.currentLanguage().locale;
   }
 }

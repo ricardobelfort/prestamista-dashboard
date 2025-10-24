@@ -42,7 +42,7 @@
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.totalLoaned' | translate }}</p>
-        <p class="text-3xl font-bold text-foreground">{{ metrics().total_loaned | currency:'BRL':'symbol':'1.0-0' }}</p>
+        <p class="text-3xl font-bold text-foreground">{{ metrics().total_loaned | localizedCurrency:'symbol':'1.0-0' }}</p>
         <p class="text-xs text-muted-foreground mt-2">{{ metrics().active_loans }} {{ 'home.activeLoans' | translate }}</p>
       </div>
 
@@ -54,7 +54,7 @@
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.totalReceived' | translate }}</p>
-        <p class="text-3xl font-bold text-foreground">{{ metrics().total_received | currency:'BRL':'symbol':'1.0-0' }}</p>
+        <p class="text-3xl font-bold text-foreground">{{ metrics().total_received | localizedCurrency:'symbol':'1.0-0' }}</p>
         <div class="flex items-center mt-2 text-xs">
           @if (profitPercentage() > 0) {
             <lucide-icon [img]="ArrowUp" class="text-emerald-600 mr-1"></lucide-icon>
@@ -84,10 +84,10 @@
         <p class="text-3xl font-bold"
            [class.text-emerald-600]="metrics().profit >= 0"
            [class.text-red-600]="metrics().profit < 0">
-          {{ metrics().profit | currency:'BRL':'symbol':'1.0-0' }}
+          {{ metrics().profit | localizedCurrency:'symbol':'1.0-0' }}
         </p>
         <p class="text-xs text-muted-foreground mt-2">
-          {{ 'home.expected' | translate }}: {{ metrics().expected_profit | currency:'BRL':'symbol':'1.0-0' }}
+          {{ 'home.expected' | translate }}: {{ metrics().expected_profit | localizedCurrency:'symbol':'1.0-0' }}
         </p>
       </div>
 
@@ -167,10 +167,10 @@
                 </p>
               </div>
               <div class="text-right">
-                <p class="font-semibold text-foreground">{{ inst.remaining_amount | currency:'BRL':'symbol':'1.2-2' }}</p>
+                <p class="font-semibold text-foreground">{{ inst.remaining_amount | localizedCurrency:'symbol':'1.2-2' }}</p>
                 @if (inst.paid_amount > 0) {
                   <p class="text-xs text-emerald-600">
-                    {{ 'home.paid' | translate }}: {{ inst.paid_amount | currency:'BRL':'symbol':'1.2-2' }}
+                    {{ 'home.paid' | translate }}: {{ inst.paid_amount | localizedCurrency:'symbol':'1.2-2' }}
                   </p>
                 }
               </div>
@@ -217,7 +217,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">{{ 'home.totalExpected' | translate }}</p>
-            <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | currency:'BRL':'symbol':'1.0-0' }}</p>
+            <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | localizedCurrency:'symbol':'1.0-0' }}</p>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">{{ 'home.totalOverdue' | translate }}</p>
-            <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | currency:'BRL':'symbol':'1.0-0' }}</p>
+            <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | localizedCurrency:'symbol':'1.0-0' }}</p>
           </div>
         </div>
       </div>
