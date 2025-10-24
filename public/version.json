@@ -1,13 +1,13 @@
 {
-  "version": "1.8.3-dev.599181",
-  "formatted": "v1.8.3-dev.599181",
+  "version": "1.8.4-dev.921593",
+  "formatted": "v1.8.4-dev.921593",
   "buildInfo": {
-    "baseVersion": "1.8.3",
-    "buildNumber": "599181",
-    "gitCommit": "e31920c",
+    "baseVersion": "1.8.4",
+    "buildNumber": "921593",
+    "gitCommit": "2b256b0",
     "gitBranch": "main",
     "environment": "development",
-    "buildTime": "2025-10-24T14:36:39.181Z",
+    "buildTime": "2025-10-24T15:15:21.593Z",
     "isProduction": false
   }
 }
