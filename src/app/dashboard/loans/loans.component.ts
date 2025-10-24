@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle, faFileExcel, faSort, faSortUp, faSortDown, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -44,9 +44,71 @@ export class LoansComponent implements OnInit {
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
   faFileExcel = faFileExcel;
+  faSort = faSort;
+  faSortUp = faSortUp;
+  faSortDown = faSortDown;
+  faChevronLeft = faChevronLeft;
+  faChevronRight = faChevronRight;
 
   private exportService = inject(ExportService);
   exporting = signal(false);
+
+  // Make Math available in template
+  Math = Math;
+
+  // Sorting state
+  sortColumn = signal<string | null>(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  // Pagination state
+  currentPage = signal(1);
+  itemsPerPage = signal(10);
+  
+  // Computed values
+  totalItems = computed(() => this.loans().length);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
+  
+  paginatedLoans = computed(() => {
+    let sorted = [...this.loans()];
+    
+    // Apply sorting
+    const column = this.sortColumn();
+    if (column) {
+      sorted.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch (column) {
+          case 'client':
+            aVal = a.clients?.name || '';
+            bVal = b.clients?.name || '';
+            break;
+          case 'principal':
+            aVal = a.principal || 0;
+            bVal = b.principal || 0;
+            break;
+          case 'date':
+            aVal = new Date(a.start_date).getTime();
+            bVal = new Date(b.start_date).getTime();
+            break;
+          case 'status':
+            aVal = a.status || '';
+            bVal = b.status || '';
+            break;
+          default:
+            return 0;
+        }
+        
+        if (aVal < bVal) return this.sortDirection() === 'asc' ? -1 : 1;
+        if (aVal > bVal) return this.sortDirection() === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    
+    // Apply pagination
+    const start = (this.currentPage() - 1) * this.itemsPerPage();
+    const end = start + this.itemsPerPage();
+    return sorted.slice(start, end);
+  });
 
   constructor(
     private dataService: DataService,
@@ -192,6 +254,37 @@ export class LoansComponent implements OnInit {
     this.showConfirmation.set(false);
     this.loanToDelete.set(null);
     this.deletingLoan.set(false);
+  }
+
+  // Sorting methods
+  toggleSort(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1); // Reset to first page when sorting
+  }
+
+  getSortIcon(column: string) {
+    if (this.sortColumn() !== column) return this.faSort;
+    return this.sortDirection() === 'asc' ? this.faSortUp : this.faSortDown;
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  nextPage() {
+    this.goToPage(this.currentPage() + 1);
+  }
+
+  previousPage() {
+    this.goToPage(this.currentPage() - 1);
   }
 
   trackByLoanId(index: number, loan: any): any {

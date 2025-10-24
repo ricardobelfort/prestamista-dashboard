@@ -10,6 +10,9 @@
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.2;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   button:not(:disabled),
@@ -68,6 +71,7 @@
     border-radius: calc(var(--radius) - 2px);
     font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
@@ -156,7 +160,7 @@
     border-radius: calc(var(--radius) - 4px);
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
-    line-height: 1.25;
+    line-height: 1;
   }
 
   .btn-lg {
@@ -164,7 +168,7 @@
     border-radius: calc(var(--radius) - 2px);
     padding: 0.5rem 2rem;
     font-size: 0.875rem;
-    line-height: 1.25;
+    line-height: 1;
   }
 
   .btn-icon {
@@ -172,6 +176,7 @@
     width: 2.5rem;
     padding: 0;
     gap: 0;
+    line-height: 1;
   }
 
   .btn-icon-sm {
@@ -179,6 +184,7 @@
     width: 2rem;
     padding: 0;
     gap: 0;
+    line-height: 1;
   }
 
   .btn-icon-lg {
@@ -186,6 +192,7 @@
     width: 2.5rem;
     padding: 0;
     gap: 0;
+    line-height: 1;
   }
 
   /* Table Components */

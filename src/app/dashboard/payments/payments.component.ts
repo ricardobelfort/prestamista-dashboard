@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faCreditCard, faEdit, faTrash, faExclamationTriangle, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCreditCard, faEdit, faTrash, faExclamationTriangle, faFileExcel, faSort, faSortUp, faSortDown, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -60,9 +60,71 @@ export class PaymentsComponent implements OnInit {
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
   faFileExcel = faFileExcel;
+  faSort = faSort;
+  faSortUp = faSortUp;
+  faSortDown = faSortDown;
+  faChevronLeft = faChevronLeft;
+  faChevronRight = faChevronRight;
 
   private exportService = inject(ExportService);
   exporting = signal(false);
+
+  // Make Math available in template
+  Math = Math;
+
+  // Sorting state
+  sortColumn = signal<string | null>(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  // Pagination state
+  currentPage = signal(1);
+  itemsPerPage = signal(10);
+  
+  // Computed values
+  totalItems = computed(() => this.payments().length);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
+  
+  paginatedPayments = computed(() => {
+    let sorted = [...this.payments()];
+    
+    // Apply sorting
+    const column = this.sortColumn();
+    if (column) {
+      sorted.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch (column) {
+          case 'client':
+            aVal = a.installments?.loans?.clients?.name || '';
+            bVal = b.installments?.loans?.clients?.name || '';
+            break;
+          case 'value':
+            aVal = a.value || 0;
+            bVal = b.value || 0;
+            break;
+          case 'date':
+            aVal = new Date(a.paid_on).getTime();
+            bVal = new Date(b.paid_on).getTime();
+            break;
+          case 'method':
+            aVal = a.method || '';
+            bVal = b.method || '';
+            break;
+          default:
+            return 0;
+        }
+        
+        if (aVal < bVal) return this.sortDirection() === 'asc' ? -1 : 1;
+        if (aVal > bVal) return this.sortDirection() === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    
+    // Apply pagination
+    const start = (this.currentPage() - 1) * this.itemsPerPage();
+    const end = start + this.itemsPerPage();
+    return sorted.slice(start, end);
+  });
 
   constructor(
     private dataService: DataService,
@@ -209,6 +271,58 @@ export class PaymentsComponent implements OnInit {
     this.showConfirmation.set(false);
     this.paymentToDelete.set(null);
     this.deletingPayment.set(false);
+  }
+
+  // Sorting methods
+  toggleSort(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1); // Reset to first page when sorting
+  }
+
+  getSortIcon(column: string) {
+    if (this.sortColumn() !== column) return this.faSort;
+    return this.sortDirection() === 'asc' ? this.faSortUp : this.faSortDown;
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  nextPage() {
+    this.goToPage(this.currentPage() + 1);
+  }
+
+  previousPage() {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  // Helper for payment method badges
+  getMethodBadge(method: string): { label: string; class: string } {
+    const normalizedMethod = (method || '').toLowerCase();
+    
+    const badges: Record<string, { label: string; class: string }> = {
+      'cash': { label: 'Dinheiro', class: 'bg-emerald-100 text-emerald-800' },
+      'dinheiro': { label: 'Dinheiro', class: 'bg-emerald-100 text-emerald-800' },
+      'money': { label: 'Dinheiro', class: 'bg-emerald-100 text-emerald-800' },
+      'pix': { label: 'PIX', class: 'bg-blue-100 text-blue-800' },
+      'card': { label: 'Cartão', class: 'bg-purple-100 text-purple-800' },
+      'cartão': { label: 'Cartão', class: 'bg-purple-100 text-purple-800' },
+      'bank_transfer': { label: 'Transferência', class: 'bg-indigo-100 text-indigo-800' },
+      'transferência': { label: 'Transferência', class: 'bg-indigo-100 text-indigo-800' },
+      'transfer': { label: 'Transferência', class: 'bg-indigo-100 text-indigo-800' },
+      'check': { label: 'Cheque', class: 'bg-amber-100 text-amber-800' },
+      'cheque': { label: 'Cheque', class: 'bg-amber-100 text-amber-800' }
+    };
+    
+    return badges[normalizedMethod] || { label: method, class: 'bg-muted text-muted-foreground' };
   }
 
   trackByPaymentId(index: number, payment: any): any {

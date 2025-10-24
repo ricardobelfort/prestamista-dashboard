@@ -59,25 +59,39 @@
       <table class="table">
         <thead class="table-header">
           <tr class="table-row">
-            <th class="table-head">{{ 'clients.name' | translate }}</th>
-            <th class="table-head">{{ 'clients.phone' | translate }}</th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('name')">
+                {{ 'clients.name' | translate }}
+                <fa-icon [icon]="getSortIcon('name')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('phone')">
+                {{ 'clients.phone' | translate }}
+                <fa-icon [icon]="getSortIcon('phone')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
             <th class="table-head">{{ 'clients.document' | translate }}</th>
             <th class="table-head">{{ 'clients.address' | translate }}</th>
-            <th class="table-head">{{ 'clients.route' | translate }}</th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('route')">
+                {{ 'clients.route' | translate }}
+                <fa-icon [icon]="getSortIcon('route')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
             <th class="table-head">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="table-body">
-          <tr *ngFor="let client of clients(); trackBy: trackByClientId" class="table-row">
+          <tr *ngFor="let client of paginatedClients(); trackBy: trackByClientId" class="table-row">
             <td class="table-cell font-medium">{{ client.name }}</td>
             <td class="table-cell text-muted-foreground">{{ client.phone || '-' }}</td>
             <td class="table-cell text-muted-foreground">{{ client.doc_id || '-' }}</td>
             <td class="table-cell text-muted-foreground">{{ client.address || '-' }}</td>
             <td class="table-cell">
-              <span *ngIf="client.routes?.name" class="text-muted-foreground">
-                {{ client.routes.name }}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getRouteBadge(client.routes).class }}">
+                {{ getRouteBadge(client.routes).label }}
               </span>
-              <span *ngIf="!client.routes?.name" class="text-muted-foreground">{{ 'clients.noRoute' | translate }}</span>
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
@@ -99,6 +113,47 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    
+    <!-- Footer with pagination -->
+    <div class="px-6 py-4 border-t bg-muted/20 flex items-center justify-between">
+      <div class="text-sm text-muted-foreground">
+        Mostrando <span class="font-medium text-foreground">{{ (currentPage() - 1) * itemsPerPage() + 1 }}</span> 
+        a <span class="font-medium text-foreground">{{ Math.min(currentPage() * itemsPerPage(), totalItems()) }}</span> 
+        de <span class="font-medium text-foreground">{{ totalItems() }}</span> registros
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button 
+          class="btn btn-sm btn-outline"
+          [disabled]="currentPage() === 1"
+          (click)="previousPage()">
+          <fa-icon [icon]="faChevronLeft" class="w-3 h-3"></fa-icon>
+        </button>
+        
+        <div class="flex items-center gap-2">
+          @for (page of [].constructor(totalPages()); track $index) {
+            @if ($index + 1 === currentPage() || $index + 1 === 1 || $index + 1 === totalPages() || Math.abs($index + 1 - currentPage()) <= 1) {
+              <button 
+                class="btn btn-sm min-w-9"
+                [class.btn-primary]="$index + 1 === currentPage()"
+                [class.btn-outline]="$index + 1 !== currentPage()"
+                (click)="goToPage($index + 1)">
+                {{ $index + 1 }}
+              </button>
+            } @else if ($index + 1 === currentPage() - 2 || $index + 1 === currentPage() + 2) {
+              <span class="px-2 text-sm text-muted-foreground">...</span>
+            }
+          }
+        </div>
+        
+        <button 
+          class="btn btn-sm btn-outline"
+          [disabled]="currentPage() === totalPages()"
+          (click)="nextPage()">
+          <fa-icon [icon]="faChevronRight" class="w-3 h-3"></fa-icon>
+        </button>
+      </div>
     </div>
   </div>
 

@@ -60,16 +60,31 @@
       <table class="table">
         <thead class="table-header">
           <tr class="table-row">
-            <th class="table-head">{{ 'loans.client' | translate }}</th>
-            <th class="table-head">{{ 'loans.amount' | translate }}</th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('client')">
+                {{ 'loans.client' | translate }}
+                <fa-icon [icon]="getSortIcon('client')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('principal')">
+                {{ 'loans.amount' | translate }}
+                <fa-icon [icon]="getSortIcon('principal')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
             <th class="table-head">{{ 'loans.rate' | translate }}</th>
             <th class="table-head">{{ 'loans.installments' | translate }}</th>
-            <th class="table-head">{{ 'loans.date' | translate }}</th>
+            <th class="table-head">
+              <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('date')">
+                {{ 'loans.date' | translate }}
+                <fa-icon [icon]="getSortIcon('date')" class="text-[10px] opacity-60"></fa-icon>
+              </button>
+            </th>
             <th class="table-head">{{ 'common.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="table-body">
-          <tr *ngFor="let loan of loans(); trackBy: trackByLoanId" class="table-row">
+          <tr *ngFor="let loan of paginatedLoans(); trackBy: trackByLoanId" class="table-row">
             <td class="table-cell font-medium">{{ loan.client_name}}</td>
             <td class="table-cell">
               <span class="font-semibold text-emerald-600">
@@ -92,6 +107,47 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    
+    <!-- Footer with pagination -->
+    <div class="px-6 py-4 border-t bg-muted/20 flex items-center justify-between">
+      <div class="text-sm text-muted-foreground">
+        Mostrando <span class="font-medium text-foreground">{{ (currentPage() - 1) * itemsPerPage() + 1 }}</span> 
+        a <span class="font-medium text-foreground">{{ Math.min(currentPage() * itemsPerPage(), totalItems()) }}</span> 
+        de <span class="font-medium text-foreground">{{ totalItems() }}</span> registros
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button 
+          class="btn btn-sm btn-outline"
+          [disabled]="currentPage() === 1"
+          (click)="previousPage()">
+          <fa-icon [icon]="faChevronLeft" class="w-3 h-3"></fa-icon>
+        </button>
+        
+        <div class="flex items-center gap-2">
+          @for (page of [].constructor(totalPages()); track $index) {
+            @if ($index + 1 === currentPage() || $index + 1 === 1 || $index + 1 === totalPages() || Math.abs($index + 1 - currentPage()) <= 1) {
+              <button 
+                class="btn btn-sm min-w-9"
+                [class.btn-primary]="$index + 1 === currentPage()"
+                [class.btn-outline]="$index + 1 !== currentPage()"
+                (click)="goToPage($index + 1)">
+                {{ $index + 1 }}
+              </button>
+            } @else if ($index + 1 === currentPage() - 2 || $index + 1 === currentPage() + 2) {
+              <span class="px-2 text-sm text-muted-foreground">...</span>
+            }
+          }
+        </div>
+        
+        <button 
+          class="btn btn-sm btn-outline"
+          [disabled]="currentPage() === totalPages()"
+          (click)="nextPage()">
+          <fa-icon [icon]="faChevronRight" class="w-3 h-3"></fa-icon>
+        </button>
+      </div>
     </div>
   </div>
 

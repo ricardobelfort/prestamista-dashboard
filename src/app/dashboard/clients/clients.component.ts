@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine, faFileExcel, faSort, faSortUp, faSortDown, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
@@ -49,9 +49,71 @@ export class ClientsComponent implements OnInit {
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
   faFileExcel = faFileExcel;
+  faSort = faSort;
+  faSortUp = faSortUp;
+  faSortDown = faSortDown;
+  faChevronLeft = faChevronLeft;
+  faChevronRight = faChevronRight;
 
   private exportService = inject(ExportService);
   exporting = signal(false);
+
+  // Make Math available in template
+  Math = Math;
+
+  // Sorting state
+  sortColumn = signal<string | null>(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  // Pagination state
+  currentPage = signal(1);
+  itemsPerPage = signal(10);
+  
+  // Computed values
+  totalItems = computed(() => this.clients().length);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
+  
+  paginatedClients = computed(() => {
+    let sorted = [...this.clients()];
+    
+    // Apply sorting
+    const column = this.sortColumn();
+    if (column) {
+      sorted.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch (column) {
+          case 'name':
+            aVal = a.name || '';
+            bVal = b.name || '';
+            break;
+          case 'phone':
+            aVal = a.phone || '';
+            bVal = b.phone || '';
+            break;
+          case 'route':
+            aVal = a.routes?.name || '';
+            bVal = b.routes?.name || '';
+            break;
+          case 'status':
+            aVal = a.status || '';
+            bVal = b.status || '';
+            break;
+          default:
+            return 0;
+        }
+        
+        if (aVal < bVal) return this.sortDirection() === 'asc' ? -1 : 1;
+        if (aVal > bVal) return this.sortDirection() === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    
+    // Apply pagination
+    const start = (this.currentPage() - 1) * this.itemsPerPage();
+    const end = start + this.itemsPerPage();
+    return sorted.slice(start, end);
+  });
 
   constructor(private dataService: DataService, private fb: FormBuilder, private toast: ToastService) {
     this.form = this.fb.group({
@@ -157,6 +219,67 @@ export class ClientsComponent implements OnInit {
   closeHistoryModal() {
     this.showHistoryModal.set(false);
     this.selectedClient.set(null);
+  }
+  
+  // Sorting methods
+  toggleSort(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1); // Reset to first page when sorting
+  }
+
+  getSortIcon(column: string) {
+    if (this.sortColumn() !== column) return this.faSort;
+    return this.sortDirection() === 'asc' ? this.faSortUp : this.faSortDown;
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  nextPage() {
+    this.goToPage(this.currentPage() + 1);
+  }
+
+  previousPage() {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  // Helper for route badges
+  getRouteBadge(route: any): { label: string; class: string } {
+    if (!route || !route.name) {
+      return { label: 'Sem rota', class: 'bg-gray-100 text-gray-600' };
+    }
+    
+    // Generate a consistent color based on route name
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800',
+      'bg-purple-100 text-purple-800',
+      'bg-orange-100 text-orange-800',
+      'bg-pink-100 text-pink-800',
+      'bg-indigo-100 text-indigo-800',
+      'bg-teal-100 text-teal-800',
+      'bg-cyan-100 text-cyan-800'
+    ];
+    
+    const hash = route.name.split('').reduce((acc: number, char: string) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+    
+    const colorIndex = Math.abs(hash) % colors.length;
+    
+    return {
+      label: route.name,
+      class: colors[colorIndex]
+    };
   }
   
   closeConfirmation() {
