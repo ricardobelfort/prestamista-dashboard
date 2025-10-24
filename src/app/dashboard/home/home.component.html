@@ -2,8 +2,8 @@
   <!-- Header -->
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">Dashboard</h1>
-      <p class="text-muted-foreground mt-2 text-lg">Visão geral do seu negócio</p>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'home.title' | translate }}</h1>
+      <p class="text-muted-foreground mt-2 text-lg">{{ 'home.subtitle' | translate }}</p>
     </div>
     <button 
       class="btn btn-outline"
@@ -13,11 +13,11 @@
       @if (exporting()) {
         <div class="flex items-center space-x-2">
           <div class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
-          <span>Exportando...</span>
+          <span>{{ 'home.exporting' | translate }}</span>
         </div>
       } @else {
         <lucide-icon [img]="FileSpreadsheet" class="w-4 h-4"></lucide-icon>
-        <span>Exportar Relatório</span>
+        <span>{{ 'home.exportReport' | translate }}</span>
       }
     </button>
   </div>
@@ -41,9 +41,9 @@
             <lucide-icon [img]="DollarSign" class="text-blue-600 text-xl"></lucide-icon>
           </div>
         </div>
-        <p class="text-sm font-semibold text-muted-foreground mb-1">Total Emprestado</p>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.totalLoaned' | translate }}</p>
         <p class="text-3xl font-bold text-foreground">{{ metrics().total_loaned | currency:'BRL':'symbol':'1.0-0' }}</p>
-        <p class="text-xs text-muted-foreground mt-2">{{ metrics().active_loans }} empréstimos ativos</p>
+        <p class="text-xs text-muted-foreground mt-2">{{ metrics().active_loans }} {{ 'home.activeLoans' | translate }}</p>
       </div>
 
       <!-- Total Recebido -->
@@ -53,7 +53,7 @@
             <lucide-icon [img]="Wallet" class="text-emerald-600 text-xl"></lucide-icon>
           </div>
         </div>
-        <p class="text-sm font-semibold text-muted-foreground mb-1">Total Recebido</p>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.totalReceived' | translate }}</p>
         <p class="text-3xl font-bold text-foreground">{{ metrics().total_received | currency:'BRL':'symbol':'1.0-0' }}</p>
         <div class="flex items-center mt-2 text-xs">
           @if (profitPercentage() > 0) {
@@ -62,7 +62,7 @@
           } @else {
             <span class="text-muted-foreground">0%</span>
           }
-          <span class="text-muted-foreground ml-1">de recuperação</span>
+          <span class="text-muted-foreground ml-1">{{ 'home.recovery' | translate }}</span>
         </div>
       </div>
 
@@ -80,14 +80,14 @@
                      class="text-xl"></lucide-icon>
           </div>
         </div>
-        <p class="text-sm font-semibold text-muted-foreground mb-1">Lucro</p>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.profit' | translate }}</p>
         <p class="text-3xl font-bold"
            [class.text-emerald-600]="metrics().profit >= 0"
            [class.text-red-600]="metrics().profit < 0">
           {{ metrics().profit | currency:'BRL':'symbol':'1.0-0' }}
         </p>
         <p class="text-xs text-muted-foreground mt-2">
-          Esperado: {{ metrics().expected_profit | currency:'BRL':'symbol':'1.0-0' }}
+          {{ 'home.expected' | translate }}: {{ metrics().expected_profit | currency:'BRL':'symbol':'1.0-0' }}
         </p>
       </div>
 
@@ -108,7 +108,7 @@
                      class="text-xl"></lucide-icon>
           </div>
         </div>
-        <p class="text-sm font-semibold text-muted-foreground mb-1">Taxa de Inadimplência</p>
+        <p class="text-sm font-semibold text-muted-foreground mb-1">{{ 'home.defaultRate' | translate }}</p>
         <p class="text-3xl font-bold"
            [class.text-red-600]="metrics().default_rate > 10"
            [class.text-amber-600]="metrics().default_rate > 0 && metrics().default_rate <= 10"
@@ -116,7 +116,7 @@
           {{ metrics().default_rate }}%
         </p>
         <p class="text-xs text-muted-foreground mt-2">
-          {{ metrics().overdue_installments }} parcelas vencidas
+          {{ metrics().overdue_installments }} {{ 'home.overdueInstallments' | translate }}
         </p>
       </div>
     </div>
@@ -128,9 +128,9 @@
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
           <lucide-icon [img]="CalendarDays" class="mr-2 text-muted-foreground"></lucide-icon>
-          Próximos Vencimentos
+          {{ 'home.upcomingPayments' | translate }}
         </h3>
-        <span class="text-sm text-muted-foreground">Próximos 7 dias</span>
+        <span class="text-sm text-muted-foreground">{{ 'home.next7Days' | translate }}</span>
       </div>
     </div>
     
@@ -145,7 +145,7 @@
     } @else if (upcomingInstallments().length === 0) {
       <div class="p-12 text-center">
         <lucide-icon [img]="CalendarDays" class="text-4xl text-muted-foreground mb-4"></lucide-icon>
-        <p class="text-muted-foreground">Nenhum pagamento próximo</p>
+        <p class="text-muted-foreground">{{ 'home.noUpcomingPayments' | translate }}</p>
       </div>
     } @else {
       <div class="divide-y">
@@ -155,12 +155,12 @@
               <div class="flex-1">
                 <p class="font-medium text-foreground">{{ inst.client_name }}</p>
                 <p class="text-sm text-muted-foreground">
-                  Parcela {{ inst.index_no }} • 
+                  {{ 'home.installment' | translate }} {{ inst.index_no }} • 
                   {{ inst.due_date | date:'dd/MM/yyyy' }}
                   @if (inst.days_until_due === 0) {
-                    <span class="ml-2 text-amber-600 font-medium">Vence hoje</span>
+                    <span class="ml-2 text-amber-600 font-medium">{{ 'home.dueToday' | translate }}</span>
                   } @else if (inst.days_until_due === 1) {
-                    <span class="ml-2 text-amber-600 font-medium">Vence amanhã</span>
+                    <span class="ml-2 text-amber-600 font-medium">{{ 'home.dueTomorrow' | translate }}</span>
                   } @else {
                     <span class="ml-2 text-muted-foreground">Em {{ inst.days_until_due }} dias</span>
                   }
@@ -170,7 +170,7 @@
                 <p class="font-semibold text-foreground">{{ inst.remaining_amount | currency:'BRL':'symbol':'1.2-2' }}</p>
                 @if (inst.paid_amount > 0) {
                   <p class="text-xs text-emerald-600">
-                    Pago: {{ inst.paid_amount | currency:'BRL':'symbol':'1.2-2' }}
+                    {{ 'home.paid' | translate }}: {{ inst.paid_amount | currency:'BRL':'symbol':'1.2-2' }}
                   </p>
                 }
               </div>
@@ -204,7 +204,7 @@
             <lucide-icon [img]="Users" class="text-blue-600"></lucide-icon>
           </div>
           <div>
-            <p class="text-sm text-muted-foreground">Total de Clientes</p>
+            <p class="text-sm text-muted-foreground">{{ 'home.totalClients' | translate }}</p>
             <p class="text-2xl font-bold text-foreground">{{ metrics().total_clients }}</p>
           </div>
         </div>
@@ -216,7 +216,7 @@
             <lucide-icon [img]="CreditCard" class="text-emerald-600"></lucide-icon>
           </div>
           <div>
-            <p class="text-sm text-muted-foreground">Total Esperado</p>
+            <p class="text-sm text-muted-foreground">{{ 'home.totalExpected' | translate }}</p>
             <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | currency:'BRL':'symbol':'1.0-0' }}</p>
           </div>
         </div>
@@ -228,7 +228,7 @@
             <lucide-icon [img]="AlertTriangle" class="text-red-600"></lucide-icon>
           </div>
           <div>
-            <p class="text-sm text-muted-foreground">Total Vencido</p>
+            <p class="text-sm text-muted-foreground">{{ 'home.totalOverdue' | translate }}</p>
             <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | currency:'BRL':'symbol':'1.0-0' }}</p>
           </div>
         </div>
@@ -243,9 +243,9 @@
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
           <lucide-icon [img]="TrendingUp" class="text-blue-600 mr-2"></lucide-icon>
-          Evolução Mensal
+          {{ 'home.monthlyEvolution' | translate }}
         </h3>
-        <p class="text-sm text-muted-foreground mt-1">Emprestado vs Recebido (últimos 6 meses)</p>
+        <p class="text-sm text-muted-foreground mt-1">{{ 'home.monthlyEvolutionSubtitle' | translate }}</p>
       </div>
       @if (loadingCharts()) {
         <div class="h-64 space-y-3">
@@ -268,9 +268,9 @@
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
           <lucide-icon [img]="TrendingUp" class="text-emerald-600 mr-2"></lucide-icon>
-          Status das Parcelas
+          {{ 'home.installmentStatus' | translate }}
         </h3>
-        <p class="text-sm text-muted-foreground mt-1">Distribuição de todas as parcelas</p>
+        <p class="text-sm text-muted-foreground mt-1">{{ 'home.installmentStatusSubtitle' | translate }}</p>
       </div>
       @if (loadingCharts()) {
         <div class="h-64 flex items-center justify-center">

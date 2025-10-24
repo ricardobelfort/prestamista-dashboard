@@ -4,7 +4,7 @@ import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Use
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
   };
 
   doughnutChartData = signal<ChartData<'doughnut'>>({
-    labels: ['Pagas', 'Pendentes', 'Vencidas'],
+    labels: [],
     datasets: [{
       data: [0, 0, 0],
       backgroundColor: ['#10b981', '#3b82f6', '#ef4444']
@@ -87,6 +87,7 @@ export class HomeComponent implements OnInit {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private exportService = inject(ExportService);
+  private translate = inject(TranslateService);
   exporting = signal(false);
 
   async ngOnInit() {
@@ -151,7 +152,7 @@ export class HomeComponent implements OnInit {
         labels,
         datasets: [
           {
-            label: 'Emprestado',
+            label: this.translate.instant('home.loanedLabel'),
             data: loanedData,
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -159,7 +160,7 @@ export class HomeComponent implements OnInit {
             fill: true
           },
           {
-            label: 'Recebido',
+            label: this.translate.instant('home.receivedLabel'),
             data: receivedData,
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -191,7 +192,11 @@ export class HomeComponent implements OnInit {
       ).length;
 
       this.doughnutChartData.set({
-        labels: ['Pagas', 'Pendentes', 'Vencidas'],
+        labels: [
+          this.translate.instant('home.paidLabel'),
+          this.translate.instant('home.pendingLabel'),
+          this.translate.instant('home.overdueLabel')
+        ],
         datasets: [{
           data: [paid, pending, overdue],
           backgroundColor: ['#10b981', '#3b82f6', '#ef4444']
