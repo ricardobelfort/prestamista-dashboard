@@ -647,4 +647,78 @@ export class DataService {
       throw err;
     }
   }
+
+  // Métodos para exportação
+  async getClients() {
+    try {
+      await this.ensureAuthenticated();
+      
+      const { data, error } = await this.supabase.client
+        .from('clients')
+        .select(`
+          *,
+          routes (id, name)
+        `)
+        .eq('status', 'active')
+        .order('name');
+      
+      if (error) throw new Error(error.message);
+      return data || [];
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getLoans() {
+    try {
+      await this.ensureAuthenticated();
+      
+      const { data, error } = await this.supabase.client
+        .from('loans')
+        .select(`
+          *,
+          clients (id, name),
+          installments (
+            id,
+            index_no,
+            due_date,
+            amount,
+            paid_amount,
+            late_fee
+          )
+        `)
+        .order('start_date', { ascending: false });
+      
+      if (error) throw new Error(error.message);
+      return data || [];
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
+  async getPayments() {
+    try {
+      await this.ensureAuthenticated();
+      
+      const { data, error } = await this.supabase.client
+        .from('payments')
+        .select(`
+          *,
+          installments (
+            id,
+            index_no,
+            loans (
+              id,
+              clients (id, name)
+            )
+          )
+        `)
+        .order('paid_on', { ascending: false});
+      
+      if (error) throw new Error(error.message);
+      return data || [];
+    } catch (err: any) {
+      throw err;
+    }
+  }
 }

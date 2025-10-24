@@ -5,10 +5,27 @@
       <h1 class="text-3xl font-bold text-foreground">{{ 'clients.title' | translate }}</h1>
       <p class="text-muted-foreground mt-2">{{ 'clients.subtitle' | translate }}</p>
     </div>
-        <button class="btn btn-primary" (click)="openModal()">
-      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
-      <span>{{ 'clients.newClient' | translate }}</span>
-    </button>
+    <div class="flex gap-2">
+      <button 
+        class="btn btn-outline" 
+        (click)="exportClients()"
+        [disabled]="exporting() || loading()"
+      >
+        @if (exporting()) {
+          <div class="flex items-center space-x-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
+            <span>Exportando...</span>
+          </div>
+        } @else {
+          <fa-icon [icon]="faFileExcel" class="w-4 h-4"></fa-icon>
+          <span>Exportar</span>
+        }
+      </button>
+      <button class="btn btn-primary" (click)="openModal()">
+        <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+        <span>{{ 'clients.newClient' | translate }}</span>
+      </button>
+    </div>
   </div>
 
   <!-- Loading State -->

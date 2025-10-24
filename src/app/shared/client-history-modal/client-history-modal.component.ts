@@ -11,10 +11,12 @@ import {
   faTrophy,
   faCalendar,
   faChevronDown,
-  faChevronUp
+  faChevronUp,
+  faFileExcel
 } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { ExportService } from '../../core/export.service';
 
 @Component({
   selector: 'app-client-history-modal',
@@ -31,6 +33,7 @@ export class ClientHistoryModalComponent implements OnInit {
   // Inject services using inject() function
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
+  private exportService = inject(ExportService);
 
   // Icons
   faTimes = faTimes;
@@ -43,6 +46,7 @@ export class ClientHistoryModalComponent implements OnInit {
   faCalendar = faCalendar;
   faChevronDown = faChevronDown;
   faChevronUp = faChevronUp;
+  faFileExcel = faFileExcel;
 
   loading = signal(true);
   summary = signal<any>({
@@ -119,6 +123,15 @@ export class ClientHistoryModalComponent implements OnInit {
   onBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {
       this.close.emit();
+    }
+  }
+
+  async exportHistory() {
+    try {
+      await this.exportService.exportClientHistory(this.clientId(), this.clientName());
+      this.toastService.success('Histórico exportado com sucesso!');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao exportar histórico');
     }
   }
 }

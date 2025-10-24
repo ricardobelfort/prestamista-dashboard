@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { ExportService } from '../../core/export.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { ClientHistoryModalComponent } from '../../shared/client-history-modal/client-history-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -47,6 +48,10 @@ export class ClientsComponent implements OnInit {
   faEdit = faEdit;
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
+  faFileExcel = faFileExcel;
+
+  private exportService = inject(ExportService);
+  exporting = signal(false);
 
   constructor(private dataService: DataService, private fb: FormBuilder, private toast: ToastService) {
     this.form = this.fb.group({
@@ -158,5 +163,26 @@ export class ClientsComponent implements OnInit {
     this.showConfirmation.set(false);
     this.clientToDelete.set(null);
     this.deletingClient.set(false);
+  }
+
+  async exportClients() {
+    try {
+      this.exporting.set(true);
+      await this.exportService.exportClients();
+      this.toast.success('Clientes exportados com sucesso!');
+    } catch (error: any) {
+      this.toast.error(error.message || 'Erro ao exportar clientes');
+    } finally {
+      this.exporting.set(false);
+    }
+  }
+
+  async exportClientHistory(client: any) {
+    try {
+      await this.exportService.exportClientHistory(client.id, client.name);
+      this.toast.success('Histórico exportado com sucesso!');
+    } catch (error: any) {
+      this.toast.error(error.message || 'Erro ao exportar histórico');
+    }
   }
 }

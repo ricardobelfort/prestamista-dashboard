@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faDollarSign, faEdit, faTrash, faExclamationTriangle, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { ExportService } from '../../core/export.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -42,6 +43,10 @@ export class LoansComponent implements OnInit {
   faEdit = faEdit;
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
+  faFileExcel = faFileExcel;
+
+  private exportService = inject(ExportService);
+  exporting = signal(false);
 
   constructor(
     private dataService: DataService,
@@ -195,5 +200,17 @@ export class LoansComponent implements OnInit {
 
   trackByClientId(index: number, client: any): any {
     return client?.id;
+  }
+
+  async exportLoans() {
+    try {
+      this.exporting.set(true);
+      await this.exportService.exportLoans();
+      this.toastService.success('Empréstimos exportados com sucesso!');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao exportar empréstimos');
+    } finally {
+      this.exporting.set(false);
+    }
   }
 }

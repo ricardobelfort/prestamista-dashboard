@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, computed, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { 
@@ -9,10 +9,12 @@ import {
   faUsers,
   faCreditCard,
   faCalendarAlt,
-  faArrowUp
+  faArrowUp,
+  faFileExcel
 } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { ExportService } from '../../core/export.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
@@ -28,6 +30,7 @@ export class HomeComponent implements OnInit {
   faDollarSign = faDollarSign;
   faMoneyBillWave = faMoneyBillWave;
   faChartLine = faChartLine;
+  faFileExcel = faFileExcel;
   faExclamationTriangle = faExclamationTriangle;
   faUsers = faUsers;
   faCreditCard = faCreditCard;
@@ -92,10 +95,10 @@ export class HomeComponent implements OnInit {
     return (this.metrics().total_received / loaned) * 100;
   });
 
-  constructor(
-    private dataService: DataService,
-    private toastService: ToastService
-  ) {}
+  private dataService = inject(DataService);
+  private toastService = inject(ToastService);
+  private exportService = inject(ExportService);
+  exporting = signal(false);
 
   async ngOnInit() {
     await Promise.all([
@@ -192,6 +195,18 @@ export class HomeComponent implements OnInit {
       });
     } catch (error) {
       console.error('Erro ao carregar estatísticas de parcelas:', error);
+    }
+  }
+
+  async exportDashboard() {
+    try {
+      this.exporting.set(true);
+      await this.exportService.exportDashboard();
+      this.toastService.success('Relatório exportado com sucesso!');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao exportar relatório');
+    } finally {
+      this.exporting.set(false);
     }
   }
 }

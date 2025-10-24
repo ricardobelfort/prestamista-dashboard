@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faCreditCard, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCreditCard, faEdit, faTrash, faExclamationTriangle, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
+import { ExportService } from '../../core/export.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -58,6 +59,10 @@ export class PaymentsComponent implements OnInit {
   faEdit = faEdit;
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
+  faFileExcel = faFileExcel;
+
+  private exportService = inject(ExportService);
+  exporting = signal(false);
 
   constructor(
     private dataService: DataService,
@@ -208,5 +213,17 @@ export class PaymentsComponent implements OnInit {
 
   trackByPaymentId(index: number, payment: any): any {
     return payment.id || index;
+  }
+
+  async exportPayments() {
+    try {
+      this.exporting.set(true);
+      await this.exportService.exportPayments();
+      this.toastService.success('Pagamentos exportados com sucesso!');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Erro ao exportar pagamentos');
+    } finally {
+      this.exporting.set(false);
+    }
   }
 }
