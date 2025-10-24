@@ -1,18 +1,17 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faExclamationTriangle, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, AlertTriangle, X, Loader2 } from 'lucide-angular';
 
 @Component({
   selector: 'app-confirmation-modal',
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, LucideAngularModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="!isLoading() && cancel.emit()">
       <div class="card w-full max-w-md p-6 bg-card" (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center">
-            <fa-icon [icon]="faExclamationTriangle" class="text-destructive text-xl mr-3"></fa-icon>
+            <lucide-icon [img]="AlertTriangle" class="text-destructive text-xl mr-3"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ title() }}</h2>
           </div>
           <button 
@@ -20,7 +19,7 @@ import { faExclamationTriangle, faTimes, faSpinner } from '@fortawesome/free-sol
             (click)="cancel.emit()"
             [disabled]="isLoading()"
           >
-            <fa-icon [icon]="faTimes" class="w-4 h-4"></fa-icon>
+            <lucide-icon [img]="X" class="w-4 h-4"></lucide-icon>
           </button>
         </div>
 
@@ -41,11 +40,11 @@ import { faExclamationTriangle, faTimes, faSpinner } from '@fortawesome/free-sol
             (click)="confirm.emit()"
             [disabled]="isLoading()"
           >
-            <fa-icon 
+            <lucide-icon 
               *ngIf="isLoading()" 
-              [icon]="faSpinner" 
+              [img]="Loader2" 
               class="w-4 h-4 mr-2 animate-spin"
-            ></fa-icon>
+            ></lucide-icon>
             {{ confirmText() }}
           </button>
         </div>
@@ -65,8 +64,8 @@ export class ConfirmationModalComponent {
   confirm = output<void>();
   cancel = output<void>();
 
-  // Icons
-  faExclamationTriangle = faExclamationTriangle;
-  faTimes = faTimes;
-  faSpinner = faSpinner;
+  // Lucide icons
+  readonly AlertTriangle = AlertTriangle;
+  readonly X = X;
+  readonly Loader2 = Loader2;
 }

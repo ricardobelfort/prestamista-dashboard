@@ -5,23 +5,12 @@ import { SidebarService } from '../../core/sidebar.service';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { Logger } from '../../core/logger.service';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { LucideAngularModule, Home, Users, Wallet, CreditCard, MapPin, LogOut, ChevronLeft, ChevronRight, Settings } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { 
-  faHome, 
-  faUsers, 
-  faMoneyBillWave, 
-  faCreditCard, 
-  faRoute, 
-  faSignOutAlt,
-  faChevronLeft,
-  faChevronRight,
-  faCog
-} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule, FontAwesomeModule, TranslateModule],
+  imports: [RouterModule, LucideAngularModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <aside [class]="'fixed top-0 left-0 transition-all duration-300 bg-neutral-900 h-screen shadow-xl flex flex-col z-50 ' + (sidebarService.expanded() ? 'w-64' : 'w-16')">
@@ -54,7 +43,7 @@ import {
              [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
              [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
              [title]="!sidebarService.expanded() ? (item.label | translate) : ''">
-            <fa-icon [icon]="item.icon" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></fa-icon>
+            <lucide-icon [img]="item.icon" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></lucide-icon>
             @if (sidebarService.expanded()) {
               <span class="ml-3 text-neutral-300 text-sm font-medium group-hover:text-neutral-100 transition-colors">{{ item.label | translate }}</span>
             }
@@ -68,7 +57,7 @@ import {
                routerLinkActive="bg-neutral-700 text-white"
                [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
                [title]="!sidebarService.expanded() ? ('nav.admin' | translate) : ''">
-              <fa-icon [icon]="faCog" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></fa-icon>
+              <lucide-icon [img]="Settings" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></lucide-icon>
               @if (sidebarService.expanded()) {
                 <span class="ml-3 text-neutral-300 text-sm font-medium group-hover:text-neutral-100 transition-colors">{{ 'nav.admin' | translate }}</span>
               }
@@ -81,7 +70,7 @@ import {
         <button (click)="logout()" 
                 [class]="'flex items-center text-neutral-400 hover:text-red-400 hover:bg-neutral-800 rounded transition-all duration-200 ' + (sidebarService.expanded() ? 'w-full px-3 py-2.5' : 'w-12 h-12 justify-center')"
                 [title]="!sidebarService.expanded() ? ('nav.logout' | translate) : ''">
-          <fa-icon [icon]="faSignOutAlt" class="w-5 h-5"></fa-icon>
+          <lucide-icon [img]="LogOut" class="w-5 h-5"></lucide-icon>
           @if (sidebarService.expanded()) {
             <span class="ml-3 text-sm font-medium">{{ 'nav.logout' | translate }}</span>
           }
@@ -90,11 +79,10 @@ import {
     </aside>
   `,
   styles: [`
-    fa-icon {
+    lucide-icon {
       display: flex !important;
       align-items: center;
       justify-content: center;
-      aspect-ratio: 1 / 1;
     }
   `]
 })
@@ -108,16 +96,16 @@ export class SidebarComponent implements OnInit {
   // State
   isAdmin = signal(false);
 
-  // FontAwesome icons
-  faHome = faHome;
-  faUsers = faUsers;
-  faMoneyBillWave = faMoneyBillWave;
-  faCreditCard = faCreditCard;
-  faRoute = faRoute;
-  faSignOutAlt = faSignOutAlt;
-  faChevronLeft = faChevronLeft;
-  faChevronRight = faChevronRight;
-  faCog = faCog;
+  // Lucide icons
+  readonly Home = Home;
+  readonly Users = Users;
+  readonly Wallet = Wallet;
+  readonly CreditCard = CreditCard;
+  readonly MapPin = MapPin;
+  readonly LogOut = LogOut;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
+  readonly Settings = Settings;
 
   async ngOnInit() {
     await this.checkUserRole();
@@ -139,27 +127,27 @@ export class SidebarComponent implements OnInit {
 
   navItems = [
     { 
-      icon: this.faHome, 
+      icon: Home, 
       label: 'nav.home', 
       route: '/dashboard' 
     },
     { 
-      icon: this.faUsers, 
+      icon: Users, 
       label: 'nav.clients', 
       route: '/dashboard/clients' 
     },
     { 
-      icon: this.faMoneyBillWave, 
+      icon: Wallet, 
       label: 'nav.loans', 
       route: '/dashboard/loans' 
     },
     { 
-      icon: this.faCreditCard, 
+      icon: CreditCard, 
       label: 'nav.payments', 
       route: '/dashboard/payments' 
     },
     { 
-      icon: this.faRoute, 
+      icon: MapPin, 
       label: 'nav.routes', 
       route: '/dashboard/routes' 
     }

@@ -17,12 +17,12 @@
               <span>Exportando...</span>
             </div>
           } @else {
-            <fa-icon [icon]="faFileExcel" class="w-4 h-4"></fa-icon>
+            <lucide-icon [img]="FileSpreadsheet" class="w-4 h-4"></lucide-icon>
             <span>Exportar</span>
           }
         </button>
         <button class="btn btn-primary" (click)="openModal()">
-          <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+          <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
           <span>{{ 'loans.newLoan' | translate }}</span>
         </button>
       </div>
@@ -44,7 +44,7 @@
 
   <!-- Error State -->
   <div *ngIf="error() && !loading()" class="alert alert-destructive">
-    <fa-icon [icon]="faExclamationTriangle" class="alert-icon"></fa-icon>
+    <lucide-icon [img]="AlertTriangle" class="alert-icon"></lucide-icon>
     <div class="alert-content">
       <div class="alert-title">{{ 'loans.errorLoading' | translate }}</div>
       <div class="alert-description">{{ error() }}</div>
@@ -63,13 +63,13 @@
             <th class="table-head">
               <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('client')">
                 {{ 'loans.client' | translate }}
-                <fa-icon [icon]="getSortIcon('client')" class="text-[10px] opacity-60"></fa-icon>
+                <lucide-icon [img]="getSortIcon('client')" class="text-[10px] opacity-60"></lucide-icon>
               </button>
             </th>
             <th class="table-head">
               <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('principal')">
                 {{ 'loans.amount' | translate }}
-                <fa-icon [icon]="getSortIcon('principal')" class="text-[10px] opacity-60"></fa-icon>
+                <lucide-icon [img]="getSortIcon('principal')" class="text-[10px] opacity-60"></lucide-icon>
               </button>
             </th>
             <th class="table-head">{{ 'loans.rate' | translate }}</th>
@@ -77,7 +77,7 @@
             <th class="table-head">
               <button class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors align-middle" (click)="toggleSort('date')">
                 {{ 'loans.date' | translate }}
-                <fa-icon [icon]="getSortIcon('date')" class="text-[10px] opacity-60"></fa-icon>
+                <lucide-icon [img]="getSortIcon('date')" class="text-[10px] opacity-60"></lucide-icon>
               </button>
             </th>
             <th class="table-head">{{ 'common.actions' | translate }}</th>
@@ -97,10 +97,10 @@
             <td class="table-cell">
               <div class="flex items-center space-x-2">
                 <button class="btn btn-outline btn-icon-sm" (click)="openModal(loan)">
-                  <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                  <lucide-icon [img]="Edit" class="w-4 h-4"></lucide-icon>
                 </button>
                 <button class="btn btn-outline btn-icon-sm text-destructive hover:bg-destructive hover:text-destructive-foreground" (click)="deleteLoan(loan)">
-                  <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                  <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
                 </button>
               </div>
             </td>
@@ -122,7 +122,7 @@
           class="btn btn-sm btn-outline"
           [disabled]="currentPage() === 1"
           (click)="previousPage()">
-          <fa-icon [icon]="faChevronLeft" class="w-3 h-3"></fa-icon>
+          <lucide-icon [img]="ChevronLeft" class="w-3 h-3"></lucide-icon>
         </button>
         
         <div class="flex items-center gap-2">
@@ -145,7 +145,7 @@
           class="btn btn-sm btn-outline"
           [disabled]="currentPage() === totalPages()"
           (click)="nextPage()">
-          <fa-icon [icon]="faChevronRight" class="w-3 h-3"></fa-icon>
+          <lucide-icon [img]="ChevronRight" class="w-3 h-3"></lucide-icon>
         </button>
       </div>
     </div>
@@ -158,11 +158,11 @@
     </div>
     <div class="p-6">
       <div class="flex flex-col items-center py-16">
-        <fa-icon [icon]="faDollarSign" class="text-5xl mb-4 text-muted-foreground"></fa-icon>
+        <lucide-icon [img]="DollarSign" class="text-5xl mb-4 text-muted-foreground"></lucide-icon>
         <p class="text-xl font-semibold text-foreground">{{ 'loans.noLoans' | translate }}</p>
         <p class="text-sm text-muted-foreground mt-2">{{ 'loans.createFirstLoan' | translate }}</p>
         <button class="btn btn-primary mt-6" (click)="openModal()">
-          <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+          <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
           <span>{{ 'loans.createLoan' | translate }}</span>
         </button>
       </div>

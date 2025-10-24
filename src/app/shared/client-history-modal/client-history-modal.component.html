@@ -12,14 +12,14 @@
           class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
           [disabled]="loading()"
         >
-          <fa-icon [icon]="faFileExcel" class="w-4 h-4"></fa-icon>
+          <lucide-icon [img]="FileSpreadsheet" class="w-4 h-4"></lucide-icon>
           <span>Exportar</span>
         </button>
         <button 
           (click)="close.emit()"
           class="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
         >
-          <fa-icon [icon]="faTimes" class="text-gray-600"></fa-icon>
+          <lucide-icon [img]="X" class="text-gray-600"></lucide-icon>
         </button>
       </div>
     </div>
@@ -38,7 +38,7 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-600">Total Emprestado</span>
-                <fa-icon [icon]="faMoneyBill" class="text-blue-600"></fa-icon>
+                <lucide-icon [img]="Banknote" class="text-blue-600"></lucide-icon>
               </div>
               <p class="text-2xl font-bold text-gray-900">
                 {{ summary().total_loaned | currency:'BRL':'symbol':'1.0-0' }}
@@ -49,7 +49,7 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-600">Total Pago</span>
-                <fa-icon [icon]="faCheckCircle" class="text-emerald-600"></fa-icon>
+                <lucide-icon [img]="CheckCircle2" class="text-emerald-600"></lucide-icon>
               </div>
               <p class="text-2xl font-bold text-emerald-600">
                 {{ summary().total_paid | currency:'BRL':'symbol':'1.0-0' }}
@@ -60,7 +60,7 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-600">Pendente</span>
-                <fa-icon [icon]="faClock" class="text-amber-600"></fa-icon>
+                <lucide-icon [img]="Clock" class="text-amber-600"></lucide-icon>
               </div>
               <p class="text-2xl font-bold text-amber-600">
                 {{ summary().total_outstanding | currency:'BRL':'symbol':'1.0-0' }}
@@ -71,7 +71,7 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-600">Score</span>
-                <fa-icon [icon]="faTrophy" [class]="getScoreColor(summary().payment_score)"></fa-icon>
+                <lucide-icon [img]="Trophy" [class]="getScoreColor(summary().payment_score)"></lucide-icon>
               </div>
               <p class="text-2xl font-bold" [class]="getScoreColor(summary().payment_score)">
                 {{ summary().payment_score | number:'1.0-0' }}/100
@@ -101,7 +101,7 @@
         <!-- Loans List -->
         <div class="p-6 bg-white">
           <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <fa-icon [icon]="faChartLine" class="mr-2 text-blue-600"></fa-icon>
+            <lucide-icon [img]="TrendingUp" class="mr-2 text-blue-600"></lucide-icon>
             Histórico de Empréstimos ({{ loans().length }})
           </h3>
 
@@ -155,10 +155,10 @@
                           </div>
                         </div>
                       </div>
-                      <fa-icon 
-                        [icon]="expandedLoanId() === loan.loan_id ? faChevronUp : faChevronDown"
+                      <lucide-icon 
+                        [img]="expandedLoanId() === loan.loan_id ? ChevronUp : ChevronDown"
                         class="text-gray-600 ml-4"
-                      ></fa-icon>
+                      ></lucide-icon>
                     </div>
                   </div>
 
@@ -171,10 +171,10 @@
                           @for (inst of loan.installments; track inst.id) {
                             <div class="bg-white p-3 rounded-lg flex items-center justify-between border border-gray-200">
                               <div class="flex items-center gap-3 flex-1">
-                                <fa-icon 
-                                  [icon]="getInstallmentIcon(inst.status)"
+                                <lucide-icon 
+                                  [img]="getInstallmentIcon(inst.status)"
                                   [class]="getInstallmentIconColor(inst.status)"
-                                ></fa-icon>
+                                ></lucide-icon>
                                 <div>
                                   <p class="font-medium text-gray-900">
                                     Parcela {{ inst.index_no }}

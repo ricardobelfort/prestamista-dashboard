@@ -1,26 +1,13 @@
 import { Component, signal, inject, ChangeDetectionStrategy, input, output, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faTimes,
-  faCheckCircle,
-  faExclamationCircle,
-  faClock,
-  faMoneyBill,
-  faChartLine,
-  faTrophy,
-  faCalendar,
-  faChevronDown,
-  faChevronUp,
-  faFileExcel
-} from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, X, CheckCircle2, AlertCircle, Clock, Banknote, TrendingUp, Trophy, Calendar, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
 
 @Component({
   selector: 'app-client-history-modal',
-  imports: [CommonModule, FontAwesomeModule, CurrencyPipe, DatePipe, DecimalPipe],
+  imports: [CommonModule, LucideAngularModule, CurrencyPipe, DatePipe, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './client-history-modal.component.html'
 })
@@ -36,17 +23,17 @@ export class ClientHistoryModalComponent implements OnInit {
   private exportService = inject(ExportService);
 
   // Icons
-  faTimes = faTimes;
-  faCheckCircle = faCheckCircle;
-  faExclamationCircle = faExclamationCircle;
-  faClock = faClock;
-  faMoneyBill = faMoneyBill;
-  faChartLine = faChartLine;
-  faTrophy = faTrophy;
-  faCalendar = faCalendar;
-  faChevronDown = faChevronDown;
-  faChevronUp = faChevronUp;
-  faFileExcel = faFileExcel;
+  readonly X = X;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly AlertCircle = AlertCircle;
+  readonly Clock = Clock;
+  readonly Banknote = Banknote;
+  readonly TrendingUp = TrendingUp;
+  readonly Trophy = Trophy;
+  readonly Calendar = Calendar;
+  readonly ChevronDown = ChevronDown;
+  readonly ChevronUp = ChevronUp;
+  readonly FileSpreadsheet = FileSpreadsheet;
 
   loading = signal(true);
   summary = signal<any>({
@@ -108,9 +95,9 @@ export class ClientHistoryModalComponent implements OnInit {
   }
 
   getInstallmentIcon(status: string) {
-    if (status === 'paid') return faCheckCircle;
-    if (status === 'overdue') return faExclamationCircle;
-    return faClock;
+    if (status === 'paid') return this.CheckCircle2;
+    if (status === 'overdue') return this.AlertCircle;
+    return this.Clock;
   }
 
   getInstallmentIconColor(status: string): string {

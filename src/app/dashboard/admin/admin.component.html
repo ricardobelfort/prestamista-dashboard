@@ -6,7 +6,7 @@
       <p class="text-muted-foreground mt-2 text-lg">{{ 'admin.subtitle' | translate }}</p>
     </div>
     <button class="btn btn-primary" (click)="openCreateOrgModal()">
-      <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+      <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
       <span>{{ 'admin.newOrganization' | translate }}</span>
     </button>
   </div>
@@ -20,7 +20,7 @@
           <p class="text-3xl font-bold text-foreground">{{ stats().total_organizations }}</p>
         </div>
         <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-          <fa-icon [icon]="faBuilding" class="text-blue-600 text-xl"></fa-icon>
+          <lucide-icon [img]="Building2" class="text-blue-600 text-xl"></lucide-icon>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
           <p class="text-3xl font-bold text-foreground">{{ stats().total_users }}</p>
         </div>
         <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-          <fa-icon [icon]="faUsers" class="text-green-600 text-xl"></fa-icon>
+          <lucide-icon [img]="Users" class="text-green-600 text-xl"></lucide-icon>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@
           <p class="text-3xl font-bold text-foreground">{{ stats().total_loans }}</p>
         </div>
         <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-          <fa-icon [icon]="faEnvelope" class="text-purple-600 text-xl"></fa-icon>
+          <lucide-icon [img]="Mail" class="text-purple-600 text-xl"></lucide-icon>
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
     } @else if (organizations().length === 0) {
       <div class="p-6">
         <div class="flex flex-col items-center py-16">
-          <fa-icon [icon]="faBuilding" class="text-muted-foreground text-4xl mb-4"></fa-icon>
+          <lucide-icon [img]="Building2" class="text-muted-foreground text-4xl mb-4"></lucide-icon>
           <p class="text-muted-foreground text-lg font-medium">{{ 'common.noData' | translate }}</p>
           <p class="text-muted-foreground mt-2">{{ 'admin.newOrganization' | translate }}</p>
         </div>
@@ -87,7 +87,7 @@
                 <td class="p-4">
                   <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <fa-icon [icon]="faBuilding" class="text-blue-600"></fa-icon>
+                      <lucide-icon [img]="Building2" class="text-blue-600"></lucide-icon>
                     </div>
                     <div>
                       <p class="font-medium text-foreground">{{ org.name }}</p>
@@ -104,13 +104,13 @@
                       class="btn btn-outline btn-sm"
                       (click)="viewMembers(org)"
                       [title]="'admin.viewMembers' | translate">
-                      <fa-icon [icon]="faUsers" class="w-4 h-4"></fa-icon>
+                      <lucide-icon [img]="Users" class="w-4 h-4"></lucide-icon>
                     </button>
                     <button 
                       class="btn btn-outline btn-sm"
                       (click)="deleteOrganization(org)"
                       [title]="'admin.deleteOrg' | translate">
-                      <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                      <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
                     </button>
                   </div>
                 </td>
@@ -193,7 +193,7 @@
         </h3>
         <div class="flex space-x-2">
           <button class="btn btn-primary btn-sm" (click)="openInviteModal()">
-            <fa-icon [icon]="faUserPlus" class="w-4 h-4"></fa-icon>
+            <lucide-icon [img]="UserPlus" class="w-4 h-4"></lucide-icon>
             {{ 'admin.inviteUser' | translate }}
           </button>
           <button class="btn btn-outline btn-sm" (click)="closeMembersModal()">
@@ -204,7 +204,7 @@
       
       @if (orgMembers().length === 0) {
         <div class="text-center py-8">
-          <fa-icon [icon]="faUsers" class="text-muted-foreground text-4xl mb-4"></fa-icon>
+          <lucide-icon [img]="Users" class="text-muted-foreground text-4xl mb-4"></lucide-icon>
           <p class="text-muted-foreground">Nenhum membro encontrado</p>
         </div>
       } @else {
@@ -243,7 +243,7 @@
                         (click)="removeMember(member)"
                         [disabled]="member.role === 'owner'"
                         title="Remover membro">
-                        <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                        <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
                       </button>
                     </div>
                   </td>
@@ -305,7 +305,7 @@
             {{ 'common.cancel' | translate }}
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="inviteForm.invalid">
-            <fa-icon [icon]="faEnvelope" class="w-4 h-4 mr-2"></fa-icon>
+            <lucide-icon [img]="Mail" class="w-4 h-4 mr-2"></lucide-icon>
             {{ 'admin.sendInvite' | translate }}
           </button>
         </div>

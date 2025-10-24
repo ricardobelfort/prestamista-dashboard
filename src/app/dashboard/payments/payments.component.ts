@@ -1,8 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faCreditCard, faEdit, faTrash, faExclamationTriangle, faFileExcel, faSort, faSortUp, faSortDown, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, Plus, CreditCard, Edit, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -12,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payments',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe, TranslateModule],
+  imports: [CommonModule, LucideAngularModule, ReactiveFormsModule, ConfirmationModalComponent, CurrencyPipe, DatePipe, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments.component.html'
 })
@@ -53,18 +52,18 @@ export class PaymentsComponent implements OnInit {
     'bank_transfer': 'bank_transfer'
   } as const;
 
-  // FontAwesome icons
-  faPlus = faPlus;
-  faCreditCard = faCreditCard;
-  faEdit = faEdit;
-  faTrash = faTrash;
-  faExclamationTriangle = faExclamationTriangle;
-  faFileExcel = faFileExcel;
-  faSort = faSort;
-  faSortUp = faSortUp;
-  faSortDown = faSortDown;
-  faChevronLeft = faChevronLeft;
-  faChevronRight = faChevronRight;
+  // Lucide icons
+  readonly Plus = Plus;
+  readonly CreditCard = CreditCard;
+  readonly Edit = Edit;
+  readonly Trash2 = Trash2;
+  readonly AlertTriangle = AlertTriangle;
+  readonly FileSpreadsheet = FileSpreadsheet;
+  readonly ArrowUpDown = ArrowUpDown;
+  readonly ArrowUp = ArrowUp;
+  readonly ArrowDown = ArrowDown;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
 
   private exportService = inject(ExportService);
   exporting = signal(false);
@@ -284,9 +283,9 @@ export class PaymentsComponent implements OnInit {
     this.currentPage.set(1); // Reset to first page when sorting
   }
 
-  getSortIcon(column: string) {
-    if (this.sortColumn() !== column) return this.faSort;
-    return this.sortDirection() === 'asc' ? this.faSortUp : this.faSortDown;
+  getSortIcon(column: string): any {
+    if (this.sortColumn() !== column) return this.ArrowUpDown;
+    return this.sortDirection() === 'asc' ? this.ArrowUp : this.ArrowDown;
   }
 
   // Pagination methods

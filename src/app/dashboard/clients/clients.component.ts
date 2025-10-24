@@ -1,8 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine, faFileExcel, faSort, faSortUp, faSortDown, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, Plus, Users, TrendingUp, Edit, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
@@ -13,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, ClientHistoryModalComponent, InputMaskDirective, TranslateModule],
+  imports: [CommonModule, LucideAngularModule, ReactiveFormsModule, ConfirmationModalComponent, ClientHistoryModalComponent, InputMaskDirective, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './clients.component.html'
 })
@@ -41,19 +40,19 @@ export class ClientsComponent implements OnInit {
   // Form for CRUD operations
   form;
 
-  // FontAwesome icons
-  faPlus = faPlus;
-  faUsers = faUsers;
-  faChartLine = faChartLine;
-  faEdit = faEdit;
-  faTrash = faTrash;
-  faExclamationTriangle = faExclamationTriangle;
-  faFileExcel = faFileExcel;
-  faSort = faSort;
-  faSortUp = faSortUp;
-  faSortDown = faSortDown;
-  faChevronLeft = faChevronLeft;
-  faChevronRight = faChevronRight;
+  // Lucide icons
+  readonly Plus = Plus;
+  readonly Users = Users;
+  readonly TrendingUp = TrendingUp;
+  readonly Edit = Edit;
+  readonly Trash2 = Trash2;
+  readonly AlertTriangle = AlertTriangle;
+  readonly FileSpreadsheet = FileSpreadsheet;
+  readonly ArrowUpDown = ArrowUpDown;
+  readonly ArrowUp = ArrowUp;
+  readonly ArrowDown = ArrowDown;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
 
   private exportService = inject(ExportService);
   exporting = signal(false);
@@ -232,9 +231,9 @@ export class ClientsComponent implements OnInit {
     this.currentPage.set(1); // Reset to first page when sorting
   }
 
-  getSortIcon(column: string) {
-    if (this.sortColumn() !== column) return this.faSort;
-    return this.sortDirection() === 'asc' ? this.faSortUp : this.faSortDown;
+  getSortIcon(column: string): any {
+    if (this.sortColumn() !== column) return this.ArrowUpDown;
+    return this.sortDirection() === 'asc' ? this.ArrowUp : this.ArrowDown;
   }
 
   // Pagination methods

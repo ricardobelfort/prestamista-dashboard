@@ -1,18 +1,7 @@
 import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faBuilding,
-  faUsers,
-  faUserPlus,
-  faEdit,
-  faTrash,
-  faPlus,
-  faCopy,
-  faCheck,
-  faEnvelope
-} from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, Building2, Users, UserPlus, Edit, Trash2, Plus, Copy, Check, Mail } from 'lucide-angular';
 
 import { AdminService, Organization, OrganizationMember } from '../../core/admin.service';
 import { ToastService } from '../../core/toast.service';
@@ -21,7 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, ConfirmationModalComponent, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ConfirmationModalComponent, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin.component.html'
 })
@@ -31,15 +20,15 @@ export class AdminComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   // Icons
-  faBuilding = faBuilding;
-  faUsers = faUsers;
-  faUserPlus = faUserPlus;
-  faEdit = faEdit;
-  faTrash = faTrash;
-  faPlus = faPlus;
-  faCopy = faCopy;
-  faCheck = faCheck;
-  faEnvelope = faEnvelope;
+  readonly Building2 = Building2;
+  readonly Users = Users;
+  readonly UserPlus = UserPlus;
+  readonly Edit = Edit;
+  readonly Trash2 = Trash2;
+  readonly Plus = Plus;
+  readonly Copy = Copy;
+  readonly Check = Check;
+  readonly Mail = Mail;
 
   // State
   loading = signal(false);

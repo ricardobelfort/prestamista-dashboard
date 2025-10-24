@@ -1,8 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faRoute, faEdit, faTrash, faExclamationTriangle, faEye } from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, Plus, MapPin, Edit, Trash2, AlertTriangle, Eye } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
@@ -10,7 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-routes',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, TranslateModule],
+  imports: [CommonModule, LucideAngularModule, ReactiveFormsModule, ConfirmationModalComponent, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './routes.component.html'
 })
@@ -37,13 +36,13 @@ export class RoutesComponent implements OnInit {
   // Form
   form: FormGroup;
 
-  // FontAwesome icons
-  faPlus = faPlus;
-  faRoute = faRoute;
-  faEdit = faEdit;
-  faTrash = faTrash;
-  faExclamationTriangle = faExclamationTriangle;
-  faEye = faEye;
+  // Lucide icons
+  readonly Plus = Plus;
+  readonly MapPin = MapPin;
+  readonly Edit = Edit;
+  readonly Trash2 = Trash2;
+  readonly AlertTriangle = AlertTriangle;
+  readonly Eye = Eye;
 
   constructor(
     private dataService: DataService,

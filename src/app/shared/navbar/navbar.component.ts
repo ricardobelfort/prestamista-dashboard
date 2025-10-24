@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, ChevronDown, ChevronUp } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { AuthService } from '../../core/auth.service';
 import { LanguageService, Language } from '../../core/language.service';
@@ -9,7 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, FontAwesomeModule, TranslateModule],
+  imports: [CommonModule, LucideAngularModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="bg-white border-b border-slate-200 px-6 h-16 flex items-center justify-end sticky top-0 z-40">
@@ -65,7 +64,7 @@ import { TranslateModule } from '@ngx-translate/core';
       animation: fadeIn 0.15s ease-out;
     }
     
-    fa-icon {
+    lucide-icon {
       display: flex !important;
       align-items: center;
       justify-content: center;
@@ -83,9 +82,9 @@ export class NavbarComponent implements OnInit {
   userRole = signal<string | null>(null);
   showLanguageDropdown = signal(false);
 
-  // Icons
-  faChevronDown = faChevronDown;
-  faChevronUp = faChevronUp;
+  // Lucide icons
+  readonly ChevronDown = ChevronDown;
+  readonly ChevronUp = ChevronUp;
 
   async ngOnInit() {
     try {

@@ -1,17 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, OnInit, computed, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faDollarSign,
-  faMoneyBillWave, 
-  faChartLine,
-  faExclamationTriangle,
-  faUsers,
-  faCreditCard,
-  faCalendarAlt,
-  faArrowUp,
-  faFileExcel
-} from '@fortawesome/free-solid-svg-icons';
+import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Users, CreditCard, CalendarDays, ArrowUp, FileSpreadsheet } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -22,20 +11,20 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, CurrencyPipe, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective],
+  imports: [CommonModule, LucideAngularModule, CurrencyPipe, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-  faDollarSign = faDollarSign;
-  faMoneyBillWave = faMoneyBillWave;
-  faChartLine = faChartLine;
-  faFileExcel = faFileExcel;
-  faExclamationTriangle = faExclamationTriangle;
-  faUsers = faUsers;
-  faCreditCard = faCreditCard;
-  faCalendarAlt = faCalendarAlt;
-  faArrowUp = faArrowUp;
+  readonly DollarSign = DollarSign;
+  readonly Wallet = Wallet;
+  readonly TrendingUp = TrendingUp;
+  readonly FileSpreadsheet = FileSpreadsheet;
+  readonly AlertTriangle = AlertTriangle;
+  readonly Users = Users;
+  readonly CreditCard = CreditCard;
+  readonly CalendarDays = CalendarDays;
+  readonly ArrowUp = ArrowUp;
 
   loading = signal(true);
   loadingInstallments = signal(true);

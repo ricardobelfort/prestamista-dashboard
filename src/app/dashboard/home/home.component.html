@@ -16,7 +16,7 @@
           <span>Exportando...</span>
         </div>
       } @else {
-        <fa-icon [icon]="faFileExcel" class="w-4 h-4"></fa-icon>
+        <lucide-icon [img]="FileSpreadsheet" class="w-4 h-4"></lucide-icon>
         <span>Exportar Relatório</span>
       }
     </button>
@@ -38,7 +38,7 @@
       <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4 border-blue-500">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-            <fa-icon [icon]="faDollarSign" class="text-blue-600 text-xl"></fa-icon>
+            <lucide-icon [img]="DollarSign" class="text-blue-600 text-xl"></lucide-icon>
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">Total Emprestado</p>
@@ -50,14 +50,14 @@
       <div class="card p-6 hover:shadow-lg transition-shadow duration-200 border-l-4 border-emerald-500">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-            <fa-icon [icon]="faMoneyBillWave" class="text-emerald-600 text-xl"></fa-icon>
+            <lucide-icon [img]="Wallet" class="text-emerald-600 text-xl"></lucide-icon>
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">Total Recebido</p>
         <p class="text-3xl font-bold text-foreground">{{ metrics().total_received | currency:'BRL':'symbol':'1.0-0' }}</p>
         <div class="flex items-center mt-2 text-xs">
           @if (profitPercentage() > 0) {
-            <fa-icon [icon]="faArrowUp" class="text-emerald-600 mr-1"></fa-icon>
+            <lucide-icon [img]="ArrowUp" class="text-emerald-600 mr-1"></lucide-icon>
             <span class="text-emerald-600 font-medium">{{ profitPercentage() | number:'1.1-1' }}%</span>
           } @else {
             <span class="text-muted-foreground">0%</span>
@@ -74,10 +74,10 @@
           <div class="w-12 h-12 rounded-xl flex items-center justify-center"
                [class.bg-emerald-100]="metrics().profit >= 0"
                [class.bg-red-100]="metrics().profit < 0">
-            <fa-icon [icon]="faChartLine" 
+            <lucide-icon [img]="TrendingUp" 
                      [class.text-emerald-600]="metrics().profit >= 0"
                      [class.text-red-600]="metrics().profit < 0"
-                     class="text-xl"></fa-icon>
+                     class="text-xl"></lucide-icon>
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">Lucro</p>
@@ -101,11 +101,11 @@
                [class.bg-red-100]="metrics().default_rate > 10"
                [class.bg-amber-100]="metrics().default_rate > 0 && metrics().default_rate <= 10"
                [class.bg-emerald-100]="metrics().default_rate === 0">
-            <fa-icon [icon]="faExclamationTriangle"
+            <lucide-icon [img]="AlertTriangle"
                      [class.text-red-600]="metrics().default_rate > 10"
                      [class.text-amber-600]="metrics().default_rate > 0 && metrics().default_rate <= 10"
                      [class.text-emerald-600]="metrics().default_rate === 0"
-                     class="text-xl"></fa-icon>
+                     class="text-xl"></lucide-icon>
           </div>
         </div>
         <p class="text-sm font-semibold text-muted-foreground mb-1">Taxa de Inadimplência</p>
@@ -127,7 +127,7 @@
     <div class="px-6 py-4 border-b">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
-          <fa-icon [icon]="faCalendarAlt" class="mr-2 text-muted-foreground"></fa-icon>
+          <lucide-icon [img]="CalendarDays" class="mr-2 text-muted-foreground"></lucide-icon>
           Próximos Vencimentos
         </h3>
         <span class="text-sm text-muted-foreground">Próximos 7 dias</span>
@@ -144,7 +144,7 @@
       </div>
     } @else if (upcomingInstallments().length === 0) {
       <div class="p-12 text-center">
-        <fa-icon [icon]="faCalendarAlt" class="text-4xl text-muted-foreground mb-4"></fa-icon>
+        <lucide-icon [img]="CalendarDays" class="text-4xl text-muted-foreground mb-4"></lucide-icon>
         <p class="text-muted-foreground">Nenhum pagamento próximo</p>
       </div>
     } @else {
@@ -186,7 +186,7 @@
     <div class="card p-6">
       <div class="flex items-center">
         <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-          <fa-icon [icon]="faUsers" class="text-blue-600"></fa-icon>
+          <lucide-icon [img]="Users" class="text-blue-600"></lucide-icon>
         </div>
         <div>
           <p class="text-sm text-muted-foreground">Total de Clientes</p>
@@ -198,7 +198,7 @@
     <div class="card p-6">
       <div class="flex items-center">
         <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
-          <fa-icon [icon]="faCreditCard" class="text-emerald-600"></fa-icon>
+          <lucide-icon [img]="CreditCard" class="text-emerald-600"></lucide-icon>
         </div>
         <div>
           <p class="text-sm text-muted-foreground">Total Esperado</p>
@@ -210,7 +210,7 @@
     <div class="card p-6">
       <div class="flex items-center">
         <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-4">
-          <fa-icon [icon]="faExclamationTriangle" class="text-red-600"></fa-icon>
+          <lucide-icon [img]="AlertTriangle" class="text-red-600"></lucide-icon>
         </div>
         <div>
           <p class="text-sm text-muted-foreground">Total Vencido</p>
@@ -226,7 +226,7 @@
     <div class="card p-6">
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
-          <fa-icon [icon]="faChartLine" class="text-blue-600 mr-2"></fa-icon>
+          <lucide-icon [img]="TrendingUp" class="text-blue-600 mr-2"></lucide-icon>
           Evolução Mensal
         </h3>
         <p class="text-sm text-muted-foreground mt-1">Emprestado vs Recebido (últimos 6 meses)</p>
@@ -250,7 +250,7 @@
     <div class="card p-6">
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-foreground flex items-center">
-          <fa-icon [icon]="faChartLine" class="text-emerald-600 mr-2"></fa-icon>
+          <lucide-icon [img]="TrendingUp" class="text-emerald-600 mr-2"></lucide-icon>
           Status das Parcelas
         </h3>
         <p class="text-sm text-muted-foreground mt-1">Distribuição de todas as parcelas</p>
