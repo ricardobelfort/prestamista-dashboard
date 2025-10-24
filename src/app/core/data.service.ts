@@ -241,6 +241,36 @@ export class DataService {
     }
   }
 
+  async getClientFinancialHistory(clientId: string) {
+    try {
+      await this.ensureAuthenticated();
+      
+      const user = (await this.supabase.client.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data: profile } = await this.supabase.client
+        .from('profiles')
+        .select('default_org')
+        .eq('user_id', user.id)
+        .single();
+      
+      const orgId = profile?.default_org;
+      if (!orgId) throw new Error('Organization not found');
+      
+      const { data, error } = await this.supabase.client
+        .rpc('fn_get_client_financial_history', { 
+          p_org_id: orgId,
+          p_client_id: clientId 
+        });
+      
+      if (error) throw new Error(error.message);
+      return data || { summary: {}, loans: [] };
+    } catch (err: any) {
+      Logger.error('Error getting client financial history', err);
+      throw err;
+    }
+  }
+
   async getProfile() {
     try {
       await this.ensureAuthenticated();

@@ -64,6 +64,13 @@
             </td>
             <td class="table-cell">
               <div class="flex items-center space-x-2">
+                <button 
+                  class="btn btn-outline btn-icon-sm"
+                  (click)="openHistoryModal(client)"
+                  title="Ver histórico financeiro"
+                >
+                  <fa-icon [icon]="faChartLine" class="w-4 h-4"></fa-icon>
+                </button>
                 <button class="btn btn-outline btn-icon-sm" (click)="openModal(client)">
                   <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
                 </button>
@@ -173,3 +180,12 @@
   (confirm)="confirmDelete()"
   (cancel)="closeConfirmation()"
 ></app-confirmation-modal>
+
+<!-- Modal de Histórico Financeiro -->
+@if (showHistoryModal()) {
+  <app-client-history-modal
+    [clientId]="selectedClient()!.id"
+    [clientName]="selectedClient()!.name"
+    (close)="closeHistoryModal()"
+  ></app-client-history-modal>
+}

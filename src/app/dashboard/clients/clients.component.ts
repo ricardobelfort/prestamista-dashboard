@@ -2,16 +2,17 @@ import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUsers, faEdit, faTrash, faExclamationTriangle, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { ClientHistoryModalComponent } from '../../shared/client-history-modal/client-history-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, InputMaskDirective, TranslateModule],
+  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, ConfirmationModalComponent, ClientHistoryModalComponent, InputMaskDirective, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './clients.component.html'
 })
@@ -32,12 +33,17 @@ export class ClientsComponent implements OnInit {
   clientToDelete = signal<any>(null);
   deletingClient = signal(false);
   
+  // History modal state
+  showHistoryModal = signal(false);
+  selectedClient = signal<any>(null);
+  
   // Form for CRUD operations
   form;
 
   // FontAwesome icons
   faPlus = faPlus;
   faUsers = faUsers;
+  faChartLine = faChartLine;
   faEdit = faEdit;
   faTrash = faTrash;
   faExclamationTriangle = faExclamationTriangle;
@@ -136,6 +142,16 @@ export class ClientsComponent implements OnInit {
       this.deletingClient.set(false);
       this.closeConfirmation();
     }
+  }
+  
+  openHistoryModal(client: any) {
+    this.selectedClient.set(client);
+    this.showHistoryModal.set(true);
+  }
+  
+  closeHistoryModal() {
+    this.showHistoryModal.set(false);
+    this.selectedClient.set(null);
   }
   
   closeConfirmation() {
