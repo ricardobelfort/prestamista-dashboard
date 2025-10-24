@@ -27,8 +27,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       @for (i of [1,2,3,4]; track i) {
         <div class="card p-6">
-          <div class="h-8 w-32 bg-muted rounded animate-pulse mb-2"></div>
-          <div class="h-10 w-24 bg-muted rounded animate-pulse"></div>
+          <div class="h-8 w-32 bg-slate-200 rounded animate-pulse mb-2"></div>
+          <div class="h-10 w-24 bg-slate-200 rounded animate-pulse"></div>
         </div>
       }
     </div>
@@ -138,7 +138,7 @@
       <div class="p-6">
         <div class="space-y-4">
           @for (i of [1,2,3]; track i) {
-            <div class="h-16 bg-muted rounded animate-pulse"></div>
+            <div class="h-16 bg-slate-200 rounded animate-pulse"></div>
           }
         </div>
       </div>
@@ -182,43 +182,59 @@
   </div>
 
   <!-- Quick Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="card p-6">
-      <div class="flex items-center">
-        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-          <lucide-icon [img]="Users" class="text-blue-600"></lucide-icon>
+  @if (loading()) {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (i of [1,2,3]; track i) {
+        <div class="card p-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-slate-200 rounded-lg animate-pulse mr-4"></div>
+            <div class="flex-1">
+              <div class="h-4 w-24 bg-slate-200 rounded animate-pulse mb-2"></div>
+              <div class="h-8 w-20 bg-slate-200 rounded animate-pulse"></div>
+            </div>
+          </div>
         </div>
-        <div>
-          <p class="text-sm text-muted-foreground">Total de Clientes</p>
-          <p class="text-2xl font-bold text-foreground">{{ metrics().total_clients }}</p>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="card p-6">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+            <lucide-icon [img]="Users" class="text-blue-600"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Total de Clientes</p>
+            <p class="text-2xl font-bold text-foreground">{{ metrics().total_clients }}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card p-6">
-      <div class="flex items-center">
-        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
-          <lucide-icon [img]="CreditCard" class="text-emerald-600"></lucide-icon>
-        </div>
-        <div>
-          <p class="text-sm text-muted-foreground">Total Esperado</p>
-          <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | currency:'BRL':'symbol':'1.0-0' }}</p>
+      <div class="card p-6">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
+            <lucide-icon [img]="CreditCard" class="text-emerald-600"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Total Esperado</p>
+            <p class="text-2xl font-bold text-foreground">{{ metrics().total_expected | currency:'BRL':'symbol':'1.0-0' }}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card p-6">
-      <div class="flex items-center">
-        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-4">
-          <lucide-icon [img]="AlertTriangle" class="text-red-600"></lucide-icon>
-        </div>
-        <div>
-          <p class="text-sm text-muted-foreground">Total Vencido</p>
-          <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | currency:'BRL':'symbol':'1.0-0' }}</p>
+      <div class="card p-6">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+            <lucide-icon [img]="AlertTriangle" class="text-red-600"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Total Vencido</p>
+            <p class="text-2xl font-bold text-red-600">{{ metrics().total_overdue | currency:'BRL':'symbol':'1.0-0' }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- Charts Section -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -232,8 +248,9 @@
         <p class="text-sm text-muted-foreground mt-1">Emprestado vs Recebido (últimos 6 meses)</p>
       </div>
       @if (loadingCharts()) {
-        <div class="h-64 flex items-center justify-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="h-64 space-y-3">
+          <div class="h-8 bg-slate-200 rounded animate-pulse"></div>
+          <div class="h-48 bg-slate-200 rounded animate-pulse"></div>
         </div>
       } @else {
         <div class="h-64">
@@ -257,7 +274,7 @@
       </div>
       @if (loadingCharts()) {
         <div class="h-64 flex items-center justify-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div class="w-48 h-48 bg-slate-200 rounded-full animate-pulse"></div>
         </div>
       } @else {
         <div class="h-64">

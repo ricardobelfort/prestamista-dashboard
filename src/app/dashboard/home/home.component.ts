@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, signal, OnInit, computed, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Users, CreditCard, CalendarDays, ArrowUp, FileSpreadsheet } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
@@ -12,7 +12,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, LucideAngularModule, CurrencyPipe, DecimalPipe, DatePipe, TranslateModule, BaseChartDirective],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
@@ -90,6 +90,14 @@ export class HomeComponent implements OnInit {
   exporting = signal(false);
 
   async ngOnInit() {
+    // Garantir que o loading seja exibido por pelo menos um momento
+    this.loading.set(true);
+    this.loadingInstallments.set(true);
+    this.loadingCharts.set(true);
+    
+    // Aguardar um frame de renderização antes de começar a carregar
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
     await Promise.all([
       this.loadMetrics(),
       this.loadUpcomingInstallments(),
@@ -99,8 +107,11 @@ export class HomeComponent implements OnInit {
 
   async loadMetrics() {
     try {
-      this.loading.set(true);
-      const data = await this.dataService.getDashboardMetrics();
+      const [data] = await Promise.all([
+        this.dataService.getDashboardMetrics(),
+        // Garantir um delay mínimo de 800ms para o loading ser visível
+        new Promise(resolve => setTimeout(resolve, 800))
+      ]);
       this.metrics.set(data);
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao carregar métricas');
@@ -111,8 +122,10 @@ export class HomeComponent implements OnInit {
 
   async loadUpcomingInstallments() {
     try {
-      this.loadingInstallments.set(true);
-      const data = await this.dataService.getUpcomingInstallments(7);
+      const [data] = await Promise.all([
+        this.dataService.getUpcomingInstallments(7),
+        new Promise(resolve => setTimeout(resolve, 800))
+      ]);
       this.upcomingInstallments.set(data);
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao carregar parcelas');
@@ -123,8 +136,10 @@ export class HomeComponent implements OnInit {
 
   async loadMonthlyEvolution() {
     try {
-      this.loadingCharts.set(true);
-      const data = await this.dataService.getMonthlyEvolution(6);
+      const [data] = await Promise.all([
+        this.dataService.getMonthlyEvolution(6),
+        new Promise(resolve => setTimeout(resolve, 800))
+      ]);
       this.monthlyEvolution.set(data);
       
       // Update line chart
