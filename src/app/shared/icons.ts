@@ -5,7 +5,7 @@ export const ICON_MAPPING = {
   // Actions
   Plus: 'Plus',
   Minus: 'Minus',
-  Edit: 'Edit',
+  Edit: 'SquarePen',
   Pencil: 'Pencil',
   Trash2: 'Trash2',
   X: 'X',
@@ -16,7 +16,7 @@ export const ICON_MAPPING = {
   // Alerts
   CheckCircle2: 'CheckCircle2',
   AlertCircle: 'AlertCircle',
-  AlertTriangle: 'AlertTriangle',
+  AlertTriangle: 'TriangleAlert',
   
   // Files
   FileSpreadsheet: 'FileSpreadsheet',

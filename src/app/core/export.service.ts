@@ -170,14 +170,14 @@ export class ExportService {
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumo');
 
       const loansData = (history.loans || []).map((loan: any) => ({
-        'Principal': this.formatCurrency(loan.principal),
-        'Taxa': `${loan.interest_rate}% a.m.`,
-        'Data': new Date(loan.start_date).toLocaleDateString('pt-BR'),
+        'Principal': this.formatCurrency(loan.principal || 0),
+        'Taxa': `${loan.interest_rate || 0}% a.m.`,
+        'Data': loan.start_date ? new Date(loan.start_date).toLocaleDateString('pt-BR') : '',
         'Status': this.translateStatus(loan.status),
-        'Parcelas Pagas': loan.paid_installments,
-        'Total Parcelas': loan.total_installments,
-        'Total Esperado': this.formatCurrency(loan.total_amount),
-        'Total Pago': this.formatCurrency(loan.paid_amount)
+        'Parcelas': `${loan.paid_installments || 0}/${loan.total_installments || 0}`,
+        'Total Parcelas': loan.total_installments || 0,
+        'Total Esperado': this.formatCurrency(loan.total_expected || 0),
+        'Total Pago': this.formatCurrency(loan.total_paid || 0)
       }));
       const loansSheet = XLSX.utils.json_to_sheet(loansData);
       XLSX.utils.book_append_sheet(workbook, loansSheet, 'Empréstimos');

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LucideAngularModule, Plus, DollarSign, Edit, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Plus, DollarSign, SquarePen, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -39,7 +39,7 @@ export class LoansComponent implements OnInit {
   // Lucide icons
   readonly Plus = Plus;
   readonly DollarSign = DollarSign;
-  readonly Edit = Edit;
+  readonly Edit = SquarePen;
   readonly Trash2 = Trash2;
   readonly AlertTriangle = AlertTriangle;
   readonly FileSpreadsheet = FileSpreadsheet;

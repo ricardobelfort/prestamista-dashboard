@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LucideAngularModule, Plus, CreditCard, Edit, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Plus, CreditCard, SquarePen, Trash2, TriangleAlert, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -55,9 +55,9 @@ export class PaymentsComponent implements OnInit {
   // Lucide icons
   readonly Plus = Plus;
   readonly CreditCard = CreditCard;
-  readonly Edit = Edit;
+  readonly Edit = SquarePen;
   readonly Trash2 = Trash2;
-  readonly AlertTriangle = AlertTriangle;
+  readonly AlertTriangle = TriangleAlert;
   readonly FileSpreadsheet = FileSpreadsheet;
   readonly ArrowUpDown = ArrowUpDown;
   readonly ArrowUp = ArrowUp;

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Plus, Users, TrendingUp, Edit, Trash2, AlertTriangle, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LucideAngularModule, Plus, Users, TrendingUp, SquarePen, Trash2, TriangleAlert, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { InputMaskDirective } from './input-mask.directive';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
@@ -44,9 +44,9 @@ export class ClientsComponent implements OnInit {
   readonly Plus = Plus;
   readonly Users = Users;
   readonly TrendingUp = TrendingUp;
-  readonly Edit = Edit;
+  readonly Edit = SquarePen;
   readonly Trash2 = Trash2;
-  readonly AlertTriangle = AlertTriangle;
+  readonly AlertTriangle = TriangleAlert;
   readonly FileSpreadsheet = FileSpreadsheet;
   readonly ArrowUpDown = ArrowUpDown;
   readonly ArrowUp = ArrowUp;
