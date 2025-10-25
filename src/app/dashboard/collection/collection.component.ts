@@ -218,17 +218,12 @@ export class CollectionComponent implements OnInit {
         const installment = JSON.parse(pendingData);
         sessionStorage.removeItem('pendingInstallment');
         
-        console.log('📦 Pending installment from sessionStorage:', installment);
-        console.log('📋 Current installments list:', this.installments());
-        
         // Find the full installment data from our loaded list
         const fullInstallment = this.installments().find(inst => inst.id === installment.id);
         
         if (fullInstallment) {
-          console.log('✅ Found full installment in list, opening modal');
           this.openPaymentModal(fullInstallment);
         } else {
-          console.warn('⚠️ Installment not in filtered list, fetching full data from API');
           // Fetch full installment data from API
           try {
             const { data: installmentData, error } = await this.supabase.client
@@ -265,7 +260,6 @@ export class CollectionComponent implements OnInit {
               client: clientData
             };
 
-            console.log('✅ Fetched full installment data:', enrichedInstallment);
             this.openPaymentModal(enrichedInstallment);
           } catch (error) {
             console.error('Error fetching installment data:', error);
@@ -440,9 +434,6 @@ export class CollectionComponent implements OnInit {
         .eq('loan_id', installment.loan_id)
         .order('index_no', { ascending: true });
       
-      console.log('🔍 DEBUG - All Installments:', allInstallments);
-      console.log('🔍 DEBUG - Loan Data:', loanData);
-      
       let remainingBalance = 0;
       let nextDueDate = null;
       let nextInstallmentAmount = 0;
@@ -452,14 +443,10 @@ export class CollectionComponent implements OnInit {
         // Get total installments count
         totalInstallmentsCount = allInstallments.length;
         
-        console.log('📊 Total Installments Count:', totalInstallmentsCount);
-        
         // Calculate total remaining
         remainingBalance = allInstallments.reduce((sum: number, inst: any) => {
           return sum + (inst.amount - (inst.paid_amount || 0));
         }, 0);
-        
-        console.log('💰 Remaining Balance:', remainingBalance);
         
         // Find next unpaid installment (where paid_amount < amount)
         const nextInstallment = allInstallments.find((inst: any) => {
@@ -467,17 +454,10 @@ export class CollectionComponent implements OnInit {
           return paidAmount < inst.amount;
         });
         
-        console.log('⏭️ Next Installment:', nextInstallment);
-        
         if (nextInstallment) {
           nextDueDate = nextInstallment.due_date;
           nextInstallmentAmount = nextInstallment.amount - (nextInstallment.paid_amount || 0);
-          console.log('📅 Next Due Date:', nextDueDate);
-        } else {
-          console.log('⚠️ No next installment found - all paid');
         }
-      } else {
-        console.log('⚠️ No installments found in query result');
       }
       
       // Store payment data for receipt generation
@@ -506,8 +486,6 @@ export class CollectionComponent implements OnInit {
         organizationAddress: '',
         paymentId: paymentId
       };
-      
-      console.log('📄 Receipt Data to be saved:', receiptData);
       
       this.lastPaymentData.set(receiptData);
       
@@ -584,12 +562,7 @@ export class CollectionComponent implements OnInit {
 
   printReceipt() {
     const data = this.lastPaymentData();
-    console.log('🖨️ Print button clicked - Signal data:', data);
-    
-    if (!data) {
-      console.log('⚠️ No receipt data available!');
-      return;
-    }
+    if (!data) return;
     
     this.stopConfetti();
     this.receiptService.generateReceipt(data);

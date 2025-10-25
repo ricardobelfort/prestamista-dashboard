@@ -33,8 +33,6 @@ export class ReceiptService {
   private translate = inject(TranslateService);
   
   generateReceipt(receipt: PaymentReceipt): void {
-    console.log('🧾 Generating Receipt with data:', receipt);
-    
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -150,8 +148,6 @@ export class ReceiptService {
     // Status "Em dia"
     yPos += 1;
     const daysText = this.getDaysUntil(receipt.nextDueDate);
-    console.log('📅 Days calculation - nextDueDate:', receipt.nextDueDate, 'daysText:', daysText);
-    
     const statusText = `${this.translate.instant('receipt.upToDate')} (${this.translate.instant('receipt.nextIn')} ${daysText})`;
     addCenteredText(statusText, yPos, 8);
     yPos += lineHeight + 1;
@@ -160,8 +156,6 @@ export class ReceiptService {
     yPos += lineHeight + 1;
 
     // ============= RESUMO FINANCEIRO =============
-    console.log('📊 Installments:', receipt.installmentNumber, '/', receipt.totalInstallments);
-    
     addRow(this.translate.instant('receipt.paidInstallments'), 
            `${receipt.installmentNumber} / ${receipt.totalInstallments}`, yPos, 9, true);
     yPos += lineHeight;
