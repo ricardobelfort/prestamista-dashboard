@@ -11,6 +11,34 @@
     </button>
   </div>
 
+  <!-- Tabs -->
+  <div class="border-b border-border">
+    <div class="flex space-x-8">
+      <button 
+        (click)="switchTab('organizations')"
+        class="flex items-center space-x-2 px-1 py-4 text-sm font-medium transition-colors border-b-2"
+        [class.border-primary]="activeTab() === 'organizations'"
+        [class.text-primary]="activeTab() === 'organizations'"
+        [class.border-transparent]="activeTab() !== 'organizations'"
+        [class.text-muted-foreground]="activeTab() !== 'organizations'"
+        [class.hover:text-foreground]="activeTab() !== 'organizations'">
+        <lucide-icon [img]="Building2" class="w-4 h-4"></lucide-icon>
+        <span>{{ 'admin.organizationsTab' | translate }}</span>
+      </button>
+      <button 
+        (click)="switchTab('users')"
+        class="flex items-center space-x-2 px-1 py-4 text-sm font-medium transition-colors border-b-2"
+        [class.border-primary]="activeTab() === 'users'"
+        [class.text-primary]="activeTab() === 'users'"
+        [class.border-transparent]="activeTab() !== 'users'"
+        [class.text-muted-foreground]="activeTab() !== 'users'"
+        [class.hover:text-foreground]="activeTab() !== 'users'">
+        <lucide-icon [img]="Users" class="w-4 h-4"></lucide-icon>
+        <span>{{ 'admin.usersTab' | translate }}</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="card p-6">
@@ -51,77 +79,404 @@
   </div>
 
   <!-- Organizations List -->
-  <div class="card">
-    <div class="px-6 py-4 border-b">
-      <h3 class="text-lg font-semibold text-foreground">{{ 'admin.organizationList' | translate }}</h3>
-    </div>
-    
-    @if (loading()) {
-      <div class="p-6">
-        <div class="flex flex-col items-center py-16">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p class="text-muted-foreground mt-4">{{ 'admin.loading' | translate }}</p>
-        </div>
+  @if (activeTab() === 'organizations') {
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold text-foreground">{{ 'admin.organizationList' | translate }}</h3>
       </div>
-    } @else if (organizations().length === 0) {
-      <div class="p-6">
-        <div class="flex flex-col items-center py-16">
-          <lucide-icon [img]="Building2" class="text-muted-foreground text-4xl mb-4"></lucide-icon>
-          <p class="text-muted-foreground text-lg font-medium">{{ 'common.noData' | translate }}</p>
-          <p class="text-muted-foreground mt-2">{{ 'admin.newOrganization' | translate }}</p>
+      
+      @if (loading()) {
+        <div class="p-6">
+          <div class="flex flex-col items-center py-16">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p class="text-muted-foreground mt-4">{{ 'admin.loading' | translate }}</p>
+          </div>
         </div>
-      </div>
-    } @else {
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-muted/50">
-            <tr class="border-b">
-              <th class="text-left p-4 font-medium text-muted-foreground">{{ 'admin.orgName' | translate }}</th>
-              <th class="text-left p-4 font-medium text-muted-foreground">{{ 'admin.created' | translate }}</th>
-              <th class="text-right p-4 font-medium text-muted-foreground">{{ 'common.actions' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (org of organizations(); track trackByOrgId($index, org)) {
-              <tr class="border-b hover:bg-muted/50 transition-colors">
-                <td class="p-4">
-                  <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <lucide-icon [img]="Building2" class="text-blue-600"></lucide-icon>
-                    </div>
-                    <div>
-                      <p class="font-medium text-foreground">{{ org.name }}</p>
-                      <p class="text-sm text-muted-foreground">ID: {{ org.id }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="p-4 text-muted-foreground">
-                  {{ org.created_at | date:'dd/MM/yyyy HH:mm' }}
-                </td>
-                <td class="p-4">
-                  <div class="flex justify-end space-x-2">
-                    <button 
-                      class="btn btn-outline btn-sm"
-                      (click)="viewMembers(org)"
-                      [title]="'admin.viewMembers' | translate">
-                      <lucide-icon [img]="Users" class="w-4 h-4"></lucide-icon>
-                    </button>
-                    <button 
-                      class="btn btn-outline btn-sm"
-                      (click)="deleteOrganization(org)"
-                      [title]="'admin.deleteOrg' | translate">
-                      <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
-                    </button>
-                  </div>
-                </td>
+      } @else if (organizations().length === 0) {
+        <div class="p-6">
+          <div class="flex flex-col items-center py-16">
+            <lucide-icon [img]="Building2" class="text-muted-foreground text-4xl mb-4"></lucide-icon>
+            <p class="text-muted-foreground text-lg font-medium">{{ 'common.noData' | translate }}</p>
+            <p class="text-muted-foreground mt-2">{{ 'admin.newOrganization' | translate }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b bg-muted/50">
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.orgName' | translate }}</th>
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.created' | translate }}</th>
+                <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">{{ 'common.actions' | translate }}</th>
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (org of organizations(); track trackByOrgId($index, org)) {
+                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <td class="p-4 align-middle">
+                    <div class="flex items-center gap-3">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                        <lucide-icon [img]="Building2" class="h-5 w-5 text-blue-600"></lucide-icon>
+                      </div>
+                      <div>
+                        <p class="font-medium leading-none">{{ org.name }}</p>
+                        <p class="text-sm text-muted-foreground mt-1">ID: {{ org.id }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-4 align-middle">
+                    <span class="text-sm text-muted-foreground">{{ org.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </td>
+                  <td class="p-4 align-middle text-right">
+                    <div class="flex justify-end gap-2">
+                      <button 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                        (click)="viewMembers(org)"
+                        [title]="'admin.viewMembers' | translate">
+                        <lucide-icon [img]="Users" class="h-4 w-4"></lucide-icon>
+                      </button>
+                      <button 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                        (click)="confirmDeleteOrganization(org)"
+                        [title]="'admin.deleteOrg' | translate">
+                        <lucide-icon [img]="Trash2" class="h-4 w-4"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Users List -->
+  @if (activeTab() === 'users') {
+    <div class="card">
+      <div class="px-6 py-4 border-b">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-foreground">{{ 'admin.usersTab' | translate }}</h3>
+          
+          <!-- Filtros -->
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground mr-2">{{ 'admin.filterLabel' | translate }}</span>
+            <button 
+              (click)="setUserFilter('all')"
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+              [class.bg-primary]="userFilter() === 'all'"
+              [class.text-primary-foreground]="userFilter() === 'all'"
+              [class.border-2]="userFilter() === 'all'"
+              [class.border-primary]="userFilter() === 'all'"
+              [class.bg-secondary]="userFilter() !== 'all'"
+              [class.text-secondary-foreground]="userFilter() !== 'all'"
+              [class.hover:bg-secondary/80]="userFilter() !== 'all'">
+              {{ 'admin.filterAll' | translate }}
+              <span class="rounded-full px-1.5 py-0.5 text-xs font-semibold"
+                    [class.bg-primary-foreground]="userFilter() === 'all'"
+                    [class.text-primary]="userFilter() === 'all'"
+                    [class.bg-muted]="userFilter() !== 'all'">
+                {{ systemUsers().length }}
+              </span>
+            </button>
+            <button 
+              (click)="setUserFilter('active')"
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+              [class.bg-green-500]="userFilter() === 'active'"
+              [class.text-white]="userFilter() === 'active'"
+              [class.border-2]="userFilter() === 'active'"
+              [class.border-green-500]="userFilter() === 'active'"
+              [class.bg-secondary]="userFilter() !== 'active'"
+              [class.text-secondary-foreground]="userFilter() !== 'active'"
+              [class.hover:bg-secondary/80]="userFilter() !== 'active'">
+              <lucide-icon [img]="CheckCircle" class="w-3.5 h-3.5"></lucide-icon>
+              {{ 'admin.filterActive' | translate }}
+            </button>
+            <button 
+              (click)="setUserFilter('inactive')"
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+              [class.bg-red-500]="userFilter() === 'inactive'"
+              [class.text-white]="userFilter() === 'inactive'"
+              [class.border-2]="userFilter() === 'inactive'"
+              [class.border-red-500]="userFilter() === 'inactive'"
+              [class.bg-secondary]="userFilter() !== 'inactive'"
+              [class.text-secondary-foreground]="userFilter() !== 'inactive'"
+              [class.hover:bg-secondary/80]="userFilter() !== 'inactive'">
+              <lucide-icon [img]="XCircle" class="w-3.5 h-3.5"></lucide-icon>
+              {{ 'admin.filterInactive' | translate }}
+            </button>
+            <button 
+              (click)="setUserFilter('orphan')"
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+              [class.bg-orange-500]="userFilter() === 'orphan'"
+              [class.text-white]="userFilter() === 'orphan'"
+              [class.border-2]="userFilter() === 'orphan'"
+              [class.border-orange-500]="userFilter() === 'orphan'"
+              [class.bg-secondary]="userFilter() !== 'orphan'"
+              [class.text-secondary-foreground]="userFilter() !== 'orphan'"
+              [class.hover:bg-secondary/80]="userFilter() !== 'orphan'">
+              <lucide-icon [img]="AlertTriangle" class="w-3.5 h-3.5"></lucide-icon>
+              {{ 'admin.filterOrphan' | translate }}
+            </button>
+          </div>
+        </div>
       </div>
-    }
-  </div>
+
+      <!-- Barra de ações para seleção múltipla -->
+      @if (selectedUsers().size > 0) {
+        <div class="px-6 py-3 bg-blue-50 border-b border-blue-200 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="CheckCircle" class="w-5 h-5 text-blue-600"></lucide-icon>
+              <span class="text-sm font-medium text-blue-900">
+                {{ selectedUsers().size }} {{ 'admin.selectedUsers' | translate }}
+              </span>
+            </div>
+            <button 
+              (click)="clearUserSelection()"
+              class="text-sm text-blue-600 hover:text-blue-800 underline">
+              {{ 'admin.clearSelection' | translate }}
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button 
+              (click)="confirmDeleteSelectedUsers()"
+              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors">
+              <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+              {{ 'admin.deleteSelected' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="p-6">
+          <div class="flex flex-col items-center py-16">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p class="text-muted-foreground mt-4">{{ 'admin.loadingUsers' | translate }}</p>
+          </div>
+        </div>
+      } @else if (filteredUsers().length === 0) {
+        <div class="p-6">
+          <div class="flex flex-col items-center py-16">
+            <lucide-icon [img]="Users" class="text-muted-foreground text-4xl mb-4"></lucide-icon>
+            <p class="text-muted-foreground text-lg font-medium">{{ 'admin.noUsers' | translate }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b bg-muted/50">
+                <th class="h-12 px-4 w-12 align-middle">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isAllUsersSelected()"
+                    (change)="toggleSelectAllUsers()"
+                    class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer">
+                </th>
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.user' | translate }}</th>
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.status' | translate }}</th>
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.userOrganizations' | translate }}</th>
+                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">{{ 'admin.lastAccess' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of filteredUsers(); track trackByUserId($index, user)) {
+                <tr class="border-b transition-colors hover:bg-muted/50"
+                    [class.bg-blue-50]="isUserSelected(user.user_id)">
+                  <td class="p-4 align-middle">
+                    <input 
+                      type="checkbox" 
+                      [checked]="isUserSelected(user.user_id)"
+                      (change)="toggleUserSelection(user.user_id)"
+                      class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer">
+                  </td>
+                  <td class="p-4 align-middle">
+                    <div class="flex flex-col">
+                      <p class="font-medium leading-none">{{ user.full_name || 'Sem nome' }}</p>
+                      <p class="text-sm text-muted-foreground mt-1.5">{{ user.email }}</p>
+                      @if (user.default_org_name) {
+                        <div class="mt-2 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-blue-100 text-blue-700 w-fit">
+                          📍 {{ user.default_org_name }}
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="p-4 align-middle">
+                    @if (user.is_active) {
+                      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-green-100 text-green-700">
+                        <lucide-icon [img]="CheckCircle" class="mr-1 h-3 w-3"></lucide-icon>
+                        {{ 'admin.active' | translate }}
+                      </div>
+                    } @else {
+                      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-destructive text-destructive-foreground">
+                        <lucide-icon [img]="XCircle" class="mr-1 h-3 w-3"></lucide-icon>
+                        {{ 'admin.inactive' | translate }}
+                      </div>
+                    }
+                  </td>
+                  <td class="p-4 align-middle">
+                    @if (user.total_organizations === 0) {
+                      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-orange-100 text-orange-700">
+                        <lucide-icon [img]="AlertTriangle" class="mr-1 h-3 w-3"></lucide-icon>
+                        {{ 'admin.noOrganization' | translate }}
+                      </div>
+                    } @else {
+                      <div class="flex flex-col gap-1">
+                        <p class="text-sm font-medium">{{ user.total_organizations }} {{ 'admin.organizationCount' | translate }}</p>
+                        @if (user.roles) {
+                          <p class="text-xs text-muted-foreground">{{ user.roles }}</p>
+                        }
+                        @if (user.organizations) {
+                          <p class="text-xs text-muted-foreground">{{ user.organizations }}</p>
+                        }
+                      </div>
+                    }
+                  </td>
+                  <td class="p-4 align-middle">
+                    <span class="text-sm text-muted-foreground">
+                      {{ user.last_sign_in_at ? (user.last_sign_in_at | date:'dd/MM/yyyy HH:mm') : ('admin.never' | translate) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
 </div>
+
+<!-- Modal: Impacto da Exclusão -->
+@if (showDeleteImpactModal() && deleteImpact()) {
+  <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" (click)="closeDeleteImpactModal()">
+    <div class="bg-background rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto border" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="flex flex-col space-y-1.5 p-6 border-b">
+        <div class="flex items-center gap-4">
+          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+            <lucide-icon [img]="AlertTriangle" class="h-6 w-6 text-orange-600"></lucide-icon>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold leading-none tracking-tight">Impacto da Exclusão</h2>
+            <p class="text-sm text-muted-foreground mt-1">Revise as informações antes de prosseguir</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="p-6 space-y-4">
+        <!-- Organização -->
+        <div class="space-y-2">
+          <h3 class="text-sm font-medium leading-none">Organização a ser excluída</h3>
+          <div class="rounded-lg border bg-card p-4">
+            <p class="font-medium">{{ deleteImpact()!.organization.name }}</p>
+            <p class="text-sm text-muted-foreground">Criada em {{ deleteImpact()!.organization.created_at | date:'dd/MM/yyyy' }}</p>
+          </div>
+        </div>
+
+        <!-- Dados -->
+        @if (deleteImpact()!.data.has_data) {
+          <div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+            <div class="flex items-start gap-3">
+              <lucide-icon [img]="AlertTriangle" class="h-5 w-5 text-destructive mt-0.5"></lucide-icon>
+              <div class="flex-1 space-y-2">
+                <p class="text-sm font-medium text-destructive">Esta organização possui dados cadastrados</p>
+                <ul class="text-sm text-destructive/90 space-y-1 ml-2">
+                  @if (deleteImpact()!.data.clients > 0) {
+                    <li>• {{ deleteImpact()!.data.clients }} cliente(s)</li>
+                  }
+                  @if (deleteImpact()!.data.loans > 0) {
+                    <li>• {{ deleteImpact()!.data.loans }} empréstimo(s)</li>
+                  }
+                  @if (deleteImpact()!.data.payments > 0) {
+                    <li>• {{ deleteImpact()!.data.payments }} pagamento(s)</li>
+                  }
+                  @if (deleteImpact()!.data.routes > 0) {
+                    <li>• {{ deleteImpact()!.data.routes }} rota(s)</li>
+                  }
+                </ul>
+                <p class="text-sm text-destructive font-medium">Remova todos os dados antes de excluir.</p>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="rounded-lg border border-green-200 bg-green-50 p-4">
+            <div class="flex items-center gap-3">
+              <lucide-icon [img]="CheckCircle" class="h-5 w-5 text-green-600"></lucide-icon>
+              <p class="text-sm font-medium text-green-800">Sem dados registrados - Pode excluir com segurança</p>
+            </div>
+          </div>
+        }
+
+        <!-- Membros Afetados -->
+        @if (deleteImpact()!.members && deleteImpact()!.members.length > 0) {
+          <div class="space-y-2">
+            <h3 class="text-sm font-medium leading-none">Usuários afetados ({{ deleteImpact()!.members.length }})</h3>
+            <div class="space-y-2">
+              @for (member of deleteImpact()!.members; track member.user_id) {
+                <div class="rounded-lg border p-4" 
+                     [class.border-orange-200]="member.will_be_orphan"
+                     [class.bg-orange-50]="member.will_be_orphan"
+                     [class.bg-card]="!member.will_be_orphan">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-sm truncate">{{ member.full_name }}</p>
+                      <p class="text-sm text-muted-foreground truncate">{{ member.email }}</p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <div class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                          {{ member.role }}
+                        </div>
+                        @if (member.is_default_org) {
+                          <div class="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-700">
+                            {{ 'admin.defaultOrg' | translate }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                    @if (member.will_be_orphan) {
+                      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-orange-500 text-white shrink-0">
+                        <lucide-icon [img]="AlertTriangle" class="mr-1 h-3 w-3"></lucide-icon>
+                        {{ 'admin.willBeOrphan' | translate }}
+                      </div>
+                    } @else {
+                      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-green-100 text-green-700 shrink-0">
+                        <lucide-icon [img]="CheckCircle" class="mr-1 h-3 w-3"></lucide-icon>
+                        Tem {{ member.total_orgs - 1 }} outra(s)
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center p-6 border-t bg-muted/50">
+        <div class="flex justify-end gap-2 w-full">
+          <button 
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            (click)="closeDeleteImpactModal()">
+            Cancelar
+          </button>
+          @if (!deleteImpact()!.data.has_data) {
+            <button 
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2"
+              (click)="proceedWithDelete()">
+              <lucide-icon [img]="Trash2" class="mr-2 h-4 w-4"></lucide-icon>
+              Confirmar Exclusão
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- Modal: Criar Organização -->
 @if (showCreateOrgModal()) {
@@ -324,5 +679,18 @@
     [isLoading]="isDeletingOrg()"
     (confirm)="confirmDelete()"
     (cancel)="closeConfirmation()"
+  ></app-confirmation-modal>
+}
+
+<!-- Modal de Confirmação: Excluir Usuários -->
+@if (showDeleteUsersConfirmation()) {
+  <app-confirmation-modal 
+    [title]="'admin.deleteUsersConfirm' | translate"
+    [message]="('admin.deleteUsersWarning' | translate).replace('{count}', selectedUsers().size.toString())"
+    [confirmText]="'admin.deleteUsersConfirm' | translate"
+    [cancelText]="'common.cancel' | translate"
+    [isLoading]="loading()"
+    (confirm)="deleteSelectedUsers()"
+    (cancel)="showDeleteUsersConfirmation.set(false)"
   ></app-confirmation-modal>
 }

@@ -22,6 +22,45 @@ export interface CreateOrganizationData {
   owner_name: string;
 }
 
+export interface SystemUser {
+  user_id: string;
+  email: string;
+  full_name: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
+  is_active: boolean;
+  default_org: string | null;
+  default_org_name: string | null;
+  total_organizations: number;
+  organizations: string | null;
+  roles: string | null;
+}
+
+export interface OrganizationDeleteImpact {
+  organization: {
+    id: string;
+    name: string;
+    created_at: string;
+  };
+  data: {
+    clients: number;
+    loans: number;
+    payments: number;
+    routes: number;
+    has_data: boolean;
+  };
+  members: Array<{
+    user_id: string;
+    email: string;
+    full_name: string;
+    role: string;
+    is_default_org: boolean;
+    total_orgs: number;
+    will_be_orphan: boolean;
+  }>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -297,6 +336,68 @@ export class AdminService {
         total_users: 0,
         total_loans: 0
       };
+    }
+  }
+
+  // =============================================
+  // GERENCIAMENTO DE USUÁRIOS DO SISTEMA
+  // =============================================
+
+  async listAllUsers(): Promise<SystemUser[]> {
+    try {
+      const { data, error } = await this.supabase.client.rpc('fn_list_all_users');
+      
+      if (error) {
+        this.toastService.error(`Erro ao carregar usuários: ${error.message}`);
+        throw new Error(error.message);
+      }
+      
+      return data || [];
+    } catch (err: any) {
+      if (!err.message.includes('Erro ao carregar usuários')) {
+        this.toastService.error('Erro inesperado ao carregar usuários');
+      }
+      return [];
+    }
+  }
+
+  async checkOrganizationDeleteImpact(orgId: string): Promise<OrganizationDeleteImpact | null> {
+    try {
+      const { data, error } = await this.supabase.client.rpc('fn_check_organization_delete_impact', {
+        org_id_param: orgId
+      });
+      
+      if (error) {
+        this.toastService.error(`Erro ao verificar impacto: ${error.message}`);
+        throw new Error(error.message);
+      }
+      
+      return data;
+    } catch (err: any) {
+      if (!err.message.includes('Erro ao verificar impacto')) {
+        this.toastService.error('Erro inesperado ao verificar impacto');
+      }
+      return null;
+    }
+  }
+
+  async deleteUsers(userIds: string[]): Promise<{ success: boolean; deleted_count: number; message: string } | null> {
+    try {
+      const { data, error } = await this.supabase.client.rpc('fn_delete_users', {
+        user_ids_param: userIds
+      });
+      
+      if (error) {
+        this.toastService.error(`Erro ao excluir usuários: ${error.message}`);
+        throw new Error(error.message);
+      }
+      
+      return data;
+    } catch (err: any) {
+      if (!err.message.includes('Erro ao excluir usuários')) {
+        this.toastService.error('Erro inesperado ao excluir usuários');
+      }
+      return null;
     }
   }
 }

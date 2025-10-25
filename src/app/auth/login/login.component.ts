@@ -5,7 +5,8 @@ import { AuthService } from '../../core/auth.service';
 import { VersionService } from '../../core/version.service';
 import { RateLimiterService } from '../../core/rate-limiter.service';
 import { ToastService } from '../../core/toast.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../core/language.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -59,6 +60,8 @@ export class LoginComponent {
   private router = inject(Router);
   private rateLimiter = inject(RateLimiterService);
   private toast = inject(ToastService);
+  private translate = inject(TranslateService);
+  private languageService = inject(LanguageService);
   protected versionService = inject(VersionService);
 
   loading = signal(false);
@@ -69,6 +72,8 @@ export class LoginComponent {
   });
 
   constructor() {
+    // O LanguageService já inicializa as traduções automaticamente
+    
     // Garantir que a versão seja carregada
     this.versionService.waitForLoad();
   }
@@ -83,7 +88,7 @@ export class LoginComponent {
     if (this.rateLimiter.isRateLimited(rateLimitKey)) {
       const minutesRemaining = this.rateLimiter.getBlockedTimeRemaining(rateLimitKey);
       this.toast.error(
-        `Muitas tentativas de login. Tente novamente em ${minutesRemaining} minutos.`
+        this.translate.instant('login.tooManyAttempts', { minutes: minutesRemaining })
       );
       return;
     }
@@ -92,7 +97,7 @@ export class LoginComponent {
     if (!this.rateLimiter.attempt(rateLimitKey)) {
       const minutesRemaining = this.rateLimiter.getBlockedTimeRemaining(rateLimitKey);
       this.toast.error(
-        `Conta bloqueada temporariamente por segurança. Tente novamente em ${minutesRemaining} minutos.`
+        this.translate.instant('login.accountBlocked', { minutes: minutesRemaining })
       );
       return;
     }
@@ -106,12 +111,12 @@ export class LoginComponent {
       this.router.navigate(['/dashboard']);
     } catch (err: any) {
       // Mostra mensagem de erro mas não revela se o usuário existe ou não (segurança)
-      this.toast.error('E-mail ou senha inválidos');
+      this.toast.error(this.translate.instant('login.invalidCredentials'));
       
       const attemptsRemaining = this.rateLimiter.getRemainingAttempts(rateLimitKey);
       if (attemptsRemaining > 0 && attemptsRemaining <= 2) {
         this.toast.warning(
-          `Atenção: você tem ${attemptsRemaining} tentativa(s) restante(s) antes do bloqueio temporário.`
+          this.translate.instant('login.attemptsRemaining', { attempts: attemptsRemaining })
         );
       }
     } finally {
