@@ -1,13 +1,13 @@
 {
-  "version": "1.10.0-dev.987687",
-  "formatted": "v1.10.0-dev.987687",
+  "version": "1.10.1-dev.284542",
+  "formatted": "v1.10.1-dev.284542",
   "buildInfo": {
-    "baseVersion": "1.10.0",
-    "buildNumber": "987687",
-    "gitCommit": "3f20390",
+    "baseVersion": "1.10.1",
+    "buildNumber": "284542",
+    "gitCommit": "c5f5358",
     "gitBranch": "main",
     "environment": "development",
-    "buildTime": "2025-10-25T23:13:07.687Z",
+    "buildTime": "2025-10-25T23:34:44.542Z",
     "isProduction": false
   }
 }
