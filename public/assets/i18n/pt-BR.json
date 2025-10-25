@@ -354,5 +354,28 @@
     "completed": "Concluído",
     "daysOverdue": "dias de atraso",
     "paidLabel": "Pago"
+  },
+  "receipt": {
+    "title": "COMPROVANTE DE PAGAMENTO",
+    "name": "Nome",
+    "address": "Endereço",
+    "documentId": "CPF/RG",
+    "loanFrom": "Empréstimo de",
+    "paidToCapitalInterest": "Pago em Capital e Juros",
+    "upToDate": "Em dia",
+    "nextIn": "Próxima em",
+    "days": "dias",
+    "remainingBalance": "Saldo restante",
+    "pendingLateFee": "Mora pendente",
+    "pendingCharges": "Encargos pendentes",
+    "paidInstallments": "Parcelas pagas",
+    "paymentDate": "Data do pagamento",
+    "nextInstallmentOpen": "Próxima parcela disponível",
+    "dueDate": "Data de vencimento",
+    "notes": "Observações",
+    "thankYou": "Obrigado pelo pagamento!",
+    "clientSignature": "Assinatura do Cliente",
+    "today": "hoje",
+    "daysLate": "dias de atraso"
   }
 }

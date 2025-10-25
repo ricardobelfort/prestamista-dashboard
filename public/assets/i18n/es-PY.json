@@ -323,5 +323,28 @@
     "completed": "Completado",
     "daysOverdue": "días de atraso",
     "paidLabel": "Pagado"
+  },
+  "receipt": {
+    "title": "COMPROBANTE DE PAGO",
+    "name": "Nombre",
+    "address": "Dirección",
+    "documentId": "Cédula",
+    "loanFrom": "Préstamo del",
+    "paidToCapitalInterest": "Abonado a Capital e Interés",
+    "upToDate": "Al día",
+    "nextIn": "Próxima en",
+    "days": "días",
+    "remainingBalance": "Saldo restante",
+    "pendingLateFee": "Mora pendiente",
+    "pendingCharges": "Cargos pendientes",
+    "paidInstallments": "Cuotas pagadas",
+    "paymentDate": "Fecha de abono",
+    "nextInstallmentOpen": "Próxima cuota abierta",
+    "dueDate": "Fecha vencimiento",
+    "notes": "Observaciones",
+    "thankYou": "¡Gracias por su pago!",
+    "clientSignature": "Firma del Cliente",
+    "today": "hoy",
+    "daysLate": "días atrasados"
   }
 }

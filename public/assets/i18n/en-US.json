@@ -323,5 +323,28 @@
     "completed": "Completed",
     "daysOverdue": "days overdue",
     "paidLabel": "Paid"
+  },
+  "receipt": {
+    "title": "PAYMENT RECEIPT",
+    "name": "Name",
+    "address": "Address",
+    "documentId": "ID",
+    "loanFrom": "Loan from",
+    "paidToCapitalInterest": "Paid to Principal and Interest",
+    "upToDate": "Up to date",
+    "nextIn": "Next in",
+    "days": "days",
+    "remainingBalance": "Remaining balance",
+    "pendingLateFee": "Pending late fee",
+    "pendingCharges": "Pending charges",
+    "paidInstallments": "Paid installments",
+    "paymentDate": "Payment date",
+    "nextInstallmentOpen": "Next installment open",
+    "dueDate": "Due date",
+    "notes": "Notes",
+    "thankYou": "Thank you for your payment!",
+    "clientSignature": "Client Signature",
+    "today": "today",
+    "daysLate": "days late"
   }
 }

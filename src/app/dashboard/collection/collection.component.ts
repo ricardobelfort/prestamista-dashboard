@@ -426,22 +426,90 @@ export class CollectionComponent implements OnInit {
       const sequentialNumber = String(timestamp).slice(-6); // Last 6 digits of timestamp
       const paymentId = `PAG-${year}-${sequentialNumber}`;
       
+      // Fetch additional loan data for receipt
+      const { data: loanData } = await this.supabase.client
+        .from('loans')
+        .select('principal, interest_rate, installments_count, start_date, client:clients(name, phone, address, doc_id)')
+        .eq('id', installment.loan_id)
+        .single();
+      
+      // Calculate remaining balance and next due date
+      const { data: allInstallments } = await this.supabase.client
+        .from('installments')
+        .select('index_no, amount, paid_amount, due_date')
+        .eq('loan_id', installment.loan_id)
+        .order('index_no', { ascending: true });
+      
+      console.log('🔍 DEBUG - All Installments:', allInstallments);
+      console.log('🔍 DEBUG - Loan Data:', loanData);
+      
+      let remainingBalance = 0;
+      let nextDueDate = null;
+      let nextInstallmentAmount = 0;
+      let totalInstallmentsCount = 0;
+      
+      if (allInstallments && allInstallments.length > 0) {
+        // Get total installments count
+        totalInstallmentsCount = allInstallments.length;
+        
+        console.log('📊 Total Installments Count:', totalInstallmentsCount);
+        
+        // Calculate total remaining
+        remainingBalance = allInstallments.reduce((sum: number, inst: any) => {
+          return sum + (inst.amount - (inst.paid_amount || 0));
+        }, 0);
+        
+        console.log('💰 Remaining Balance:', remainingBalance);
+        
+        // Find next unpaid installment (where paid_amount < amount)
+        const nextInstallment = allInstallments.find((inst: any) => {
+          const paidAmount = inst.paid_amount || 0;
+          return paidAmount < inst.amount;
+        });
+        
+        console.log('⏭️ Next Installment:', nextInstallment);
+        
+        if (nextInstallment) {
+          nextDueDate = nextInstallment.due_date;
+          nextInstallmentAmount = nextInstallment.amount - (nextInstallment.paid_amount || 0);
+          console.log('📅 Next Due Date:', nextDueDate);
+        } else {
+          console.log('⚠️ No next installment found - all paid');
+        }
+      } else {
+        console.log('⚠️ No installments found in query result');
+      }
+      
       // Store payment data for receipt generation
-      this.lastPaymentData.set({
-        clientName: installment.client.name,
-        clientPhone: installment.client.phone,
+      const clientData: any = loanData?.client?.[0] || installment.client;
+      
+      const receiptData = {
+        clientName: clientData.name,
+        clientPhone: clientData.phone || '',
+        clientAddress: clientData.address || '',
+        clientId: clientData.doc_id || clientData.document_id || '',
         installmentNumber: installment.index_no,
-        loanPrincipal: installment.loan.principal,
+        totalInstallments: totalInstallmentsCount || loanData?.installments_count || 0,
+        loanPrincipal: loanData?.principal || installment.loan.principal,
+        loanStartDate: loanData?.start_date || '',
         installmentAmount: installment.amount,
-        amountPaid: payment.value,
         paidAmount: payment.value,
+        remainingBalance: remainingBalance,
         paymentMethod: payment.method,
-        paidOn: payment.paid_on,
         paymentDate: payment.paid_on,
         dueDate: installment.due_date,
+        nextDueDate: nextDueDate,
+        nextInstallmentAmount: nextInstallmentAmount,
         notes: payment.notes,
+        organizationName: 'Prestamista',
+        organizationPhone: '',
+        organizationAddress: '',
         paymentId: paymentId
-      });
+      };
+      
+      console.log('📄 Receipt Data to be saved:', receiptData);
+      
+      this.lastPaymentData.set(receiptData);
       
       this.toastService.success(this.translate.instant('collection.successMessage'));
       this.closePaymentModal();
@@ -516,7 +584,12 @@ export class CollectionComponent implements OnInit {
 
   printReceipt() {
     const data = this.lastPaymentData();
-    if (!data) return;
+    console.log('🖨️ Print button clicked - Signal data:', data);
+    
+    if (!data) {
+      console.log('⚠️ No receipt data available!');
+      return;
+    }
     
     this.stopConfetti();
     this.receiptService.generateReceipt(data);
