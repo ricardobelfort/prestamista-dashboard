@@ -13,22 +13,16 @@ export class DataService {
   private userRoleCacheTimestamp = 0;
   private readonly ROLE_CACHE_DURATION = 60000; // 60 segundos
 
-  // Autenticação automática para desenvolvimento
+  // SECURITY: Verificação de autenticação
+  // Auto-login removido por questões de segurança
+  // Para desenvolvimento local com auto-login, use environment.local.ts
   private async ensureAuthenticated() {
     const { data: { user } } = await this.supabase.client.auth.getUser();
     
     if (!user) {
-      const debugUser = localStorage.getItem('debug_user');
-      const email = debugUser || 'admin@demo.com';
-      
-      const { data, error } = await this.supabase.client.auth.signInWithPassword({
-        email,
-        password: '123456'
-      });
-      
-      if (error) {
-        throw new Error('Authentication failed - unable to login with development credentials');
-      }
+      // SECURITY: Não fazer auto-login em produção ou por padrão
+      // Se precisar de auto-login para desenvolvimento, configure environment.local.ts
+      throw new Error('User not authenticated. Please login first.');
     }
   }
 

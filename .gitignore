@@ -48,3 +48,7 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Local environment files (SECURITY: Never commit debug credentials)
+src/environments/environment.local.ts
+src/environments/*.local.ts

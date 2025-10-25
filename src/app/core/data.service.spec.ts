@@ -79,48 +79,15 @@ describe('DataService', () => {
       expect(authMock.signInWithPassword).not.toHaveBeenCalled();
     });
 
-    it('should auto sign in with debug user if not authenticated', async () => {
-      authMock.getUser.mockResolvedValueOnce({
-        data: { user: null },
-        error: null,
-      });
-
-      authMock.signInWithPassword.mockResolvedValue({
-        data: { user: { id: 'debug-user' } },
-        error: null,
-      });
-
-      clientMock.rpc.mockResolvedValue({
-        data: [],
-        error: null,
-      });
-
-      localStorage.setItem('debug_user', 'debug@test.com');
-
-      await service.listClients();
-
-      expect(authMock.signInWithPassword).toHaveBeenCalledWith({
-        email: 'debug@test.com',
-        password: '123456',
-      });
-
-      localStorage.removeItem('debug_user');
-    });
-
-    it('should throw error if auto sign in fails', async () => {
+    it('should throw error if user is not authenticated', async () => {
       authMock.getUser.mockResolvedValue({
         data: { user: null },
         error: null,
       });
 
-      authMock.signInWithPassword.mockResolvedValue({
-        data: null,
-        error: { message: 'Invalid credentials' },
-      });
-
-      await expect(service.listClients()).rejects.toThrow(
-        'Authentication failed - unable to login with development credentials'
-      );
+      await expect(service.listClients()).rejects.toThrow('User not authenticated');
+      expect(authMock.getUser).toHaveBeenCalled();
+      expect(authMock.signInWithPassword).not.toHaveBeenCalled();
     });
   });
 
