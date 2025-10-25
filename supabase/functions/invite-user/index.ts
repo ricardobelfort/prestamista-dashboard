@@ -20,6 +20,14 @@ serve(async (req) => {
   }
 
   try {
+    console.log('=== INVITE USER FUNCTION START ===');
+    console.log('Environment check:', {
+      hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+      hasServiceRoleKey: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+      hasSiteUrl: !!Deno.env.get('SITE_URL'),
+      siteUrl: Deno.env.get('SITE_URL')
+    });
+    
     // Criar cliente Supabase com privilégios admin
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -35,6 +43,7 @@ serve(async (req) => {
     // Verificar autenticação do usuário que está fazendo a requisição
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('Missing authorization header');
       throw new Error('Missing authorization header');
     }
 
@@ -42,36 +51,50 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
+      console.error('Unauthorized:', authError);
       throw new Error('Unauthorized');
     }
 
+    console.log('Authenticated user:', { userId: user.id, email: user.email });
+
     // Verificar se o usuário tem permissão (owner ou admin)
-    const { data: requestBody }: { data: InviteUserRequest } = await req.json();
+    const requestBody: InviteUserRequest = await req.json();
     const { org_id, email, role, name } = requestBody;
 
+    console.log('Request body:', { org_id, email, role, name });
+
     if (!org_id || !email || !role) {
+      console.error('Missing required fields:', { org_id, email, role });
       throw new Error('Missing required fields: org_id, email, role');
     }
 
     // Verificar se o usuário tem permissão na organização
+    console.log('Checking membership for user:', user.id, 'in org:', org_id);
     const { data: membership, error: membershipError } = await supabaseAdmin
-      .from('organization_members')
+      .from('org_members')
       .select('role')
       .eq('org_id', org_id)
       .eq('user_id', user.id)
       .single();
 
     if (membershipError || !membership) {
+      console.error('Membership check failed:', membershipError);
       throw new Error('User is not a member of this organization');
     }
 
+    console.log('User membership:', membership);
+
     if (membership.role !== 'owner' && membership.role !== 'admin') {
+      console.error('Insufficient permissions:', membership.role);
       throw new Error('Insufficient permissions. Only owners and admins can invite users.');
     }
 
     // Verificar se o email já está cadastrado
+    console.log('Checking if email exists:', email);
     const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
     const userExists = existingUser?.users.some(u => u.email === email);
+
+    console.log('User exists check:', userExists);
 
     if (userExists) {
       // Se o usuário já existe, apenas adicionar à organização
@@ -81,7 +104,7 @@ serve(async (req) => {
       if (targetUser) {
         // Verificar se já é membro
         const { data: existingMembership } = await supabaseAdmin
-          .from('organization_members')
+          .from('org_members')
           .select('*')
           .eq('org_id', org_id)
           .eq('user_id', targetUser.id)
@@ -102,7 +125,7 @@ serve(async (req) => {
 
         // Adicionar à organização
         const { error: insertError } = await supabaseAdmin
-          .from('organization_members')
+          .from('org_members')
           .insert({
             org_id,
             user_id: targetUser.id,
@@ -129,8 +152,12 @@ serve(async (req) => {
     // Enviar convite por email usando Supabase Auth
     const siteUrl = Deno.env.get('SITE_URL') || 'http://localhost:4200';
     
+    console.log('Preparing to send invite email to:', email);
+    console.log('Site URL:', siteUrl);
+    
     // Detectar idioma preferido do usuário que está convidando (ou usar padrão)
     const inviterLanguage = user.user_metadata?.preferred_language || 'pt-BR';
+    console.log('Inviter language:', inviterLanguage);
     
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email,
@@ -148,10 +175,16 @@ serve(async (req) => {
     );
 
     if (inviteError) {
+      console.error('Error sending invite email:', inviteError);
       throw inviteError;
     }
 
-    console.log('Invite sent successfully:', { email, org_id, role });
+    console.log('Invite sent successfully:', { 
+      email, 
+      org_id, 
+      role, 
+      userId: inviteData.user?.id 
+    });
 
     return new Response(
       JSON.stringify({ 
@@ -165,11 +198,17 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error('Error inviting user:', error);
+    console.error('=== INVITE USER FUNCTION ERROR ===');
+    console.error('Error details:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'An unexpected error occurred'
+        error: error.message || 'An unexpected error occurred',
+        details: error.toString()
       }),
       { 
         status: 400, 

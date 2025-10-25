@@ -120,16 +120,26 @@ export class AdminService {
       });
       
       if (error) {
-        this.toastService.error(`Erro ao excluir organização: ${error.message}`);
-        throw new Error(error.message);
+        // Extrair informações detalhadas do erro
+        const errorMessage = error.message;
+        
+        // Verificar se é erro de organização com dados
+        if (errorMessage.includes('possui dados e não pode ser excluída')) {
+          // Mensagem mais amigável e detalhada
+          this.toastService.error(
+            `Não é possível excluir esta organização porque ela possui dados registrados. ` +
+            `Por favor, remova todos os clientes, empréstimos e rotas antes de excluir a organização.`
+          );
+        } else {
+          this.toastService.error(`Erro ao excluir organização: ${errorMessage}`);
+        }
+        throw new Error(errorMessage);
       }
       
       this.toastService.success('Organização excluída com sucesso!');
       return true;
     } catch (err: any) {
-      if (!err.message.includes('Erro ao excluir')) {
-        this.toastService.error('Erro inesperado ao excluir organização');
-      }
+      // Não mostrar toast duplicado - o erro já foi tratado no bloco acima
       throw err;
     }
   }
@@ -230,11 +240,7 @@ export class AdminService {
         }
       });
 
-      if (error) {
-        this.toastService.error(`Erro ao enviar convite: ${error.message}`);
-        throw new Error(error.message);
-      }
-
+      // Verificar primeiro se há erro no data (contém a mensagem real)
       if (data?.error) {
         if (data.alreadyMember) {
           this.toastService.error('Este usuário já é membro desta organização');
@@ -242,6 +248,12 @@ export class AdminService {
           this.toastService.error(`Erro ao enviar convite: ${data.error}`);
         }
         throw new Error(data.error);
+      }
+
+      // Verificar erro genérico da invocação
+      if (error) {
+        this.toastService.error(`Erro ao enviar convite: ${error.message}`);
+        throw new Error(error.message);
       }
 
       if (data?.userExists) {
