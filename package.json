@@ -40,7 +40,9 @@
     "@ngx-translate/core": "^17.0.0",
     "@supabase/supabase-js": "^2.76.1",
     "@tailwindcss/postcss": "^4.1.15",
+    "canvas-confetti": "^1.9.3",
     "chart.js": "^4.5.1",
+    "jspdf": "^3.0.3",
     "lucide-angular": "^0.547.0",
     "ng2-charts": "^8.0.0",
     "ngx-sonner": "^3.1.0",
@@ -53,6 +55,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",

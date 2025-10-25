@@ -1,14 +1,15 @@
 import { Component, signal, inject, ChangeDetectionStrategy, input, output, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { LucideAngularModule, X, CheckCircle2, AlertCircle, Clock, Banknote, TrendingUp, Trophy, Calendar, ChevronDown, ChevronUp, FileSpreadsheet } from 'lucide-angular';
+import { LucideAngularModule, X, CheckCircle2, AlertCircle, Clock, Banknote, TrendingUp, Trophy, Calendar, ChevronDown, ChevronUp, FileSpreadsheet, HandCoins } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
 import { LocalizedCurrencyPipe } from '../pipes/localized-currency.pipe';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-client-history-modal',
-  imports: [CommonModule, LucideAngularModule, DatePipe, DecimalPipe, LocalizedCurrencyPipe],
+  imports: [CommonModule, LucideAngularModule, DatePipe, DecimalPipe, LocalizedCurrencyPipe, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './client-history-modal.component.html'
 })
@@ -17,11 +18,13 @@ export class ClientHistoryModalComponent implements OnInit {
   clientId = input.required<string>();
   clientName = input.required<string>();
   close = output<void>();
+  payInstallment = output<any>();
 
   // Inject services using inject() function
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private exportService = inject(ExportService);
+  private translateService = inject(TranslateService);
 
   // Icons
   readonly X = X;
@@ -35,6 +38,7 @@ export class ClientHistoryModalComponent implements OnInit {
   readonly ChevronDown = ChevronDown;
   readonly ChevronUp = ChevronUp;
   readonly FileSpreadsheet = FileSpreadsheet;
+  readonly HandCoins = HandCoins;
 
   loading = signal(true);
   summary = signal<any>({
@@ -87,12 +91,8 @@ export class ClientHistoryModalComponent implements OnInit {
   }
 
   getLoanStatusLabel(status: string): string {
-    const labels: any = {
-      'active': 'Ativo',
-      'paid': 'Pago',
-      'overdue': 'Vencido'
-    };
-    return labels[status] || status;
+    const key = `clientHistory.${status}`;
+    return this.translateService.instant(key);
   }
 
   getInstallmentIcon(status: string) {
@@ -121,5 +121,13 @@ export class ClientHistoryModalComponent implements OnInit {
     } catch (error: any) {
       this.toastService.error(error.message || 'Erro ao exportar histórico');
     }
+  }
+
+  onPayInstallment(installment: any) {
+    this.payInstallment.emit(installment);
+  }
+
+  canPayInstallment(status: string): boolean {
+    return status === 'pending' || status === 'overdue' || status === 'partial';
   }
 }

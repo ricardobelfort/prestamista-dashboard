@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, signal, OnInit, computed, inject } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
-import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Users, CreditCard, CalendarDays, ArrowUp, FileSpreadsheet } from 'lucide-angular';
+import { LucideAngularModule, DollarSign, Wallet, TrendingUp, AlertTriangle, Users, CreditCard, CalendarDays, ArrowUp, FileSpreadsheet, Home } from 'lucide-angular';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { ExportService } from '../../core/export.service';
@@ -17,6 +17,7 @@ import { LocalizedCurrencyPipe } from '../../shared/pipes/localized-currency.pip
   templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
+  readonly Home = Home;
   readonly DollarSign = DollarSign;
   readonly Wallet = Wallet;
   readonly TrendingUp = TrendingUp;

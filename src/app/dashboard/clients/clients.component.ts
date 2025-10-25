@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { LucideAngularModule, Plus, Users, TrendingUp, SquarePen, Trash2, TriangleAlert, FileSpreadsheet, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { InputMaskDirective } from './input-mask.directive';
@@ -55,6 +56,7 @@ export class ClientsComponent implements OnInit {
   readonly ChevronRight = ChevronRight;
 
   private exportService = inject(ExportService);
+  private router = inject(Router);
   exporting = signal(false);
 
   // Make Math available in template
@@ -218,6 +220,13 @@ export class ClientsComponent implements OnInit {
   closeHistoryModal() {
     this.showHistoryModal.set(false);
     this.selectedClient.set(null);
+  }
+
+  handlePayInstallment(installment: any) {
+    // Store installment data in sessionStorage to be retrieved by Collection component
+    sessionStorage.setItem('pendingInstallment', JSON.stringify(installment));
+    this.closeHistoryModal();
+    this.router.navigate(['/dashboard/collection']);
   }
   
   // Sorting methods

@@ -1,7 +1,10 @@
-<div class="space-y-8 mt-6">
+<div class="space-y-8">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">{{ 'loans.title' | translate }}</h1>
+      <h1 class="text-3xl font-bold text-foreground flex items-center gap-2">
+        <lucide-icon [img]="Wallet" class="w-7 h-7"></lucide-icon>
+        {{ 'loans.title' | translate }}
+      </h1>
       <p class="text-muted-foreground mt-2 text-lg">{{ 'loans.subtitle' | translate }}</p>
     </div>
     @if (loans().length > 0) {

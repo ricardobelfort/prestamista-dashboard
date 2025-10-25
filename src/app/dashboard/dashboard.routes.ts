@@ -6,6 +6,7 @@ import { LoansComponent } from './loans/loans.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { RoutesComponent } from './routes/routes.component';
 import { AdminComponent } from './admin/admin.component';
+import { CollectionComponent } from './collection/collection.component';
 import { AdminGuard } from '../core/admin.guard';
 
 export const routes: Routes = [
@@ -17,6 +18,7 @@ export const routes: Routes = [
       { path: 'clients', component: ClientsComponent },
       { path: 'loans', component: LoansComponent },
       { path: 'payments', component: PaymentsComponent },
+      { path: 'collection', component: CollectionComponent },
       { path: 'routes', component: RoutesComponent },
       { 
         path: 'admin', 

@@ -5,3 +5,17 @@
 :root {
   font-family: 'Inter', sans-serif;
 }
+
+/* Success Modal Animations */
+@keyframes bounce-once {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-bounce-once {
+  animation: bounce-once 0.6s ease-in-out;
+}

@@ -5,7 +5,7 @@ import { SidebarService } from '../../core/sidebar.service';
 import { DataService } from '../../core/data.service';
 import { ToastService } from '../../core/toast.service';
 import { Logger } from '../../core/logger.service';
-import { LucideAngularModule, Home, Users, Wallet, CreditCard, MapPin, LogOut, ChevronLeft, ChevronRight, Settings } from 'lucide-angular';
+import { LucideAngularModule, Home, Users, Wallet, CreditCard, MapPin, LogOut, ChevronLeft, ChevronRight, Settings, HandCoins } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -41,11 +41,22 @@ import { TranslateModule } from '@ngx-translate/core';
           <a [routerLink]="item.route" 
              routerLinkActive="bg-neutral-700 text-white" 
              [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
-             [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
+             [class]="'flex items-center mb-1 cursor-pointer rounded transition-all duration-150 group hover:bg-neutral-800 relative ' + (sidebarService.expanded() ? 'px-3 py-2.5' : 'w-12 h-12 justify-center')"
              [title]="!sidebarService.expanded() ? (item.label | translate) : ''">
             <lucide-icon [img]="item.icon" class="w-5 h-5 text-neutral-400 group-hover:text-neutral-200 transition-colors"></lucide-icon>
             @if (sidebarService.expanded()) {
               <span class="ml-3 text-neutral-300 text-sm font-medium group-hover:text-neutral-100 transition-colors">{{ item.label | translate }}</span>
+              @if (item.route === '/dashboard/collection' && overdueCount() > 0) {
+                <span class="ml-auto bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-5 text-center">
+                  {{ overdueCount() }}
+                </span>
+              }
+            } @else {
+              @if (item.route === '/dashboard/collection' && overdueCount() > 0) {
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {{ overdueCount() > 9 ? '9+' : overdueCount() }}
+                </span>
+              }
             }
           </a>
         }
@@ -95,12 +106,14 @@ export class SidebarComponent implements OnInit {
 
   // State
   isAdmin = signal(false);
+  overdueCount = signal(0);
 
   // Lucide icons
   readonly Home = Home;
   readonly Users = Users;
   readonly Wallet = Wallet;
   readonly CreditCard = CreditCard;
+  readonly HandCoins = HandCoins;
   readonly MapPin = MapPin;
   readonly LogOut = LogOut;
   readonly ChevronLeft = ChevronLeft;
@@ -109,6 +122,10 @@ export class SidebarComponent implements OnInit {
 
   async ngOnInit() {
     await this.checkUserRole();
+    await this.loadOverdueCount();
+    
+    // Update overdue count every 5 minutes
+    setInterval(() => this.loadOverdueCount(), 5 * 60 * 1000);
   }
 
   async checkUserRole() {
@@ -122,6 +139,21 @@ export class SidebarComponent implements OnInit {
       // Log interno para debug, sem mostrar toast pois é uma verificação silenciosa
       Logger.error('Erro ao verificar role do usuário:', error);
       this.isAdmin.set(false);
+    }
+  }
+
+  async loadOverdueCount() {
+    try {
+      const installments = await this.dataService.listInstallments();
+      const overdue = installments.filter((inst: any) => {
+        const dueDate = new Date(inst.due_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return inst.status !== 'paid' && dueDate < today;
+      });
+      this.overdueCount.set(overdue.length);
+    } catch (error) {
+      Logger.error('Erro ao carregar contagem de parcelas vencidas:', error);
     }
   }
 
@@ -145,6 +177,11 @@ export class SidebarComponent implements OnInit {
       icon: CreditCard, 
       label: 'nav.payments', 
       route: '/dashboard/payments' 
+    },
+    { 
+      icon: HandCoins, 
+      label: 'nav.collection', 
+      route: '/dashboard/collection' 
     },
     { 
       icon: MapPin, 

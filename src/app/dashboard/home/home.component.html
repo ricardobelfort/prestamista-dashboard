@@ -2,7 +2,10 @@
   <!-- Header -->
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-bold text-foreground">{{ 'home.title' | translate }}</h1>
+      <h1 class="text-3xl font-bold text-foreground flex items-center gap-2">
+        <lucide-icon [img]="Home" class="w-7 h-7"></lucide-icon>
+        {{ 'home.title' | translate }}
+      </h1>
       <p class="text-muted-foreground mt-2 text-lg">{{ 'home.subtitle' | translate }}</p>
     </div>
     <button 
