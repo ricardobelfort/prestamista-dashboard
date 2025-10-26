@@ -131,6 +131,18 @@ VITE_SUPABASE_KEY=eyJhbGci...sua-chave-anon
    git push origin main
    ```
 
+#### 4️⃣ GitHub Actions (CI/CD)
+
+Para o CI/CD funcionar, adicione as variáveis como **Secrets**:
+
+1. **Acesse:** GitHub → Seu Repo → Settings → Secrets and variables → Actions
+2. **Adicione:** 
+   - `VITE_SUPABASE_URL` (valor do `.env` local)
+   - `VITE_SUPABASE_KEY` (valor do `.env` local)
+3. **Pronto:** O workflow já está configurado para usar esses secrets
+
+> 📖 [Documentação GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+
 ### Validação
 
 ```bash
