@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Pre-commit hook to restore environment placeholders
+# This ensures credentials are never committed to the repository
+
+echo "🔒 Restoring environment placeholders before commit..."
+node restore-env-placeholders.js
+
+# Add the restored file to staging
+git add src/environments/environment.ts
+
+echo "✅ Safe to commit!"

@@ -3,8 +3,10 @@
   "version": "1.10.6",
   "scripts": {
     "ng": "ng",
-    "start": "node generate-version.js && ng serve",
+    "start": "node replace-env-dev.js && node generate-version.js && ng serve",
+    "start:clean": "node restore-env-placeholders.js && npm start",
     "build": "node generate-version.js && npx ng build && node replace-env.js",
+    "prebuild": "node restore-env-placeholders.js",
     "watch": "ng build --watch --configuration development",
     "test": "jest",
     "test:watch": "jest --watch",
