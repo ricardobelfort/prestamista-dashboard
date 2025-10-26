@@ -1,0 +1,10 @@
+export const environment = {
+  production: false,
+  // DEVELOPMENT: Copy this file to environment.ts and add your real credentials
+  // environment.ts is gitignored to prevent committing sensitive data
+  supabaseUrl: 'YOUR_SUPABASE_URL_HERE', // e.g., https://xxxxx.supabase.co
+  supabaseKey: 'YOUR_SUPABASE_ANON_KEY_HERE', // e.g., eyJhbGci...
+  features: {
+    enableAutoLogin: false, // SECURITY: Auto-login desabilitado por padrão
+  }
+};
