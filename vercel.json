@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node generate-version.js && npx ng build",
+  "buildCommand": "node generate-version.js && npx ng build && node replace-env.js",
   "outputDirectory": "dist/prestamista-dashboard-ui/browser",
   "framework": "angular",
   "headers": [
