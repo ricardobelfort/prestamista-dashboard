@@ -1,7 +1,10 @@
 export const environment = {
   production: true,
-  supabaseUrl: 'https://frwawmcvrpdhsuljrvlw.supabase.co',
-  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyd2F3bWN2cnBkaHN1bGpydmx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwODI1ODQsImV4cCI6MjA3NjY1ODU4NH0.95Om2RvBjsHASPF-wLhjN32ntbMRKK9TwypLgVS23p4',
+  // SECURITY: These placeholders are replaced at build time with actual environment variables
+  // This ensures credentials are NEVER committed to the repository
+  // Set VITE_SUPABASE_URL and VITE_SUPABASE_KEY in Vercel's Environment Variables
+  supabaseUrl: '__SUPABASE_URL__',
+  supabaseKey: '__SUPABASE_KEY__',
   features: {
     enableAutoLogin: false, // SECURITY: Auto-login NUNCA deve ser habilitado em produção
   }
